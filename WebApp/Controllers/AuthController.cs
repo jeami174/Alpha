@@ -2,6 +2,7 @@
 
 namespace WebApp.Controllers
 {
+    [Route("Auth")]
     public class AuthController : Controller
     {
         [Route("sign-up")]
@@ -10,7 +11,7 @@ namespace WebApp.Controllers
             return View();
         }
 
-        [Route("sign-in")]
+        [Route("signin")]
         public IActionResult SignIn()
         {
             return View();

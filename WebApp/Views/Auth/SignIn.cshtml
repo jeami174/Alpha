@@ -1,1 +1,28 @@
-﻿
+﻿﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Signin";
+}
+
+
+    
+        <form class="form">
+            <h1 class="form-header">Login</h1>
+            <div class="input-group">
+                <label class="form-label">Email</label>
+                <input class="form-input" type="email" name="email" placeholder="Your email address" />
+            </div>
+            <div class="input-group">
+                <label class="form-label">Password</label>
+                <input class="form-input" type="password" name="password" placeholder="Enter your password" />
+            </div>
+            <div class="form-options">
+                <div class="remember">
+                    <input type="checkbox" name="remember" id="remember" />
+                    <label for="remember">Remember me</label>
+                </div>
+            </div>
+            <button class="btn-primary">Log In</button>
+            <div class="form-footer">
+                <p>Don´t have an account?</p><a asp-controller="Auth" asp-action="Register">Sign up</a>
+            </div>
+        </form>
