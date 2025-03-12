@@ -14,10 +14,18 @@
 </head>
 <body>
 
-
-    @RenderBody()
-
-
+    <div class="portal">
+        <div class="side-menu">
+            <div class="logotype">
+                @await Html.PartialAsync("Partials/Components/_Logotype")
+            </div>
+        </div>
+        <div class="top-menu">TOP</div>
+        <div class="main">
+            @RenderBody()
+        </div>
+        
+    </div>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

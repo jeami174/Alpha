@@ -1,12 +1,11 @@
 ﻿﻿@{
     Layout = "_Layout";
-    ViewData["Title"] = "Signin";
+    ViewData["Title"] = "Sign-in";
 }
-
-
     
         <form class="form">
             <h1 class="form-header">Login</h1>
+    <button class="btn btn-gray">Log In</button>
             <div class="input-group">
                 <label class="form-label">Email</label>
                 <input class="form-input" type="email" name="email" placeholder="Your email address" />
@@ -21,8 +20,8 @@
                     <label for="remember">Remember me</label>
                 </div>
             </div>
-            <button class="btn-primary">Log In</button>
+            <button class="btn btn-blue">Log In</button>
             <div class="form-footer">
-                <p>Don´t have an account?</p><a asp-controller="Auth" asp-action="Register">Sign up</a>
+                <p>Don´t have an account?</p><a asp-controller="Auth" asp-action="signup">Sign up</a>
             </div>
         </form>
