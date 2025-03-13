@@ -2,11 +2,13 @@
 
 namespace WebApp.Controllers;
 
+[Route("Projects")]
 public class ProjectsController : Controller
 {
-    [Route("projects")] //Ändra här så att det inte blir projects/projects
+    [Route("")]
     public IActionResult Projects()
     {
         return View();
     }
 }
+

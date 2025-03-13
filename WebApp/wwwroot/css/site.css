@@ -59,13 +59,6 @@
     --border-radius: 1rem;
     --button-font-size: 1rem;
 }
-[data-theme="dark"] {
-    color-scheme: dark;
-    --text-color: var(--bodyDark);
-    --heading-color: var(--heading);
-    --border-color: var(--gray100);
-    --background-color: var(--background);
-}
 
 /* BASE */
 
@@ -119,21 +112,29 @@ html, body {
 .portal {
     display: grid;
     height: 100dvh;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(50px, 270px) 1fr;
     grid-template-rows: auto 1fr;
-    grid-template-areas: "sidebar topbar" "sidebar main";  
+    grid-template-areas: "logotype topbar" "sidebar main";
 }
 
+    .portal > .logotype {
+        grid-area: logotype;
+        padding: 1rem 1.5rem;
+    }
+
     .portal > .side-menu {
-    grid-area: sidebar;
+        grid-area: sidebar;
+        padding: 1rem;
     }
 
     .portal > .top-menu {
-    grid-area: topbar;
+        grid-area: topbar;
+        padding: 1rem;
     }
 
     .portal > .main {
         grid-area: main;
+        padding: 1rem;
     }
 
 /* TYPOGRAPHY */
@@ -243,3 +244,21 @@ h6 {
 }
 
 /* FORM END */
+
+/* COMPONENTS */
+
+.Alphalogo {
+    display: flex;
+    align-items: center;
+    font-size: 26px;
+    font-weight: var(--font-bold);
+    font-family: var(--font-logo);
+    text-decoration: none;
+    color: var(--heading-color);
+    gap: 0.5rem;
+}
+
+    .Alphalogo span {
+        display: flex;
+        align-items: center;
+    }

@@ -16,10 +16,6 @@ namespace WebApp.Controllers
             return View();
         }
 
-        [Route("signout")]
-        public new IActionResult SignOut()
-        {
-            return RedirectToAction("Index", "Home");
-        }
+
     }
 }

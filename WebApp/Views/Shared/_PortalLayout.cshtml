@@ -15,12 +15,19 @@
 <body>
 
     <div class="portal">
-        <div class="side-menu">
-            <div class="logotype">
-                @await Html.PartialAsync("Partials/Components/_Logotype")
-            </div>
+        
+        <div class="logotype">
+            @await Html.PartialAsync("Partials/Components/_Logotype")
         </div>
-        <div class="top-menu">TOP</div>
+
+        <header class="top-menu">
+            @await Html.PartialAsync("Partials/Sections/_Topbar")
+        </header>
+
+        <aside class="side-menu">
+            @await Html.PartialAsync("Partials/Components/_NavLinks")
+        </aside>
+        
         <div class="main">
             @RenderBody()
         </div>

@@ -1,27 +1,35 @@
 ﻿﻿@{
     Layout = "_Layout";
-    ViewData["Title"] = "Sign-in";
+    ViewData["Title"] = "Signin";
 }
-    
-        <form class="form">
-            <h1 class="form-header">Login</h1>
-    <button class="btn btn-gray">Log In</button>
-            <div class="input-group">
-                <label class="form-label">Email</label>
-                <input class="form-input" type="email" name="email" placeholder="Your email address" />
-            </div>
-            <div class="input-group">
-                <label class="form-label">Password</label>
-                <input class="form-input" type="password" name="password" placeholder="Enter your password" />
-            </div>
-            <div class="form-options">
-                <div class="remember">
-                    <input type="checkbox" name="remember" id="remember" />
-                    <label for="remember">Remember me</label>
+
+<div class="center-screen"> 
+    <div class="surface">
+        <h1 class="form-header">Login</h1>
+            
+            <form class="form">
+                <button class="btn btn-gray">Log In</button>
+                <div class="input-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" type="email" name="email" placeholder="Your email address" />
                 </div>
-            </div>
-            <button class="btn btn-blue">Log In</button>
-            <div class="form-footer">
-                <p>Don´t have an account?</p><a asp-controller="Auth" asp-action="signup">Sign up</a>
-            </div>
-        </form>
+                <div class="input-group">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" type="password" name="password" placeholder="Enter your password" />
+                </div>
+                <div class="form-options">
+                    <div class="remember">
+                        <input type="checkbox" name="remember" id="remember" />
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <div class="forgot">
+                        <a href="#">Forgot password?</a>
+                    </div>
+                </div>
+                <button class="btn btn-blue">Log In</button>
+             </form>
+             <div class="form-footer">
+                <p>Don´t have an account?</p>
+             </div>
+    </div>
+</div>
