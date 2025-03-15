@@ -53,6 +53,15 @@
     --border-color: var(--gray100);
     --background-color: var(--background);
     --btn-border: var(--white);
+    --navlink-text-color: var(--text-color);
+    --navlink-text-hover-color: var(--accent);
+    --navlink-text-active-color: var(--accent);
+    --navlink-background-color: transparent;
+    --navlink-background-hover-color: var(--accent-dimmed);
+    --navlink-background-active-color: var(--accent-dimmed);
+    --table-header-background-color: var(--background);
+    --table-header-text-color: var(--heading);
+    --text-color-muted: #706E83
     /*MISC*/
     --container-padding: 1rem;
     --transition-time: all 0.2s;
@@ -120,16 +129,20 @@ html, body {
     .portal > .logotype {
         grid-area: logotype;
         padding: 1rem 1.5rem;
+        border-right: 1px solid var(--border200);
     }
 
     .portal > .side-menu {
         grid-area: sidebar;
         padding: 1rem;
+        padding-top: 0rem;
+        border-right: 1px solid var(--border200);
     }
 
     .portal > .top-menu {
         grid-area: topbar;
         padding: 1rem;
+        border-bottom: 1px solid var(--border200);
     }
 
     .portal > .main {
@@ -178,14 +191,6 @@ h6 {
 
 /* LINKS */
 
-.nav-link {
-    font-family: var(--font-main);
-    color: var(--text-color);
-    font-size: 1em;
-    font-weight: var(--font-semibold);
-    text-decoration: none;
-    transition: var(--transition-time);
-}
 
 /* LÄGG IN AKTIV, OCH HOOVER*/
 
@@ -237,16 +242,9 @@ h6 {
         background-color: var(--gray300);
     }
 
-/* FORM START */
-.form {
-    display: flex;
-    flex-direction: column;
-}
-
-/* FORM END */
-
 /* COMPONENTS */
 
+/*LOGOTYPE START*/
 .Alphalogo {
     display: flex;
     align-items: center;
@@ -262,3 +260,150 @@ h6 {
         display: flex;
         align-items: center;
     }
+
+/*LOGOTYPE END*/
+
+/*NAVLINKS START*/
+.nav-links {
+    display: flex;
+    flex-direction: column;
+
+}
+    .nav-links > .nav-link {
+        display: flex;
+        align-items: center;
+        font-size: 1em;
+        font-family: var(--font-main);
+        font-weight: var(--font-semibold);
+        text-decoration: none;
+        color: var(--navlink-text-color);
+        background-color: var(--navlink-background-color);
+        border-radius: 1rem;
+        padding: 17px 20px;
+        gap:1.2rem;
+        white-space: nowrap;
+        margin-bottom: 10px;
+    }
+
+        .nav-links > .nav-link span {
+            white-space: nowrap; 
+        }
+
+        .nav-links > .nav-link:hover {
+            color: var(--navlink-text-hover-color);
+            background-color: var(--navlink-background-hover-color);
+        }
+
+        .nav-links > .nav-link.active {
+            color: var(--navlink-text-active-color);
+            background-color: var(--navlink-background-active-color);
+        }
+
+/*NAVLINKS END*/
+
+/* LIST START */
+.client-list {
+    height: 100%;
+}
+    .client-list .client-info {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas: "image name"" image email";
+        column-gap: 1rem;
+        align-items: center;
+    }
+
+        .client-list .client-info .client-image {
+            grid-area: image;
+            width: 48px;
+            height: 48px;
+        }
+
+        .client-list .client-info .client-name {
+            grid-area: name;
+            font-weight: var(--font-bold);
+        }
+
+        .client-list .client-info .client-email {
+            grid-area: email;
+            color: var(--text-color-muted);
+        }
+
+
+
+
+/* LIST END */
+
+/* TABLES START */
+table {
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+    table tr {
+        display: grid;
+        grid-template-areas: "check info location phone date status actions";
+        grid-template-columns: auto 3fr 3fr 2fr 2fr 2fr 50px;
+        align-items: center;
+        width: 100%;
+        border-radius: 16px;
+        padding: 1rem;
+    }
+
+    table thead
+    table tbody {
+        display: contents;
+    }
+
+    table thead > tr {
+        background-color: var(--table-header-background-color);
+        color: var(--table-header-text-color);
+    }
+
+    table tbody > tr {
+        margin: 0.5rem 0;
+        padding: 0.7rem 1rem;
+    }
+
+        table tbody > tr:hover {
+            background-color: var(--accent-dimmed);
+        }
+
+    table th,
+    table td {
+        width: 100%;
+        padding: 0 1rem;
+        text-align: left;
+    }
+
+
+
+/* TABLES END */
+
+/* FORM START */
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="checkbox"] {
+    height: 15px;
+    width: 15px;
+}
+
+/* FORM END */
+
+/* SECTIONS */
+
+#team-members {
+} /*lägg till id*/
+
+#projects {
+} /*lägg till id*/
+
+#clients {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+}

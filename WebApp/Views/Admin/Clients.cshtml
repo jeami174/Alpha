@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "_PortalLayout";
+    ViewData["Title"] = "Clients";
+}
+
+<section id="clients">
+    <header>
+        <h2>@ViewData["Title"]</h2>
+        <button type="button" class="btn btn-blue">Add Client</button>
+    </header>
+
+<div class="client-list surface">
+    <table>
+        <thead>
+            <tr>
+                <th class="client-check"><input type="checkbox" /></th>
+                <th class="client-info">Client Name</th>
+                <th class="client-location">Location</th>
+                <th class="client-phone">Phone</th>
+                <th class="client-date">Date</th>
+                <th class="client-status">Status</th>
+                <th class="client-actions"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="client-check"><input type="checkbox" /></td>
+                <td class="client-info">
+                    <img class="client-image" src="~/Images/Avatars/Avatar.svg" alt="" />
+                    <div class="client-name">Volvo AB</div>
+                    <div class="client-email">jeanette@info.com</div>
+                </td>
+                <td class="client-location">Eskilstuna, sweden</td>
+                <td class="client-phone">0768182456</td>
+                <td class="client-date">25-03-14</td>
+                <td class="client-status">
+                    <div class="badge success">
+                            Active
+                    </div>
+                </td>
+                <td class="client-actions">
+                    <i class="fa-regular fa-ellipsis"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+   </div>
+</section>
