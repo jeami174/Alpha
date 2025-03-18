@@ -10,6 +10,7 @@ namespace WebApp.Controllers
             return View();
         }
 
+
         [Route("signup")]
         public IActionResult SignUp()
         {

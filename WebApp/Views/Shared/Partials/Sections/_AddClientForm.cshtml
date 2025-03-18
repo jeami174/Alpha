@@ -8,16 +8,14 @@
             <button type="button" class="btn-close" data-close="true"></button>
         </div>
 
-        <form novalidate method="post" asp-action="AddClient" asp-controller="Admin">
+        <form novalidate method="post" asp-action="AddClient" asp-controller="Clients">
             
 
             <div class="image-previewer square">
                 <img src="" class="image-preview" />
                 <input asp-for="ClientImage" accept="image/*" class="hide"/>
                 </div>
-            
-            
-            
+
             <div class="form-group">
                 <label asp-for="ClientName"></label>
                 <div class="field-group">
@@ -25,6 +23,7 @@
                     <span asp-validation-for="ClientName"></span>
                 </div>
             </div>
+
             <div class="form-group">
                 <label asp-for="ClientEmail"></label>
                 <div class="field-group">
@@ -32,6 +31,7 @@
                     <span asp-validation-for="ClientEmail"></span>
                 </div>
             </div>
+
             <div class="form-group">
                 <label asp-for="Location"></label>
                 <div class="field-group">
@@ -39,6 +39,7 @@
                     <span asp-validation-for="Location"></span>
                 </div>
             </div>
+
             <div class="form-group">
                 <label asp-for="Phone"></label>
                 <div class="field-group">

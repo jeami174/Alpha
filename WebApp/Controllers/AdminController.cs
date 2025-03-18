@@ -3,37 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-[Route("Admin")]
+[Route("admin")]
 public class AdminController : Controller
 {
+    [Route("members")]
     public IActionResult Members()
     {
         return View();
     }
 
-    [Route("Clients")]
+
+    [Route("clients")]
     public IActionResult Clients()
     {
         return View();
     }
 
-    [HttpPost]
-    public IActionResult AddClient(AddClientForm form)
-    {
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction("Clients");
-        }
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult EditClient(AddClientForm form)
-    {
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction("Clients");
-        }
-        return View();
-    }
 }
