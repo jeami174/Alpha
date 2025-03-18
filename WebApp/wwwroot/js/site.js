@@ -25,6 +25,9 @@
                 modal.querySelectorAll('form').forEach(form => {
                     form.reset()
 
+                    // Lägg till denna rad för att rensa upp felmeddelanden
+                    clearErrorMessages(form)
+
                     const imagePreview = form.querySelector('.image-preview')
                     if (imagePreview)
                         imagePreview.src = ''
@@ -157,3 +160,27 @@ async function processImage(file, imagePreview, previewer, previewSize = 150) {
         console.error('Failed on image processing', error)
     }
 }
+
+//Funktion för att bygga ihop DateOfBirth för de formulär som har det
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('#addMemberModal form');
+    if (!form) return;
+
+    form.addEventListener('submit', () => {
+        const day = document.getElementById('dobDay')?.value;
+        const month = document.getElementById('dobMonth')?.value;
+        const year = document.getElementById('dobYear')?.value;
+
+        const hiddenDobInput = form.querySelector('input[name="DateOfBirth"]');
+        if (!hiddenDobInput) return;
+
+        if (!day || !month || !year) {
+            hiddenDobInput.value = '';
+            return;
+        }
+
+        const dayPadded = day.padStart(2, '0');
+        const monthPadded = month.padStart(2, '0');
+        hiddenDobInput.value = `${year}-${monthPadded}-${dayPadded}`;
+    });
+});

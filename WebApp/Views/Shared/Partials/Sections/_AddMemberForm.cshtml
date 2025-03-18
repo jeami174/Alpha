@@ -1,0 +1,109 @@
+﻿@model AddMemberForm
+
+<div id="addMemberModal" class="modal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h3>New Member</h3>
+            <button type="button" class="btn-close" data-close="true"></button>
+        </div>
+
+        <form novalidate method="post" asp-action="AddMember" asp-controller="Members">
+
+            <div class="image-previewer circle">
+                <img src="" class="image-preview" />
+                <input asp-for="MemberImage" accept="image/*" class="hide" />
+            </div>
+
+            <div class="form-group name-group">
+                <div class="name-field">
+                    <label asp-for="FirstName"></label>
+                    <div class="field-group">
+                        <input asp-for="FirstName" />
+                        <span asp-validation-for="FirstName"></span>
+                    </div>
+                </div>
+                <div class="name-field">
+                    <label asp-for="LastName"></label>
+                    <div class="field-group">
+                        <input asp-for="LastName" />
+                        <span asp-validation-for="LastName"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MemberEmail"></label>
+                <div class="field-group">
+                    <input asp-for="MemberEmail" />
+                    <span asp-validation-for="MemberEmail"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Phone"></label>
+                <div class="field-group">
+                    <input asp-for="Phone" />
+                    <span asp-validation-for="Phone"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="JobTitle"></label>
+                <div class="field-group">
+                    <input asp-for="JobTitle" />
+                    <span asp-validation-for="JobTitle"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <div class="field-group">
+                    <input asp-for="Address" />
+                    <span asp-validation-for="Address"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <div class="field-group dob-group">
+                    <div class="custom-select">
+                        <select id="dobDay" class="dob-day">
+                            <option value="">Day</option>
+                            @for (int d = 1; d <= 31; d++)
+                            {
+                                <option value="@d">@d</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="custom-select">
+                        <select id="dobMonth" class="dob-month">
+                            <option value="">Month</option>
+                            @for (int m = 1; m <= 12; m++)
+                            {
+                                var monthName = new DateTime(1, m, 1).ToString("MMMM");
+                                <option value="@m">@monthName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="custom-select">
+                        <select id="dobYear" class="dob-year">
+                            <option value="">Year</option>
+                            @for (int y = DateTime.Now.Year; y >= 1900; y--)
+                            {
+                                <option value="@y">@y</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <input asp-for="DateOfBirth" type="hidden" />
+                <span asp-validation-for="DateOfBirth"></span>
+            </div>
+
+            <button type="submit" class="btn btn-submit btn-blue">Add Contact</button>
+        </form>
+
+    </div>
+</div>

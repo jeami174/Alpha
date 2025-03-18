@@ -454,7 +454,7 @@ form {
     form .form-group {
         position: relative;
         display: grid;
-        gap: 0.2rem;
+        gap: 0.4rem;
         margin-bottom: 1.2rem;
     }
 
@@ -466,11 +466,18 @@ form {
     form select,
     form textarea {
         width: 100%;
-        font-size: 1em;
-        padding: 0.5rem 1rem;
+        font-size: 15px;
+        font-weight: var(--font-regular);
+        padding: 14px 16px;
         border-radius: 14px;
         border: 1px solid var(--border100, #EBEEF2);
         outline: none;
+    }
+
+    form label {
+        font-size: 15px;
+        font-weight: var(--font-semibold);
+        color: var(--heading-color);
     }
 
         form input:focus,
@@ -483,7 +490,7 @@ form {
         form select::placeholder,
         form textarea::placeholder {
             color: var(--body-light);
-            font-size: 1em;
+            font-size: 15px;
             font-weight: var(--font-regular);
         }
 
@@ -603,9 +610,7 @@ form {
 
 /* SECTIONS */
 
-#team-members {
-}
-/*lägg till id*/
+
 
 #projects {
 }
@@ -625,3 +630,77 @@ form {
 #editClientModal .modal-content {
     width: 550px;
 }
+
+#members {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+}
+
+#addMemberModal .modal-content {
+    width: 550px;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+    #addMemberModal .modal-content .dob-group {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+        #addMemberModal .modal-content .dob-group select {
+            display: flex;
+            font-size: 15px;
+            color: var(--body-dark);
+            padding: 14px 14px 14px 16px;
+            border: 1px solid var(--border100);
+            border-radius: 14px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #addMemberModal .modal-content .dob-group .custom-select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+            #addMemberModal .modal-content .dob-group .custom-select select {
+                width: 100%;
+                padding-right: 2.5rem;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+
+            #addMemberModal .modal-content .dob-group .custom-select::after {
+                content: '\f078';
+                font-family: var(--font-fa); 
+                font-weight: 900;
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-50%);
+                pointer-events: none;
+                font-size: 15px;
+                color: var(--body-dark);
+            }
+
+    #addMemberModal .modal-content .name-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+
+        #addMemberModal .modal-content .name-field {
+            flex: 1;
+        }
+
+
+
+    #editMemberModal .modal-content {
+        width: 550px;
+    }
+

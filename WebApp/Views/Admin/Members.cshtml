@@ -3,6 +3,17 @@
     ViewData["Title"] = "Team Members";
 }
 
-<h2>
-    @ViewData["Title"]
-</h2>
+<partial name="Partials/Sections/_AddMemberForm" />
+
+<section id="members">
+    <header>
+        <h2>@ViewData["Title"]</h2>
+        <button type="button" data-modal="true" data-target="#addMemberModal" class="btn btn-blue btn-add">Add Member</button>
+    </header>
+
+    <div class="surface">
+
+    </div>
+
+
+</section>
