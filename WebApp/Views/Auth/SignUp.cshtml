@@ -1,4 +1,70 @@
-﻿﻿@{
+﻿@model SignUpFormModel
+@{
     Layout = "_Layout";
     ViewData["Title"] = "Sign-up";
 }
+
+<div class="center-screen">
+    <div class="surface">
+        <h1 class="form-header signup-title">Create Account</h1>
+
+        <form class="form signup-form" novalidate method="post" asp-action="SignUp" asp-controller="Auth">
+            
+            <div class="SignUp-Divider">
+                <hr />
+                <span>OR</span>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FullName"></label>
+                <div class="field-group">
+                    <input asp-for="FullName" />
+                    <span asp-validation-for="FullName"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <div class="field-group">
+                    <input asp-for="Email" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <div class="field-group">
+                    <input asp-for="Password" />
+                    <span asp-validation-for="Password"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <div class="field-group">
+                    <input asp-for="ConfirmPassword" />
+                    <span asp-validation-for="ConfirmPassword"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="field-group field-group-terms">
+                    <input asp-for="AcceptTerms" type="checkbox" />
+                    <label asp-for="AcceptTerms">
+                        I accept the <a class="terms-link" href="#" onclick="return false;">Terms and Conditions</a>
+                    </label>
+                    <span asp-validation-for="AcceptTerms"></span>
+                </div>
+            </div>
+
+            <button class="btn btn-blue">Create Account</button>
+        </form>
+        <div class="SignUp-Footer">
+            <p>
+                Already have an account?
+                <a href="/auth/signin">Login</a>
+            </p>
+        </div>
+    </div>
+</div>

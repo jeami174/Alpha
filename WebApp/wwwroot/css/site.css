@@ -268,6 +268,7 @@ h6 {
 .btn-blue {
     background-color: var(--accent);
     box-shadow: 0px 4px 16px 0px rgba(0, 129, 255, 0.18);
+    font-size: 0.9375rem;
 }
 
     .btn-blue:hover {
@@ -514,13 +515,78 @@ form {
         gap: 0.5rem;
     }
 
-    input[type="checkbox"] {
-        height: 15px;
-        width: 15px;
-    }
+input[type="checkbox"] {
+    height: 15px;
+    width: 15px;
+    accent-color: var(--accent);
+}
 
 /* FORM END */
 
+/* SIGN UP FORM START */
+.signup-form {
+    width: 500px;
+    margin: 0 auto;
+    padding-inline: 4rem;
+}
+
+.signup-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: 3rem;
+}
+
+.SignUp-Footer {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.SignUp-Divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+}
+    .SignUp-Divider hr {
+        flex: 1;
+        border: none;
+        border-top: 1px solid #EBEEF2;
+        margin: 0 1rem;
+    }
+
+    .SignUp-Divider span {
+        font-size: 0.75rem;
+        color: var(--body-light);
+        white-space: nowrap;
+    }
+
+.SignUp-Footer p {
+    font-size: 0.9375rem;
+    font-weight: var(--font-semibold);
+}
+
+.SignUp-Footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+}
+
+.signup-form button.btn-blue {
+    width: 100%;
+    padding: 0.7rem 1.25rem;
+}
+
+.signup-form .terms-link {
+    color: var(--accent);
+    text-decoration: none
+}
+
+.signup-form .field-group-terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* SIGN UP FORM END */
 /* MODAL START */
 .modal {
     display: none;
