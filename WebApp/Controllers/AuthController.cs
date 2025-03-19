@@ -10,9 +10,18 @@ namespace WebApp.Controllers
             return View();
         }
 
-
         [Route("signup")]
         public IActionResult SignUp()
+        {
+            return View();
+        }
+
+        public new IActionResult SignOut()
+        {
+            return View();
+        }
+
+        public IActionResult ForgotPassword()
         {
             return View();
         }
