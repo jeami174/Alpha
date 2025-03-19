@@ -3,8 +3,16 @@
     ViewData["Title"] = "Projects";
 }
 
-<div >
-    <h2>@ViewData["title"]</h2>
+<partial name="Partials/Sections/_AddProjectForm" />
+
+<section id="projects">
+    <header>
+        <h2>@ViewData["Title"]</h2>
+        <button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-blue btn-add">Add Project</button>
+    </header>
+
+    <div class="surface">
+    </div>
 
 
-</div>
+</section>

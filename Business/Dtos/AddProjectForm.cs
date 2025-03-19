@@ -14,21 +14,17 @@ public class AddProjectForm
     [Required(ErrorMessage = "Required")]
     public string ProjectName { get; set; } = null!;
 
-    /// <summary>
-    /// Hämta in lista med befintliga klienter
-    /// </summary>
-
-    [Display(Name = "Client Email", Prompt = "Enter client email")]
-    [DataType(DataType.EmailAddress)]
-    [Required(ErrorMessage = "Required")]
-    [RegularExpression(@"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$", ErrorMessage = "Invalid email address")]
-    public string ClientEmail { get; set; } = null!;
-
-    [Display(Name = "Location", Prompt = "Enter client location")]
+    [Display(Name = "Description", Prompt = "Type something")]
     [DataType(DataType.Text)]
-    public string? Location { get; set; }
+    [Required(ErrorMessage = "Required")]
+    public string Description { get; set; } = null!;
 
-    [Display(Name = "Phone", Prompt = "Enter client phone number")]
-    [DataType(DataType.PhoneNumber)]
-    public string? Phone { get; set; }
+    [Display(Name = "Start Date", Prompt = "Select start date")]
+    public DateTime? StartDate { get; set; }
+
+    [Display(Name = "End Date", Prompt = "Select end date")]
+    public DateTime? EndDate { get; set; }
+
+    [Display(Name = "Budget", Prompt = "Select a budget")]
+    public decimal? Budget { get; set; }
 }

@@ -1,0 +1,72 @@
+﻿@model AddProjectForm
+
+<div id="addProjectModal" class="modal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h3>Add Project</h3>
+            <button type="button" class="btn-close" data-close="true"></button>
+        </div>
+
+        <div class="scroll-container">
+            <div class="inner-padding">
+                <form novalidate method="post" asp-action="AddProject" asp-controller="ProjectCrud">
+
+                    <div class="image-previewer square">
+                        <img src="" class="image-preview" />
+                        <input asp-for="ProjectImage" accept="image/*" class="hide" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ProjectName"></label>
+                        <div class="field-group">
+                            <input asp-for="ProjectName" />
+                            <span asp-validation-for="ProjectName"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description"></label>
+                        <div class="field-group">
+                            <!-- Om tid finns på slutet byt ut mot WYSIWYG-editor -Quill -->
+                            <textarea asp-for="Description"></textarea>
+                            <span asp-validation-for="Description"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group date-group">
+                        <div>
+                            <label asp-for="StartDate"></label>
+                            <div class="field-group">
+                                <input asp-for="StartDate" type="date" />
+                                <span asp-validation-for="StartDate"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <label asp-for="EndDate"></label>
+                            <div class="field-group">
+                                <input asp-for="EndDate" type="date" />
+                                <span asp-validation-for="EndDate"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Budget"></label>
+                        <div class="field-group icon-input">
+                            <span class="icon-dollar">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <input asp-for="Budget" placeholder="" />
+                            <span asp-validation-for="Budget"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit btn-blue">Create</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

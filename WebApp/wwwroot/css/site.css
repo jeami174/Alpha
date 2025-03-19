@@ -291,7 +291,7 @@ h6 {
 
 .btn-close {
     cursor: pointer;
-    font-size: 2em;
+    font-size: 1.75em;
     font-weight: var(--font-regular);
     border: none;
     background-color: transparent;
@@ -729,4 +729,46 @@ form {
     #editMemberModal .modal-content {
         width: 550px;
     }
+
+#addProjectModal .modal-content {
+    width: 550px;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+    #addProjectModal .modal-content .date-group {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+    }
+
+        #addProjectModal .modal-content .date-group > div {
+            flex: 1;
+        }
+
+        #addProjectModal .modal-content .date-group input[type="date"] {
+            width: 100%;
+            box-sizing: border-box;
+            color: var(--body-dark);
+            font-weight: var(--font-regular);
+        }
+
+    #addProjectModal .modal-content .icon-input {
+        position: relative;
+    }
+
+        #addProjectModal .modal-content .icon-input .icon-dollar {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: var(--body-dark);
+            pointer-events: none;
+        }
+
+        #addProjectModal .modal-content .icon-input input {
+            padding-left: 2.5rem;
+            box-sizing: border-box;
+        }
+
 
