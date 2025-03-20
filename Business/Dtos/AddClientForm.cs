@@ -8,7 +8,7 @@ public class AddClientForm
     [DataType(DataType.Upload)]
     public IFormFile? ClientImage { get; set; }
 
-    [Display(Name = "Client Name", Prompt= "Enter client name")]
+    [Display(Name = "Client Name", Prompt = "Enter client name")]
     [DataType(DataType.Text)]
     [Required(ErrorMessage = "Required")]
     public string ClientName { get; set; } = null!;
