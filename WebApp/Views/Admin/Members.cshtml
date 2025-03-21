@@ -1,19 +1,25 @@
-﻿@{
+﻿@model IEnumerable<Data.Entities.MemberEntity>
+@{
     Layout = "_PortalLayout";
     ViewData["Title"] = "Team Members";
 }
 
-<partial name="Partials/Sections/_AddMemberForm" />
-
 <section id="members">
     <header>
         <h2>@ViewData["Title"]</h2>
-        <button type="button" data-modal="true" data-target="#addMemberModal" class="btn btn-blue btn-add">Add Member</button>
+        <button type="button" data-modal="true" data-target="#addMemberModal"
+                class="btn btn-blue btn-add">
+            Add Member
+        </button>
     </header>
 
-    <div class="surface">
-
+    <div class="member-card-grid">
+        @foreach (var member in Model)
+        {
+            <partial name="Partials/Sections/_MemberCard" model="member" />
+        }
     </div>
-
-
 </section>
+
+<partial name="Partials/Sections/_AddMemberForm" model="new AddMemberForm()" />
+

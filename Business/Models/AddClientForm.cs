@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
-namespace Business.Dtos;
+namespace Business.Models;
 
 public class AddClientForm
 {

@@ -1,16 +1,16 @@
-﻿@model Business.Models.AddMemberForm
+﻿@model Business.Models.EditMemberForm
 
-<div id="addMemberModal" class="modal">
+<div id="editMemberModal" class="modal">
     <div class="modal-content">
-        
+
         <div class="modal-header">
-            <h3>New Member</h3>
+            <h3>Edit Member</h3>
             <button type="button" class="btn-close" data-close="true"></button>
         </div>
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form novalidate method="post" asp-action="AddMember" asp-controller="Members">
+                <form novalidate method="post" asp-action="EditMember" asp-controller="Members">
 
                     <div class="image-previewer circle">
                         <img src="" class="image-preview" />
@@ -104,7 +104,7 @@
                         <span asp-validation-for="DateOfBirth"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-submit btn-blue">Add Contact</button>
+                    <button type="submit" class="btn btn-submit btn-blue">Save</button>
                 </form>
             </div>
         </div>

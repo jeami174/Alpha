@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Business.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;

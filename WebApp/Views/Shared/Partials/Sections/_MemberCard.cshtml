@@ -1,0 +1,23 @@
+﻿@model Data.Entities.MemberEntity
+
+<div class="member-card">
+    <button class="edit-btn" data-modal="true" data-target="#editMemberModal">
+        <img src="~/Images/Icons/More 2.svg" alt="Edit" class="member-card-edit" />
+
+    </button>
+
+    <!-- Behöver ersättas med riktig logik för att visa uppladdad bild -->
+    <img src="~/Images/Avatars/Avatar.svg" alt="Avatar" class="member-card-avatar" />
+
+    <h4>@Model.FirstName @Model.LastName</h4>
+    @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
+    {
+        <div class="member-card-title">@Model.JobTitle</div>
+    }
+    <div class="member-card-email">@Model.Email</div>
+    <div class="member-card-phone">@Model.Phone</div>
+
+    <button class="btn btn-gray btn-member">Message</button>
+</div>
+
+<partial name="Partials/Sections/_EditMemberForm" model="new EditMemberForm()" />

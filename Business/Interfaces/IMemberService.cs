@@ -1,5 +1,4 @@
-﻿
-using Business.Dtos;
+﻿using Business.Models;
 using Data.Entities;
 
 namespace Business.Interfaces;
@@ -8,7 +7,7 @@ public interface IMemberService
 {
     Task AddMemberAsync(AddMemberForm form);
 
-    Task UpdateMemberAsync(int id, AddMemberForm form);
+    Task UpdateMemberAsync(int id, EditMemberForm form);
 
     Task DeleteMemberAsync(int id);
 

@@ -1,6 +1,6 @@
-﻿using Business.Dtos;
-using Business.Factories;
+﻿using Business.Factories;
 using Business.Interfaces;
+using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using System.Diagnostics;
@@ -30,22 +30,16 @@ namespace Business.Services
             }
         }
 
-        public async Task UpdateMemberAsync(int id, AddMemberForm form)
+        public async Task UpdateMemberAsync(int id, EditMemberForm form)
         {
             var member = await _memberRepository.GetOneAsync(m => m.Id == id)
                          ?? throw new Exception("Member not found");
 
-            member.FirstName = form.FirstName;
-            member.LastName = form.LastName;
-            member.Email = form.MemberEmail;
-            member.Address = form.Address;
-            member.Phone = form.Phone;
-            member.JobTitle = form.JobTitle;
-            member.DateOfBirth = form.DateOfBirth;
-
             await _memberRepository.BeginTransactionAsync();
             try
             {
+                MemberFactory.Update(member, form);
+
                 _memberRepository.Update(member);
                 await _memberRepository.SaveToDatabaseAsync();
                 await _memberRepository.CommitTransactionAsync();
