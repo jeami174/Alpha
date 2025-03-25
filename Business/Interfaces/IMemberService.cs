@@ -1,19 +1,20 @@
 ﻿using Business.Models;
 using Data.Entities;
 
-namespace Business.Interfaces;
-
-public interface IMemberService
+namespace Business.Interfaces
 {
-    Task AddMemberAsync(AddMemberForm form);
+    public interface IMemberService
+    {
+        Task AddMemberAsync(AddMemberForm form, string imageName);
 
-    Task UpdateMemberAsync(int id, EditMemberForm form);
+        Task UpdateMemberAsync(int id, EditMemberForm form);
 
-    Task DeleteMemberAsync(int id);
+        Task DeleteMemberAsync(int id);
 
-    Task<MemberEntity?> GetMemberByIdAsync(int id);
+        Task<MemberEntity?> GetMemberByIdAsync(int id);
 
-    Task<IEnumerable<MemberEntity>> GetAllMembersAsync();
+        Task<IEnumerable<MemberEntity>> GetAllMembersAsync();
 
-    Task<IEnumerable<MemberEntity>> SearchMembersAsync(string searchTerm);
+        Task<IEnumerable<MemberEntity>> SearchMembersAsync(string searchTerm);
+    }
 }

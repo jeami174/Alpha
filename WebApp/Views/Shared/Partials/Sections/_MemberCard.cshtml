@@ -3,11 +3,9 @@
 <div class="member-card">
     <button class="edit-btn" data-modal="true" data-target="#editMemberModal">
         <img src="~/Images/Icons/More 2.svg" alt="Edit" class="member-card-edit" />
-
     </button>
 
-    <!-- Behöver ersättas med riktig logik för att visa uppladdad bild -->
-    <img src="~/Images/Avatars/Avatar.svg" alt="Avatar" class="member-card-avatar" />
+    <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
 
     <h4>@Model.FirstName @Model.LastName</h4>
     @if (!string.IsNullOrWhiteSpace(Model.JobTitle))

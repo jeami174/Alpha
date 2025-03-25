@@ -10,11 +10,11 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form novalidate method="post" asp-action="AddMember" asp-controller="Members">
+                <form novalidate method="post" asp-action="AddMember" asp-controller="Members" enctype="multipart/form-data">
 
                     <div class="image-previewer circle">
                         <img src="" class="image-preview" />
-                        <input asp-for="MemberImage" accept="image/*" class="hide" />
+                        <input asp-for="MemberImage" type="file" accept="image/*" class="hide" />
                     </div>
 
                     <div class="form-group name-group">

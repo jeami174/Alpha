@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Data.Entities;
-using System.Data.Entity;
+
 
 namespace Data.Repositories;
 

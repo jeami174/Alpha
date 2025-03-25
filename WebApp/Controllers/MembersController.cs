@@ -1,106 +1,68 @@
 ﻿using Business.Interfaces;
 using Business.Models;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Helpers;
 
-namespace WebApp.Controllers;
-
-public class MembersController : Controller
+namespace WebApp.Controllers
 {
-    private readonly IMemberService _memberService;
-
-    public MembersController(IMemberService memberService)
+    public class MembersController : Controller
     {
-        _memberService = memberService;
-    }
+        private readonly IMemberService _memberService;
+        private readonly IFileStorageService _fileStorageService;
 
-    // Visar en enskild medlems detaljer
-
-    [HttpGet]
-    public async Task<IActionResult> Member(int id)
-    {
-        var member = await _memberService.GetMemberByIdAsync(id);
-        if (member == null)
-            return NotFound();
-
-        return View(member);
-    }
-
-    // Visar redigeringsformuläret med existerande medlemsdata
-
-    [HttpGet]
-    public async Task<IActionResult> EditMember(int id)
-    {
-        var member = await _memberService.GetMemberByIdAsync(id);
-        if (member == null)
-            return NotFound();
-
-        // Mappar från MemberEntity till EditMemberForm
-        var editForm = new EditMemberForm
+        public MembersController(IMemberService memberService, IFileStorageService fileStorageService)
         {
-            FirstName = member.FirstName,
-            LastName = member.LastName,
-            MemberEmail = member.Email,
-            Address = member.Address,
-            Phone = member.Phone,
-            JobTitle = member.JobTitle,
-            DateOfBirth = member.DateOfBirth
-        };
-
-        return PartialView("_EditMemberForm", editForm);
-    }
-
-    // Hanterar uppdatering av en medlem med EditMemberForm
-
-    [HttpPost]
-    public async Task<IActionResult> EditMember(int id, EditMemberForm form)
-    {
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(x => x.ErrorMessage).ToArray()
-                );
-            return BadRequest(new { success = false, errors });
+            _memberService = memberService;
+            _fileStorageService = fileStorageService;
         }
 
-        try
+        [HttpPost]
+        public async Task<IActionResult> AddMember(AddMemberForm form)
         {
-            await _memberService.UpdateMemberAsync(id, form);
-            return Ok(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, error = ex.Message });
-        }
-    }
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
 
-    // Hanterar skapandet av en ny medlem (använder AddMemberForm)
+                // Logga fel för debug
+                foreach (var error in ModelState)
+                {
+                    Console.WriteLine($"Key: {error.Key}");
+                    foreach (var e in error.Value.Errors)
+                    {
+                        Console.WriteLine($" - Error: {e.ErrorMessage}");
+                    }
+                }
 
-    [HttpPost]
-    public async Task<IActionResult> AddMember(AddMemberForm form)
-    {
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(x => x.ErrorMessage).ToArray()
-                );
+                return BadRequest(new { success = false, errors });
+            }
 
-            return BadRequest(new { success = false, errors });
-        }
+            try
+            {
+                string imageName;
 
-        try
-        {
-            await _memberService.AddMemberAsync(form);
-            return Ok(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, error = ex.Message });
+                if (form.MemberImage != null && form.MemberImage.Length > 0)
+                {
+                    imageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
+                }
+                else
+                {
+                    imageName = _fileStorageService.GetRandomAvatar();
+
+                    Console.WriteLine("Random avatar selected: " + imageName);
+                }
+
+                await _memberService.AddMemberAsync(form, imageName);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, error = ex.Message });
+            }
         }
     }
 }

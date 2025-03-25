@@ -6,6 +6,7 @@ namespace Data.Entities;
 public class MemberEntity
 {
     public int Id { get; set; }
+    public string? ImageName { get; set; }
 
     [Column(TypeName = "nvarchar(100)")]
     public string FirstName { get; set; } = null!;

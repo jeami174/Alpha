@@ -2,80 +2,41 @@
 using Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("admin")]
-public class AdminController : Controller
+namespace WebApp.Controllers
 {
-    private readonly IMemberService _memberService;
-
-    public AdminController(IMemberService memberService)
+    [Route("admin")]
+    public class AdminController : Controller
     {
-        _memberService = memberService;
-    }
+        private readonly IMemberService _memberService;
 
-    [Route("members")]
-    //public async Task<IActionResult> Members()
-    //{
-    //var allMembers = await _memberService.GetAllMembersAsync();
-    //return View(allMembers); // Returnerar IEnumerable<MemberEntity>
-    // }
-
-    public IActionResult Members()
-    {
-        // Dummy-lista med testanvändare
-        var testMembers = new List<MemberEntity>
-    {
-        new MemberEntity
+        public AdminController(IMemberService memberService)
         {
-            Id = 1,
-            FirstName = "Test",
-            LastName = "User",
-            Email = "test.user@example.com",
-            Phone = "0701234567",
-            JobTitle = "Developer",
-            Address = "Testgatan 1",
-            DateOfBirth = new DateTime(1990, 1, 1)
-        },
-        new MemberEntity
-        {
-            Id = 2,
-            FirstName = "Anna",
-            LastName = "Andersson",
-            Email = "anna.andersson@example.com",
-            Phone = "0702345678",
-            JobTitle = "Designer",
-            Address = "Exempelvägen 2",
-            DateOfBirth = new DateTime(1985, 5, 15)
-        },
-        new MemberEntity
-        {
-            Id = 3,
-            FirstName = "Erik",
-            LastName = "Svensson",
-            Email = "erik.svensson@example.com",
-            Phone = "0703456789",
-            JobTitle = "Manager",
-            Address = "Demo Väg 3",
-            DateOfBirth = new DateTime(1980, 3, 10)
-        },
-        new MemberEntity
-        {
-            Id = 4,
-            FirstName = "Jeanette",
-            LastName = "Mikkelsen",
-            Email = "Jeanette.Mikkelsen@example.com",
-            Phone = "070852852",
-            JobTitle = "Confused",
-            Address = "Demo Väg 3",
-            DateOfBirth = new DateTime(1980, 3, 10)
+            _memberService = memberService;
         }
-    };
 
-        return View(testMembers);
-    }
+        [Route("members")]
+        public async Task<IActionResult> Members()
+        {
+            try
+            {
+                // Hämta alla medlemmar från business-lagret
+                IEnumerable<MemberEntity> allMembers = await _memberService.GetAllMembersAsync();
+                return View(allMembers);
+            }
+            catch (Exception ex)
+            {
+                // Hantera fel – här kan du antingen visa en felvy eller skicka en tom lista
+                // Du kan logga felet och/eller returnera en error view
+                // return View("Error", ex);
+                return View(new List<MemberEntity>());
+            }
+        }
 
-    [Route("clients")]
-    public IActionResult Clients()
-    {
-        return View();
+        [Route("clients")]
+        public IActionResult Clients()
+        {
+            return View();
+        }
     }
 }
+
