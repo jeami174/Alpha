@@ -72,6 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     form.reset();
                     clearErrorMessages(form);
 
+                    //Lägger till för att tömma filinput och bildpreview
+                    form.querySelectorAll('input[type="file"]').forEach(fileInput => {
+                        fileInput.value = '';
+                    });
+
                     const imagePreview = form.querySelector('.image-preview');
                     if (imagePreview) imagePreview.src = '';
 
@@ -115,7 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Logga FormData (för debug)
+            //Lägger till en till validering innan fetch för att strikt uppfylla tenta-kraven
+            let hasError = false;
+            form.querySelectorAll('[data-val="true"]').forEach(input => {
+                if (!input.value.trim()) {
+                    hasError = true;
+                    input.classList.add('input-validation-error');
+                    const span = form.querySelector(`[data-valmsg-for="${input.name}"]`);
+                    if (span) {
+                        span.innerText = 'Field is required';
+                        span.classList.add('field-validation-error');
+                    }
+                }
+            });
+
             const formData = new FormData(form);
             for (let pair of formData.entries()) {
                 console.log(`${pair[0]}: ${pair[1]}`);

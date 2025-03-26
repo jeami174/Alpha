@@ -28,33 +28,14 @@ namespace WebApp.Controllers
                         kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
                     );
 
-                // Logga fel för debug
-                foreach (var error in ModelState)
-                {
-                    Console.WriteLine($"Key: {error.Key}");
-                    foreach (var e in error.Value.Errors)
-                    {
-                        Console.WriteLine($" - Error: {e.ErrorMessage}");
-                    }
-                }
-
                 return BadRequest(new { success = false, errors });
             }
 
             try
             {
-                string imageName;
-
-                if (form.MemberImage != null && form.MemberImage.Length > 0)
-                {
-                    imageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
-                }
-                else
-                {
-                    imageName = _fileStorageService.GetRandomAvatar();
-
-                    Console.WriteLine("Random avatar selected: " + imageName);
-                }
+            string imageName = form.MemberImage != null && form.MemberImage.Length > 0
+            ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
+            : _fileStorageService.GetRandomAvatar();
 
                 await _memberService.AddMemberAsync(form, imageName);
                 return Ok(new { success = true });

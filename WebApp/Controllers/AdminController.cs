@@ -19,15 +19,12 @@ namespace WebApp.Controllers
         {
             try
             {
-                // Hämta alla medlemmar från business-lagret
                 IEnumerable<MemberEntity> allMembers = await _memberService.GetAllMembersAsync();
                 return View(allMembers);
             }
             catch (Exception ex)
             {
-                // Hantera fel – här kan du antingen visa en felvy eller skicka en tom lista
-                // Du kan logga felet och/eller returnera en error view
-                // return View("Error", ex);
+
                 return View(new List<MemberEntity>());
             }
         }
