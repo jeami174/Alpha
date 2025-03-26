@@ -7,7 +7,6 @@ public static class MemberFactory
 {
     /// <summary>
     /// Skapar en MemberEntity från ett AddMemberForm-objekt.
-    /// Bildhantering (MemberImage) behöver hanteras separat.
     /// </summary>
 
     public static MemberEntity Create(AddMemberForm form)
@@ -26,7 +25,6 @@ public static class MemberFactory
 
     /// <summary>
     /// Uppdaterar en befintlig MemberEntity med data från EditMemberForm (vid redigering).
-    /// Bildhantering (MemberImage) behöver hanteras separat.
     /// </summary>
     public static void Update(MemberEntity entity, EditMemberForm form)
     {
@@ -37,5 +35,11 @@ public static class MemberFactory
         entity.Phone = form.Phone;
         entity.JobTitle = form.JobTitle;
         entity.DateOfBirth = form.DateOfBirth;
+
+        if (!string.IsNullOrEmpty(form.ImageName))
+        {
+            entity.ImageName = form.ImageName;
+        }
+
     }
 }

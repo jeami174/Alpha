@@ -2,7 +2,6 @@
 // 1. Hjälpfunktioner
 // ----------------------------------------
 
-
 function clearErrorMessages(form) {
     form.querySelectorAll('[data-val="true"]').forEach(input => {
         input.classList.remove('input-validation-error');
@@ -13,7 +12,6 @@ function clearErrorMessages(form) {
         span.classList.remove('field-validation-error', 'extended-field-validation-error');
     });
 }
-
 
 async function loadImage(file) {
     return new Promise((resolve, reject) => {
@@ -28,7 +26,6 @@ async function loadImage(file) {
         reader.readAsDataURL(file);
     });
 }
-
 
 async function processImage(file, imagePreview, previewer, previewSize = 150) {
     try {
@@ -46,47 +43,7 @@ async function processImage(file, imagePreview, previewer, previewSize = 150) {
     }
 }
 
-// ----------------------------------------
-// 2. Eventhantering – DOMContentLoaded
-// ----------------------------------------
-
-document.addEventListener('DOMContentLoaded', () => {
-    const previewSize = 150;
-
-    const modalButtons = document.querySelectorAll('[data-modal="true"]');
-    modalButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const modalTarget = button.getAttribute('data-target');
-            const modal = document.querySelector(modalTarget);
-            if (modal) modal.style.display = 'flex';
-        });
-    });
-
-    const closeButtons = document.querySelectorAll('[data-close="true"]');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.querySelectorAll('form').forEach(form => {
-                    form.reset();
-                    clearErrorMessages(form);
-
-                    //Lägger till för att tömma filinput och bildpreview
-                    form.querySelectorAll('input[type="file"]').forEach(fileInput => {
-                        fileInput.value = '';
-                    });
-
-                    const imagePreview = form.querySelector('.image-preview');
-                    if (imagePreview) imagePreview.src = '';
-
-                    const imagePreviewer = form.querySelector('.image-previewer');
-                    if (imagePreviewer) imagePreviewer.classList.remove('selected');
-                });
-            }
-        });
-    });
-
+function bindImagePreviewers() {
     document.querySelectorAll('.image-previewer').forEach(previewer => {
         const fileInput = previewer.querySelector('input[type="file"]');
         const imagePreview = previewer.querySelector('.image-preview');
@@ -95,32 +52,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fileInput.addEventListener('change', ({ target: { files } }) => {
             const file = files[0];
-            if (file) processImage(file, imagePreview, previewer, previewSize);
+            if (file) processImage(file, imagePreview, previewer);
         });
     });
+}
 
-    const form = document.querySelector('#addMemberModal form');
-    if (form) {
+function bindCloseButtons() {
+    document.querySelectorAll('[data-close="true"]').forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.querySelectorAll('form').forEach(form => {
+                    form.reset();
+                    clearErrorMessages(form);
+                    form.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+                    const imagePreview = form.querySelector('.image-preview');
+                    if (imagePreview) imagePreview.src = '';
+                    const imagePreviewer = form.querySelector('.image-previewer');
+                    if (imagePreviewer) imagePreviewer.classList.remove('selected');
+                });
+            }
+        });
+    });
+}
+
+// ----------------------------------------
+// 2. Dynamisk Partial Loader Funktion
+// ----------------------------------------
+
+function loadPartialView(url, containerId) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = html;
+
+            const modal = container.querySelector('.modal');
+            if (modal) {
+                modal.style.display = 'flex';
+
+                const previewer = modal.querySelector('.image-previewer');
+                const imagePreview = previewer?.querySelector('.image-preview');
+
+                if (imagePreview?.src && !imagePreview.src.includes('base64')) {
+                    const imageUrl = imagePreview.src;
+                    fetch(imageUrl)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const file = new File([blob], "preview.jpg", { type: blob.type });
+                            processImage(file, imagePreview, previewer);
+                        });
+                }
+            }
+
+            bindImagePreviewers();
+            bindCloseButtons();
+            bindFormSubmitHandlers();
+        })
+        .catch(error => console.error('Error loading partial view:', error));
+}
+
+// ----------------------------------------
+// 3. Form Submit Handler
+// ----------------------------------------
+
+function bindFormSubmitHandlers() {
+    document.querySelectorAll('.modal form').forEach(form => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             clearErrorMessages(form);
 
-            const day = document.getElementById('dobDay')?.value;
-            const month = document.getElementById('dobMonth')?.value;
-            const year = document.getElementById('dobYear')?.value;
+            const day = form.querySelector('#dobDay')?.value;
+            const month = form.querySelector('#dobMonth')?.value;
+            const year = form.querySelector('#dobYear')?.value;
             const hiddenDobInput = form.querySelector('input[name="DateOfBirth"]');
 
             if (hiddenDobInput) {
                 if (!day || !month || !year) {
                     hiddenDobInput.value = '';
                 } else {
-                    const dayPadded = day.padStart(2, '0');
-                    const monthPadded = month.padStart(2, '0');
-                    hiddenDobInput.value = `${year}-${monthPadded}-${dayPadded}`;
+                    hiddenDobInput.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                 }
+                console.log("DOB set to:", hiddenDobInput.value);
             }
 
-            //Lägger till en till validering innan fetch för att strikt uppfylla tenta-kraven
             let hasError = false;
             form.querySelectorAll('[data-val="true"]').forEach(input => {
                 if (!input.value.trim()) {
@@ -134,10 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            if (hasError) return;
+
             const formData = new FormData(form);
-            for (let pair of formData.entries()) {
-                console.log(`${pair[0]}: ${pair[1]}`);
-            }
 
             try {
                 const res = await fetch(form.action, {
@@ -154,9 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.errors) {
                         Object.keys(data.errors).forEach(key => {
                             let input = form.querySelector(`[name="${key}"]`);
-                            if (input) {
-                                input.classList.add('input-validation-error');
-                            }
+                            if (input) input.classList.add('input-validation-error');
 
                             let span = form.querySelector(`[data-valmsg-for="${key}"]`);
                             if (span) {
@@ -175,5 +190,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Failed to submit form', error);
             }
         });
-    }
+    });
+}
+
+// ----------------------------------------
+// 4. Init – DOMContentLoaded
+// ----------------------------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modalButtons = document.querySelectorAll('[data-modal="true"]');
+    modalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalTarget = button.getAttribute('data-target');
+            const modal = document.querySelector(modalTarget);
+            if (modal) modal.style.display = 'flex';
+        });
+    });
+
+    document.querySelectorAll('[data-fetch-url]').forEach(element => {
+        element.addEventListener('click', () => {
+            const url = element.getAttribute('data-fetch-url');
+            const container = element.getAttribute('data-container');
+            if (url && container) {
+                loadPartialView(url, container);
+            }
+        });
+    });
+
+    bindImagePreviewers();
+    bindCloseButtons();
+    bindFormSubmitHandlers();
 });

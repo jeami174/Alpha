@@ -6,6 +6,10 @@ namespace Business.Models;
 
 public class EditMemberForm
 {
+    public int Id { get; set; }
+
+    public string? ImageName { get; set; }
+
     [Display(Name = "Member Image", Prompt = "Upload a image")]
     [DataType(DataType.Upload)]
     public IFormFile? MemberImage { get; set; }

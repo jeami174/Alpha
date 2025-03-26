@@ -1,8 +1,10 @@
 ﻿@model Business.Models.EditMemberForm
+@{
+    var dob = Model.DateOfBirth;
+}
 
 <div id="editMemberModal" class="modal">
     <div class="modal-content">
-
         <div class="modal-header">
             <h3>Edit Member</h3>
             <button type="button" class="btn-close" data-close="true"></button>
@@ -10,11 +12,13 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form novalidate method="post" asp-action="EditMember" asp-controller="Members">
+                <form novalidate method="post" asp-action="EditMember" asp-controller="Members" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <input asp-for="DateOfBirth" type="hidden" value="@(Model.DateOfBirth?.ToString("yyyy-MM-dd"))" />
 
-                    <div class="image-previewer circle">
-                        <img src="" class="image-preview" />
-                        <input asp-for="MemberImage" accept="image/*" class="hide" />
+                    <div class="image-previewer circle @(string.IsNullOrWhiteSpace(Model.ImageName) ? "" : "selected")">
+                        <img src="~/@Model.ImageName" class="image-preview" />
+                        <input asp-for="MemberImage" type="file" accept="image/*" class="hide" />
                     </div>
 
                     <div class="form-group name-group">
@@ -71,36 +75,42 @@
                         <div class="field-group dob-group">
                             <div class="custom-select">
                                 <select id="dobDay" class="dob-day">
-                                    <option value="">Day</option>
+                                    @{
+                                        var selectedDay = dob.HasValue ? dob.Value.Day : (int?)null;
+                                    }
+
                                     @for (int d = 1; d <= 31; d++)
                                     {
-                                        <option value="@d">@d</option>
+                                        <option value="@d" selected="@(selectedDay == d ? "selected" : null)">@d</option>
                                     }
                                 </select>
                             </div>
-
                             <div class="custom-select">
                                 <select id="dobMonth" class="dob-month">
-                                    <option value="">Month</option>
+                                    @{
+                                        var selectedMonth = dob.HasValue ? dob.Value.Month : (int?)null;
+                                    }
+
                                     @for (int m = 1; m <= 12; m++)
                                     {
                                         var monthName = new DateTime(1, m, 1).ToString("MMMM");
-                                        <option value="@m">@monthName</option>
+                                        <option value="@m" selected="@(selectedMonth == m ? "selected" : null)">@monthName</option>
                                     }
                                 </select>
                             </div>
-
                             <div class="custom-select">
                                 <select id="dobYear" class="dob-year">
-                                    <option value="">Year</option>
+                                    @{
+                                        var selectedYear = dob.HasValue ? dob.Value.Year : (int?)null;
+                                    }
+
                                     @for (int y = DateTime.Now.Year; y >= 1900; y--)
                                     {
-                                        <option value="@y">@y</option>
+                                        <option value="@y" selected="@(selectedYear == y ? "selected" : null)">@y</option>
                                     }
                                 </select>
                             </div>
                         </div>
-                        <input asp-for="DateOfBirth" type="hidden" />
                         <span asp-validation-for="DateOfBirth"></span>
                     </div>
 
@@ -110,3 +120,5 @@
         </div>
     </div>
 </div>
+
+

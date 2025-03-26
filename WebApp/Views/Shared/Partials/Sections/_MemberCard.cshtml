@@ -1,7 +1,9 @@
 ﻿@model Data.Entities.MemberEntity
 
-<div class="member-card">
-    <button class="edit-btn" data-modal="true" data-target="#editMemberModal">
+<div class="member-card" data-member-id="@Model.Id">
+    <button class="edit-btn"
+            data-fetch-url="@Url.Action("EditMember", "Members", new { id = Model.Id })"
+            data-container="editMemberContainer">
         <img src="~/Images/Icons/More 2.svg" alt="Edit" class="member-card-edit" />
     </button>
 
@@ -18,4 +20,3 @@
     <button class="btn btn-gray btn-member">Message</button>
 </div>
 
-<partial name="Partials/Sections/_EditMemberForm" model="new EditMemberForm()" />
