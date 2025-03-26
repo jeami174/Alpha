@@ -39,5 +39,13 @@ public class MemberRepository(DataContext context) : BaseRepository<MemberEntity
             return Enumerable.Empty<MemberEntity>();
         }
     }
+
+    public async Task<MemberEntity?> GetOneWithIncludesAsync(int id)
+    {
+        return await _dbSet
+            .Include(m => m.Role)
+            .Include(m => m.Address)
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
 }
 

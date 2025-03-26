@@ -121,8 +121,13 @@ function loadPartialView(url, containerId) {
 
 function bindFormSubmitHandlers() {
     document.querySelectorAll('.modal form').forEach(form => {
+        let isSubmitting = false;
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (isSubmitting) return;
+            isSubmitting = true;
+
             clearErrorMessages(form);
 
             const day = form.querySelector('#dobDay')?.value;
@@ -136,7 +141,6 @@ function bindFormSubmitHandlers() {
                 } else {
                     hiddenDobInput.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                 }
-                console.log("DOB set to:", hiddenDobInput.value);
             }
 
             let hasError = false;
@@ -152,7 +156,21 @@ function bindFormSubmitHandlers() {
                 }
             });
 
-            if (hasError) return;
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            if (hasError) {
+                isSubmitting = false;
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerText = "Add Contact";
+                }
+                return;
+            }
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerText = "Saving...";
+            }
 
             const formData = new FormData(form);
 
@@ -170,24 +188,31 @@ function bindFormSubmitHandlers() {
                     const data = await res.json();
                     if (data.errors) {
                         Object.keys(data.errors).forEach(key => {
-                            let input = form.querySelector(`[name="${key}"]`);
+                            const input = form.querySelector(`[name="${key}"]`);
                             if (input) input.classList.add('input-validation-error');
 
-                            let span = form.querySelector(`[data-valmsg-for="${key}"]`);
+                            const span = form.querySelector(`[data-valmsg-for="${key}"]`);
                             if (span) {
                                 span.innerText = data.errors[key].join('\n');
-
-                                if (form.classList.contains('extended-validation')) {
-                                    span.classList.add('extended-field-validation-error');
-                                } else {
-                                    span.classList.add('field-validation-error');
-                                }
+                                span.classList.add('field-validation-error');
                             }
                         });
                     }
+
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerText = "Add Contact";
+                    }
+
+                    isSubmitting = false; 
                 }
             } catch (error) {
                 console.log('Failed to submit form', error);
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerText = "Add Contact";
+                }
+                isSubmitting = false;
             }
         });
     });

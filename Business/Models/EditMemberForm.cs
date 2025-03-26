@@ -35,15 +35,24 @@ public class EditMemberForm
     [Required(ErrorMessage = "Required")]
     public string? Phone { get; set; }
 
-    [Display(Name = "Job Title", Prompt = "")]
-    [DataType(DataType.Text)]
-    [Required(ErrorMessage = "Required")]
-    public string? JobTitle { get; set; }
-
-    [Display(Name = "Address", Prompt = "")]
-    [DataType(DataType.Text)]
-    public string? Address { get; set; }
-
     [Display(Name = "Date of Birth", Prompt = "")]
     public DateTime? DateOfBirth { get; set; }
+
+    [Display(Name = "Job Title", Prompt = "Enter job title")]
+    [DataType(DataType.Text)]
+    [Required(ErrorMessage = "Required")]
+    public string? RoleName { get; set; }
+
+    [Display(Name = "Street", Prompt = "Enter Street")]
+    [DataType(DataType.Text)]
+    public string? Street { get; set; }
+
+    [Display(Name = "PostalCode", Prompt = "Enter Postal code")]
+    [DataType(DataType.Text)]
+    public string? PostalCode { get; set; }
+
+    [Display(Name = "City", Prompt = "Enter City")]
+    [DataType(DataType.Text)]
+    public string? City { get; set; }
+
 }

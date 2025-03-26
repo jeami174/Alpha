@@ -10,9 +10,9 @@
     <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
 
     <h4>@Model.FirstName @Model.LastName</h4>
-    @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
+    @if (!string.IsNullOrWhiteSpace(Model.Role?.Name))
     {
-        <div class="member-card-title">@Model.JobTitle</div>
+        <div class="member-card-title">@Model.Role.Name</div>
     }
     <div class="member-card-email">@Model.Email</div>
     <div class="member-card-phone">@Model.Phone</div>

@@ -33,9 +33,16 @@ public class MembersController : Controller
 
         try
         {
-            string imageName = form.MemberImage != null && form.MemberImage.Length > 0
-            ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
-            : _fileStorageService.GetRandomAvatar();
+            string imageName;
+
+            if (form.MemberImage != null && form.MemberImage.Length > 0)
+            {
+                imageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
+            }
+            else
+            {
+                imageName = _fileStorageService.GetRandomAvatar();
+            }
 
             await _memberService.AddMemberAsync(form, imageName);
             return Ok(new { success = true });
@@ -63,10 +70,12 @@ public class MembersController : Controller
             LastName = member.LastName,
             MemberEmail = member.Email,
             Phone = member.Phone,
-            JobTitle = member.JobTitle,
-            Address = member.Address,
             DateOfBirth = member.DateOfBirth,
-            ImageName = member.ImageName
+            ImageName = member.ImageName,
+            RoleName = member.Role?.Name,
+            Street = member.Address?.Street,
+            PostalCode = member.Address?.PostalCode,
+            City = member.Address?.City
         };
 
         return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", editForm);

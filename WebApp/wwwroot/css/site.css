@@ -867,6 +867,24 @@ input[type="checkbox"] {
     flex: 1;
 }
 
+#addMemberModal .modal-content .address-group {
+    display: flex;
+    gap: 1rem;
+}
+
+#editMemberModal .modal-content .address-group {
+    display: flex;
+    gap: 1rem;
+}
+
+
+#addMemberModal .modal-content .address-field {
+    flex: 1;
+}
+
+#editMemberModal .modal-content .address-field {
+    flex: 1;
+}
 
 
 #addProjectModal .modal-content {

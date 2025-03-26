@@ -9,4 +9,6 @@ public interface IMemberRepository : IBaseRepository<MemberEntity>
     /// efternamn eller e-post.
     /// </summary>
     Task<IEnumerable<MemberEntity>> SearchMembersAsync(string searchTerm);
+
+    Task<MemberEntity?> GetOneWithIncludesAsync(int id);
 }

@@ -5,41 +5,31 @@ namespace Business.Factories;
 
 public static class MemberFactory
 {
-    /// <summary>
-    /// Skapar en MemberEntity från ett AddMemberForm-objekt.
-    /// </summary>
-
-    public static MemberEntity Create(AddMemberForm form)
+    public static MemberEntity Create(AddMemberForm form, RoleEntity role)
     {
         return new MemberEntity
         {
             FirstName = form.FirstName,
             LastName = form.LastName,
             Email = form.MemberEmail,
-            Address = form.Address,
             Phone = form.Phone,
-            JobTitle = form.JobTitle,
             DateOfBirth = form.DateOfBirth,
+            Role = role
         };
     }
 
-    /// <summary>
-    /// Uppdaterar en befintlig MemberEntity med data från EditMemberForm (vid redigering).
-    /// </summary>
-    public static void Update(MemberEntity entity, EditMemberForm form)
+    public static void Update(MemberEntity entity, EditMemberForm form, RoleEntity role)
     {
         entity.FirstName = form.FirstName;
         entity.LastName = form.LastName;
         entity.Email = form.MemberEmail;
-        entity.Address = form.Address;
         entity.Phone = form.Phone;
-        entity.JobTitle = form.JobTitle;
         entity.DateOfBirth = form.DateOfBirth;
+        entity.Role = role;
 
         if (!string.IsNullOrEmpty(form.ImageName))
         {
             entity.ImageName = form.ImageName;
         }
-
     }
 }

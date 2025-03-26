@@ -1,3 +1,5 @@
+using Business.Interfaces;
+using Business.Services;
 using Data.Context;
 using Data.Interfaces;
 using Data.Repositories;
@@ -10,10 +12,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<Business.Interfaces.IMemberService, Business.Services.MemberService>();
-
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-
+builder.Services.AddScoped<IAddressService, AddressService>();
 
 var app = builder.Build();
 
