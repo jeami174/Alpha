@@ -48,8 +48,16 @@
     --heading: #1A1926;
     --body-light: #637085;
     --body-dark: #28263B;
+    --dark-100: #1A1926;
+    --dark-200: #1C1D1F;
+    --dark-300: #202123;
+    --dark-400: #28263B;
+    --dark-500: #333333;
+    --dark-600: #38383B;
+    --dark-opacity-20: rgba(26, 25, 38, 0.2);
+    --dark-opacity-60: rgba(26, 25, 38, 0.6);
     /*CUSTOM PROPERTIES*/
-    --text-color: var(--bodyDark);
+    --text-color: var(--dark-400);
     --heading-color: var(--heading);
     --border-color: var(--gray100);
     --background-color: var(--background);
@@ -145,7 +153,8 @@ section > header {
 
     .portal > .logotype {
         grid-area: logotype;
-        padding: 1rem 1.5rem;
+        padding: 1.75rem 1.5rem;
+
         border-right: 1px solid var(--border200);
     }
 
@@ -288,6 +297,14 @@ h6 {
     .btn-gray:hover {
         background-color: var(--gray300);
     }
+
+.btn-add {
+    padding: 0.8rem 1rem;
+    gap: 0.5rem;
+    border-radius: 0.875rem;
+    min-width: 130px;
+    align-content: center;
+}
 
 .btn-add::before {
     content: '\2b';
@@ -519,6 +536,7 @@ form {
         gap: 0.5rem;
     }
 
+    form.extended-validation .field-validation-error,
     form.extended-validation .extended-field-validation-error {
         position: static;
         display: block;
@@ -528,6 +546,18 @@ form {
         color: #E94D3F;
         padding: 0;
         border: none;
+    }
+
+    form .form-message {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        background-color: rgba(255, 102, 64, 0.10);
+        color: #E94D3F;
+        padding: 0.6rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+        display: none;
+        text-align: center;
     }
 
 input[type="checkbox"] {
@@ -602,6 +632,54 @@ input[type="checkbox"] {
 }
 
 /* SIGN UP FORM END */
+
+.signin-form {
+    width: 500px;
+    margin: 0 auto;
+    padding-inline: 4rem;
+}
+
+.signin-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+.SignIn-Divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+    .SignIn-Divider hr {
+        flex: 1;
+        border: none;
+        border-top: 1px solid #EBEEF2;
+        margin: 0 1rem;
+    }
+
+    .SignIn-Divider span {
+        font-size: 0.75rem;
+        color: var(--body-light);
+        white-space: nowrap;
+    }
+
+.SignIn-Footer p {
+    font-size: 0.9375rem;
+    font-weight: var(--font-semibold);
+}
+
+.SignIn-Footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+}
+
+.signin-form button.btn-blue {
+    width: 100%;
+    padding: 0.7rem 1.25rem;
+}
+
 /* MODAL START */
 .modal {
     display: none;

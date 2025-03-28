@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
+
+
+
+[Authorize]
 
 [Route("Projects")]
 public class ProjectsController : Controller

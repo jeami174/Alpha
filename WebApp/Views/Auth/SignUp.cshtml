@@ -5,26 +5,40 @@
 
 <div class="center-screen">
     <div class="surface">
-
         <h1 class="form-header signup-title">Create Account</h1>
+
         <div class="scroll-container">
             <div class="inner-padding">
-                <form class="form signup-form extended-validation" novalidate method="post" asp-action="SignUp" asp-controller="Auth">
-            
+
+                
+
+                <form class="form signup-form extended-validation" method="post" asp-action="SignUp" asp-controller="Auth" novalidate>
+
                     <div class="SignUp-Divider">
                         <hr />
                         <span>OR</span>
                         <hr />
                     </div>
 
-                    <div class="form-group">
-                        <label asp-for="FullName"></label>
-                        <div class="field-group">
-                            <input asp-for="FullName" />
-                            <span asp-validation-for="FullName"></span>
+                    <!-- Name Fields -->
+                    <div class="form-group name-group">
+                        <div class="name-field">
+                            <label asp-for="FirstName"></label>
+                            <div class="field-group">
+                                <input asp-for="FirstName" />
+                                <span asp-validation-for="FirstName"></span>
+                            </div>
+                        </div>
+                        <div class="name-field">
+                            <label asp-for="LastName"></label>
+                            <div class="field-group">
+                                <input asp-for="LastName" />
+                                <span asp-validation-for="LastName"></span>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Email -->
                     <div class="form-group">
                         <label asp-for="Email"></label>
                         <div class="field-group">
@@ -33,6 +47,7 @@
                         </div>
                     </div>
 
+                    <!-- Password -->
                     <div class="form-group">
                         <label asp-for="Password"></label>
                         <div class="field-group">
@@ -41,6 +56,7 @@
                         </div>
                     </div>
 
+                    <!-- Confirm -->
                     <div class="form-group">
                         <label asp-for="ConfirmPassword"></label>
                         <div class="field-group">
@@ -49,6 +65,7 @@
                         </div>
                     </div>
 
+                    <!-- Terms -->
                     <div class="form-group">
                         <div class="field-group field-group-terms">
                             <input asp-for="AcceptTerms" type="checkbox" />
@@ -59,12 +76,16 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-blue">Create Account</button>
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-blue">Create Account</button>
+                    <div class="form-message"></div>
                 </form>
+
+                <!-- Footer -->
                 <div class="SignUp-Footer">
                     <p>
                         Already have an account?
-                        <a href="/auth/signin">Login</a>
+                        <a asp-action="SignIn" asp-controller="Auth">Login</a>
                     </p>
                 </div>
             </div>

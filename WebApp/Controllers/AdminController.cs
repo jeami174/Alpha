@@ -1,39 +1,49 @@
 ﻿using Business.Interfaces;
 using Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+[Authorize] 
+
+[Route("admin")]
+public class AdminController : Controller
 {
-    [Route("admin")]
-    public class AdminController : Controller
+    private readonly IMemberService _memberService;
+
+    public AdminController(IMemberService memberService)
     {
-        private readonly IMemberService _memberService;
+        _memberService = memberService;
+    }
 
-        public AdminController(IMemberService memberService)
+    [Route("")]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = "admin")]
+    [Route("members")]
+    public async Task<IActionResult> Members()
+    {
+        try
         {
-            _memberService = memberService;
+            IEnumerable<MemberEntity> allMembers = await _memberService.GetAllMembersAsync();
+            return View(allMembers);
         }
-
-        [Route("members")]
-        public async Task<IActionResult> Members()
+        catch (Exception ex)
         {
-            try
-            {
-                IEnumerable<MemberEntity> allMembers = await _memberService.GetAllMembersAsync();
-                return View(allMembers);
-            }
-            catch (Exception ex)
-            {
 
-                return View(new List<MemberEntity>());
-            }
+            return View(new List<MemberEntity>());
         }
+    }
 
-        [Route("clients")]
-        public IActionResult Clients()
-        {
-            return View();
-        }
+    [Authorize(Roles = "admin")]
+    [Route("clients")]
+    public IActionResult Clients()
+    {
+        return View();
     }
 }
 

@@ -1,4 +1,5 @@
-﻿// ----------------------------------------
+﻿
+// ----------------------------------------
 // 1. Hjälpfunktioner
 // ----------------------------------------
 
@@ -11,6 +12,12 @@ function clearErrorMessages(form) {
         span.innerText = '';
         span.classList.remove('field-validation-error', 'extended-field-validation-error');
     });
+
+    const formMessage = form.querySelector('.form-message');
+    if (formMessage) {
+        formMessage.innerText = '';
+        formMessage.style.display = 'none';
+    }
 }
 
 async function loadImage(file) {
@@ -120,7 +127,7 @@ function loadPartialView(url, containerId) {
 // ----------------------------------------
 
 function bindFormSubmitHandlers() {
-    document.querySelectorAll('.modal form').forEach(form => {
+    document.querySelectorAll('form').forEach(form => {
         let isSubmitting = false;
 
         form.addEventListener('submit', async (e) => {
@@ -136,11 +143,7 @@ function bindFormSubmitHandlers() {
             const hiddenDobInput = form.querySelector('input[name="DateOfBirth"]');
 
             if (hiddenDobInput) {
-                if (!day || !month || !year) {
-                    hiddenDobInput.value = '';
-                } else {
-                    hiddenDobInput.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                }
+                hiddenDobInput.value = (!day || !month || !year) ? '' : `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             }
 
             let hasError = false;
@@ -150,26 +153,25 @@ function bindFormSubmitHandlers() {
                     input.classList.add('input-validation-error');
                     const span = form.querySelector(`[data-valmsg-for="${input.name}"]`);
                     if (span) {
-                        span.innerText = 'Field is required';
+                        const customMessage = form.classList.contains('extended-validation')
+                            ? input.getAttribute('data-val-required') || 'This field is required'
+                            : 'Field is required';
+                        span.innerText = customMessage;
                         span.classList.add('field-validation-error');
                     }
                 }
             });
 
             const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton?.getAttribute("data-original-text") || submitButton?.innerText;
 
             if (hasError) {
                 isSubmitting = false;
                 if (submitButton) {
                     submitButton.disabled = false;
-                    submitButton.innerText = "Add Contact";
+                    submitButton.innerText = originalText;
                 }
                 return;
-            }
-
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.innerText = "Saving...";
             }
 
             const formData = new FormData(form);
@@ -180,17 +182,21 @@ function bindFormSubmitHandlers() {
                     body: formData
                 });
 
+                const data = await res.json();
+
                 if (res.ok) {
-                    const modal = form.closest('.modal');
-                    if (modal) modal.style.display = 'none';
-                    window.location.reload();
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        const modal = form.closest('.modal');
+                        if (modal) modal.style.display = 'none';
+                        window.location.reload();
+                    }
                 } else if (res.status === 400) {
-                    const data = await res.json();
                     if (data.errors) {
                         Object.keys(data.errors).forEach(key => {
                             const input = form.querySelector(`[name="${key}"]`);
                             if (input) input.classList.add('input-validation-error');
-
                             const span = form.querySelector(`[data-valmsg-for="${key}"]`);
                             if (span) {
                                 span.innerText = data.errors[key].join('\n');
@@ -199,18 +205,26 @@ function bindFormSubmitHandlers() {
                         });
                     }
 
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.innerText = "Add Contact";
+                    if (data.error) {
+                        const summary = form.querySelector('.form-message');
+                        if (summary) {
+                            summary.innerText = data.error;
+                            summary.style.display = 'block';
+                        }
                     }
 
-                    isSubmitting = false; 
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerText = originalText;
+                    }
+
+                    isSubmitting = false;
                 }
             } catch (error) {
                 console.log('Failed to submit form', error);
                 if (submitButton) {
                     submitButton.disabled = false;
-                    submitButton.innerText = "Add Contact";
+                    submitButton.innerText = originalText;
                 }
                 isSubmitting = false;
             }

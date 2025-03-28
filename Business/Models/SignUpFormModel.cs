@@ -1,12 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApp.Models;
+namespace Business.Models;
 
 public class SignUpFormModel
 {
-    [Display(Name = "Full Name", Prompt = "Your full name")]
-    [Required(ErrorMessage = "You must enter your full name")]
-    public string FullName { get; set; } = null!;
+    [Display(Name = "First Name", Prompt = "Your first name")]
+    [Required(ErrorMessage = "You must enter your first name")]
+    public string FirstName { get; set; } = null!;
+
+    [Display(Name = "Last Name", Prompt = "Your last name")]
+    [Required(ErrorMessage = "You must enter your last name")]
+    public string LastName { get; set; } = null!;
 
     [Display(Name = "Email", Prompt = "Your email address")]
     [DataType(DataType.EmailAddress)]
