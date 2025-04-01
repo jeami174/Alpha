@@ -1,12 +1,11 @@
 ﻿using Business.Interfaces;
-using Data.Entities;
+using Business.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-[Authorize] 
-
+[Authorize]
 [Route("admin")]
 public class AdminController : Controller
 {
@@ -23,27 +22,25 @@ public class AdminController : Controller
         return View();
     }
 
-    [Authorize(Roles = "admin")]
+
     [Route("members")]
     public async Task<IActionResult> Members()
     {
         try
         {
-            IEnumerable<MemberEntity> allMembers = await _memberService.GetAllMembersAsync();
+            IEnumerable<MemberModel> allMembers = await _memberService.GetAllMembersAsync();
             return View(allMembers);
         }
         catch (Exception ex)
         {
-
-            return View(new List<MemberEntity>());
+            return View(new List<MemberModel>());
         }
     }
 
-    [Authorize(Roles = "admin")]
+
     [Route("clients")]
     public IActionResult Clients()
     {
         return View();
     }
 }
-

@@ -93,14 +93,17 @@ public class MemberService : IMemberService
         }
     }
 
-    public async Task<MemberEntity?> GetMemberByIdAsync(int id)
+    public async Task<MemberModel?> GetMemberByIdAsync(int id)
     {
-        return await _memberRepository.GetOneWithIncludesAsync(id);
+        var memberEntity = await _memberRepository.GetOneWithIncludesAsync(id);
+        return memberEntity != null ? MemberFactory.ToModel(memberEntity) : null;
     }
 
-    public async Task<IEnumerable<MemberEntity>> GetAllMembersAsync()
+    public async Task<IEnumerable<MemberModel>> GetAllMembersAsync()
     {
-        return await _memberRepository.GetAllWithDetailsAsync(q => q.Include(m => m.Role));
+        var memberEntities = await _memberRepository.GetAllWithDetailsAsync(q =>
+            q.Include(m => m.Role).Include(m => m.Address));
+        return memberEntities.Select(MemberFactory.ToModel);
     }
 
     public async Task<IEnumerable<MemberEntity>> SearchMembersAsync(string searchTerm)

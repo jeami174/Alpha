@@ -72,21 +72,24 @@ public class AuthController : Controller
 
         var result = await _authService.RegisterAsync(formData);
 
-        if (result.Succeeded)
-            return Json(new { success = true, redirectUrl = Url.Action("Index", "Admin") });
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { success = false, error = result.Errors.FirstOrDefault() ?? "Registration failed" });
+        }
 
-        return BadRequest(new { success = false, errors = result.Errors });
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Admin") });
     }
 
     // ------------------ SIGN OUT ------------------
 
-    [HttpPost]
-    public async Task<IActionResult> SignOut()
-    {
-        await _authService.SignOutAsync();
-        return RedirectToAction("SignIn");
-    }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LogOut()
+    {
+        await _authService.LogOutAsync();
+        return Json(new { success = true, redirectUrl = Url.Action("SignIn", "Auth") });
+    }
     public IActionResult ForgotPassword()
     {
         return View();

@@ -2,6 +2,12 @@
 // 1. Hjälpfunktioner
 // ----------------------------------------
 
+// Funktion för att hämta anti-forgery-token från det dolda formuläret
+function getRequestVerificationToken() {
+    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+    return tokenElement ? tokenElement.value : '';
+}
+
 function clearErrorMessages(form) {
     form.querySelectorAll('[data-val="true"]').forEach(input => {
         input.classList.remove('input-validation-error');
@@ -82,6 +88,7 @@ function bindCloseButtons() {
         });
     });
 }
+
 function bindTogglePassword() {
     const togglePassword = document.getElementById('togglePassword');
     if (togglePassword) {
@@ -104,6 +111,21 @@ function bindTogglePassword() {
             }
         });
     }
+}
+
+const settingsToggle = document.querySelector('.settings-toggle');
+const dropdown = document.querySelector('.settings-dropdown');
+
+if (settingsToggle && dropdown) {
+    settingsToggle.addEventListener('click', () => {
+        dropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!settingsToggle.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 }
 
 // ----------------------------------------
@@ -165,7 +187,9 @@ function bindFormSubmitHandlers() {
             const hiddenDobInput = form.querySelector('input[name="DateOfBirth"]');
 
             if (hiddenDobInput) {
-                hiddenDobInput.value = (!day || !month || !year) ? '' : `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                hiddenDobInput.value = (!day || !month || !year)
+                    ? ''
+                    : `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             }
 
             let hasError = false;
@@ -282,4 +306,36 @@ document.addEventListener('DOMContentLoaded', () => {
     bindCloseButtons();
     bindFormSubmitHandlers();
     bindTogglePassword();
+
+    // -------------------------------
+    // Logout handler (secure POST)
+    // -------------------------------
+    const logoutButton = document.getElementById('logoutButton');
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            try {
+                const res = await fetch('/Auth/LogOut', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    }
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    console.warn('Unexpected logout response:', data);
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Logout failed', error);
+            }
+        });
+    }
 });

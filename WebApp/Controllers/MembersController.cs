@@ -16,6 +16,12 @@ public class MembersController : Controller
         _fileStorageService = fileStorageService;
     }
 
+    public async Task<IActionResult> Index()
+    {
+        var members = await _memberService.GetAllMembersAsync();
+        return View(members);
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddMember(AddMemberForm form)
     {

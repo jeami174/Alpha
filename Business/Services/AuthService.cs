@@ -1,4 +1,5 @@
 ﻿
+using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
@@ -6,27 +7,24 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    UserFactory userFactory) : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-
-    public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly UserFactory _userFactory = userFactory;
 
     public async Task<(bool Succeeded, string[] Errors)> RegisterAsync(SignUpFormModel form)
     {
-        var user = new ApplicationUser
+        var existingUser = await _userManager.FindByEmailAsync(form.Email);
+        if (existingUser != null)
         {
-            UserName = form.Email,
-            Email = form.Email,
-            FirstName = form.FirstName,
-            LastName = form.LastName
-        };
+            return (false, new[] { "An account with this email already exists." });
+        }
 
+        var user = _userFactory.Create(form);
         var result = await _userManager.CreateAsync(user, form.Password);
 
         if (result.Succeeded)
@@ -52,7 +50,7 @@ public class AuthService : IAuthService
             : (false, "Invalid login credentials");
     }
 
-    public async Task SignOutAsync()
+    public async Task LogOutAsync()
     {
         await _signInManager.SignOutAsync();
     }

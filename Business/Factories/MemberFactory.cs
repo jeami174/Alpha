@@ -32,4 +32,21 @@ public static class MemberFactory
             entity.ImageName = form.ImageName;
         }
     }
+
+    public static MemberModel ToModel(MemberEntity entity)
+    {
+        return new MemberModel
+        {
+            Id = entity.Id,
+            ImageName = entity.ImageName,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Email = entity.Email,
+            Phone = entity.Phone,
+            DateOfBirth = entity.DateOfBirth,
+            Role = entity.Role,
+            Address = entity.Address
+        };
+    }
+
 }

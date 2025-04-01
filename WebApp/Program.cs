@@ -1,3 +1,4 @@
+using Business.Factories;
 using Business.Interfaces;
 using Business.Services;
 using Data.Context;
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<UserFactory>();
 
 var app = builder.Build();
 
