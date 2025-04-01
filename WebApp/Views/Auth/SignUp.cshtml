@@ -14,6 +14,12 @@
 
                 <form class="form signup-form extended-validation" method="post" asp-action="SignUp" asp-controller="Auth" novalidate>
 
+                    <!-- Google Sign up -->
+                    <button class="btn btn-gray google-btn" type="button">
+                        <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
+                        Sign Up with Google
+                    </button>
+
                     <div class="SignUp-Divider">
                         <hr />
                         <span>OR</span>
@@ -51,7 +57,12 @@
                     <div class="form-group">
                         <label asp-for="Password"></label>
                         <div class="field-group">
-                            <input asp-for="Password" />
+                            <div class="input-with-icon">
+                            <input asp-for="Password" data-val="false" autocomplete="off" id="passwordField" />
+                            <span id="togglePassword" class="toggle-password">
+                                <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
+                            </span>
+                            </div>
                             <span asp-validation-for="Password"></span>
                         </div>
                     </div>
@@ -60,7 +71,12 @@
                     <div class="form-group">
                         <label asp-for="ConfirmPassword"></label>
                         <div class="field-group">
-                            <input asp-for="ConfirmPassword" />
+                            <div class="input-with-icon">
+                            <input asp-for="ConfirmPassword" id="confirmPasswordField" />
+                            <span id="toggleConfirmPassword" class="toggle-password">
+                                <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
+                            </span>
+                            </div>
                             <span asp-validation-for="ConfirmPassword"></span>
                         </div>
                     </div>

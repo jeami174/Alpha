@@ -82,7 +82,6 @@ function bindCloseButtons() {
         });
     });
 }
-
 function bindTogglePassword() {
     const togglePassword = document.getElementById('togglePassword');
     if (togglePassword) {
@@ -91,6 +90,17 @@ function bindTogglePassword() {
             if (passwordField) {
                 const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordField.setAttribute('type', type);
+            }
+        });
+    }
+
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    if (toggleConfirmPassword) {
+        toggleConfirmPassword.addEventListener('click', function () {
+            const confirmPasswordField = document.getElementById('confirmPasswordField');
+            if (confirmPasswordField) {
+                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordField.setAttribute('type', type);
             }
         });
     }

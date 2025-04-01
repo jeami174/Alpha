@@ -38,10 +38,12 @@
             <div class="form-group">
                 <label asp-for="Password"></label>
                 <div class="field-group">
+                    <div class="input-with-icon">
                     <input asp-for="Password" data-val="false" autocomplete="off" id="passwordField" />
                     <span id="togglePassword" class="toggle-password">
                         <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
                     </span>
+                    </div>
                     <span asp-validation-for="Password"></span>
                 </div>
             </div>
