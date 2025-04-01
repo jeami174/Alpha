@@ -292,10 +292,26 @@ h6 {
     background-color: var(--gray100);
     color: var(--heading-color);
     border-color: var(--gray100);
+    font-size: 0.9375rem;
+
 }
 
     .btn-gray:hover {
         background-color: var(--gray300);
+    }
+
+.google-btn {
+    position: relative;
+    padding-left: 3rem;
+    align-items: center;
+    justify-content: center;
+}
+
+    .google-btn .google-icon {
+        position: absolute;
+        left: 1rem;
+        width: 0.9375rem;
+        height: 1rem;
     }
 
 .btn-add {
@@ -631,7 +647,26 @@ input[type="checkbox"] {
     gap: 0.5rem;
 }
 
+.field-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 55%;
+    right: 1rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+    .toggle-password .toggle-icon {
+        width: 20px;
+        height: auto;
+    }
+
 /* SIGN UP FORM END */
+
+/* SIGN IN FORM START */
 
 .signin-form {
     width: 500px;
@@ -639,11 +674,19 @@ input[type="checkbox"] {
     padding-inline: 4rem;
 }
 
-.signin-title {
-    text-align: center;
-    margin-bottom: 1rem;
-    margin-top: 2rem;
-}
+    .signin-form .btn-gray {
+        display: inline-flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.7rem 1.25rem;
+    }
+
+    .signin-title {
+        text-align: center;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+    }
 
 .SignIn-Divider {
     display: flex;
@@ -664,6 +707,11 @@ input[type="checkbox"] {
         white-space: nowrap;
     }
 
+.SignIn-Footer {
+    margin-top: 3.5rem;
+    text-align: center;
+}
+
 .SignIn-Footer p {
     font-size: 0.9375rem;
     font-weight: var(--font-semibold);
@@ -679,6 +727,32 @@ input[type="checkbox"] {
     width: 100%;
     padding: 0.7rem 1.25rem;
 }
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+.signin-form .remember {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .signin-form .remember label {
+        font-weight: var(--font-regular);
+        font-size: 0.9375rem;
+    }
+
+.forgot a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: var(--font-regular);
+    font-size: 0.9375rem;
+}
+
 
 /* MODAL START */
 .modal {

@@ -14,8 +14,10 @@
         <form class="form signin-form form extended-validation" method="post" asp-action="SignIn" asp-controller="Auth" novalidate>
 
             <!-- Google login -->
-            <button class="btn btn-gray" type="button">Login with Google</button>
-            <div class="divider"><span>or</span></div>
+            <button class="btn btn-gray google-btn" type="button">
+                <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
+                Login with Google
+                </button>
 
             <div class="SignIn-Divider">
                 <hr />
@@ -36,11 +38,13 @@
             <div class="form-group">
                 <label asp-for="Password"></label>
                 <div class="field-group">
-                    <input asp-for="Password" data-val="false" autocomplete="off" />
+                    <input asp-for="Password" data-val="false" autocomplete="off" id="passwordField" />
+                    <span id="togglePassword" class="toggle-password">
+                        <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
+                    </span>
                     <span asp-validation-for="Password"></span>
                 </div>
             </div>
-
             <!-- Remember Me -->
             <div class="form-options">
                 <div class="remember">

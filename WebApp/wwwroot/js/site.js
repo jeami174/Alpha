@@ -1,5 +1,4 @@
-﻿
-// ----------------------------------------
+﻿// ----------------------------------------
 // 1. Hjälpfunktioner
 // ----------------------------------------
 
@@ -82,6 +81,19 @@ function bindCloseButtons() {
             }
         });
     });
+}
+
+function bindTogglePassword() {
+    const togglePassword = document.getElementById('togglePassword');
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function () {
+            const passwordField = document.getElementById('passwordField');
+            if (passwordField) {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+            }
+        });
+    }
 }
 
 // ----------------------------------------
@@ -259,4 +271,5 @@ document.addEventListener('DOMContentLoaded', () => {
     bindImagePreviewers();
     bindCloseButtons();
     bindFormSubmitHandlers();
+    bindTogglePassword();
 });
