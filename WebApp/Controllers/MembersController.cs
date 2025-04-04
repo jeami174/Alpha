@@ -1,25 +1,20 @@
 ﻿using Business.Interfaces;
 using Business.Models;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Helpers;
 
 namespace WebApp.Controllers;
 
-public class MembersController : Controller
+public class MembersController(IMemberService memberService, IFileStorageService fileStorageService) : Controller
 {
-    private readonly IMemberService _memberService;
-    private readonly IFileStorageService _fileStorageService;
-
-    public MembersController(IMemberService memberService, IFileStorageService fileStorageService)
-    {
-        _memberService = memberService;
-        _fileStorageService = fileStorageService;
-    }
+    private readonly IMemberService _memberService = memberService;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
 
     public async Task<IActionResult> Index()
     {
-        var members = await _memberService.GetAllMembersAsync();
-        return View(members);
+        var result = await _memberService.GetAllMembersAsync();
+        return View(result.Succeeded ? result.Result : new List<MemberModel>());
     }
 
     [HttpPost]
@@ -37,39 +32,28 @@ public class MembersController : Controller
             return BadRequest(new { success = false, errors });
         }
 
-        try
-        {
-            string imageName;
+        string imageName = form.MemberImage is { Length: > 0 }
+            ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
+            : _fileStorageService.GetRandomAvatar();
 
-            if (form.MemberImage != null && form.MemberImage.Length > 0)
-            {
-                imageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
-            }
-            else
-            {
-                imageName = _fileStorageService.GetRandomAvatar();
-            }
+        var result = await _memberService.AddMemberAsync(form, imageName);
 
-            await _memberService.AddMemberAsync(form, imageName);
+        if (result.Succeeded)
             return Ok(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, error = ex.Message });
-        }
-    }
 
+        return BadRequest(new { success = false, error = result.Error });
+    }
 
     [HttpGet]
     public async Task<IActionResult> EditMember(int id)
     {
-        var member = await _memberService.GetMemberByIdAsync(id);
-        if (member == null)
-        {
+        var result = await _memberService.GetMemberByIdAsync(id);
+        if (!result.Succeeded || result.Result == null)
             return NotFound();
-        }
 
-        var editForm = new EditMemberForm
+        var member = result.Result;
+
+        var form = new EditMemberForm
         {
             Id = member.Id,
             FirstName = member.FirstName,
@@ -84,7 +68,7 @@ public class MembersController : Controller
             City = member.Address?.City
         };
 
-        return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", editForm);
+        return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", form);
     }
 
     [HttpPost]
@@ -102,21 +86,17 @@ public class MembersController : Controller
             return BadRequest(new { success = false, errors });
         }
 
-        try
+        if (form.MemberImage is { Length: > 0 })
         {
-            if (form.MemberImage != null && form.MemberImage.Length > 0)
-            {
-                string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
-                form.ImageName = newImageName;
-            }
+            string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
+            form.ImageName = newImageName;
+        }
 
-            await _memberService.UpdateMemberAsync(form.Id, form);
+        var result = await _memberService.UpdateMemberAsync(form.Id, form);
+
+        if (result.Succeeded)
             return Ok(new { success = true });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { success = false, error = ex.Message });
-        }
+
+        return BadRequest(new { success = false, error = result.Error });
     }
 }
-

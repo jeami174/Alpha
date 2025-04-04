@@ -1,11 +1,12 @@
 ﻿using Business.Models;
 using Data.Entities;
+using Domain.Models;
 
 namespace Business.Factories;
 
-public static class MemberFactory
+public class MemberFactory
 {
-    public static MemberEntity Create(AddMemberForm form, RoleEntity role)
+    public MemberEntity Create(AddMemberForm form, RoleEntity role)
     {
         return new MemberEntity
         {
@@ -18,7 +19,7 @@ public static class MemberFactory
         };
     }
 
-    public static void Update(MemberEntity entity, EditMemberForm form, RoleEntity role)
+    public void Update(MemberEntity entity, EditMemberForm form, RoleEntity role)
     {
         entity.FirstName = form.FirstName;
         entity.LastName = form.LastName;
@@ -33,7 +34,7 @@ public static class MemberFactory
         }
     }
 
-    public static MemberModel ToModel(MemberEntity entity)
+    public MemberModel Create(MemberEntity entity)
     {
         return new MemberModel
         {
@@ -44,9 +45,24 @@ public static class MemberFactory
             Email = entity.Email,
             Phone = entity.Phone,
             DateOfBirth = entity.DateOfBirth,
-            Role = entity.Role,
-            Address = entity.Address
+
+            Role = entity.Role != null
+                ? new RoleModel
+                {
+                    Id = entity.Role.Id,
+                    Name = entity.Role.Name
+                }
+                : null,
+
+            Address = entity.Address != null
+                ? new AddressModel
+                {
+                    Id = entity.Address.Id,
+                    Street = entity.Address.Street,
+                    PostalCode = entity.Address.PostalCode,
+                    City = entity.Address.City
+                }
+                : null
         };
     }
-
 }

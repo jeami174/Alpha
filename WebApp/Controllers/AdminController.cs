@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 [Route("admin")]
 public class AdminController : Controller
 {
     private readonly IMemberService _memberService;
+    private readonly IClientService _clientService;
 
-    public AdminController(IMemberService memberService)
+    public AdminController(IMemberService memberService, IClientService clientService)
     {
         _memberService = memberService;
+        _clientService = clientService;
     }
 
     [Route("")]
@@ -22,25 +24,21 @@ public class AdminController : Controller
         return View();
     }
 
-
     [Route("members")]
     public async Task<IActionResult> Members()
     {
-        try
-        {
-            IEnumerable<MemberModel> allMembers = await _memberService.GetAllMembersAsync();
-            return View(allMembers);
-        }
-        catch (Exception ex)
-        {
-            return View(new List<MemberModel>());
-        }
+        var result = await _memberService.GetAllMembersAsync();
+        return result.Succeeded
+            ? View(result.Result)
+            : Problem(result.Error ?? "Could not load members");
     }
 
-
     [Route("clients")]
-    public IActionResult Clients()
+    public async Task<IActionResult> Clients()
     {
-        return View();
+        var result = await _clientService.GetAllAsync();
+        return result.Succeeded
+            ? View(result.Result)
+            : Problem(result.Error ?? "Could not load clients");
     }
 }

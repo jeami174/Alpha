@@ -11,46 +11,76 @@ using WebApp.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// 1. Add DB Context
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// 2. Identity config
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-        options.User.RequireUniqueEmail = true;
-        options.Password.RequiredLength = 8;
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 8;
+})
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-    })
-    .AddEntityFrameworkStores<DataContext>()
-    .AddDefaultTokenProviders();
-
+// 3. Cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Auth/SignIn";
+    options.AccessDeniedPath = "/Auth/Denied";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
     options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 });
 
+// 4. MVC
 builder.Services.AddControllersWithViews();
 
+// 5. Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IStatusService, StatusService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
+// 6. Repositories
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-builder.Services.AddScoped<IAddressService, AddressService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<UserFactory>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
+// 7. Factories
+builder.Services.AddScoped<MemberFactory>();
+builder.Services.AddScoped<UserFactory>();
+builder.Services.AddScoped<ClientFactory>();
+builder.Services.AddScoped<ProjectFactory>();
+builder.Services.AddScoped<StatusFactory>();
+
+// 8. Run app
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapStaticAssets();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=SignIn}/{id?}") //Ändra till en dashboard här eller lägg funktionalitet på signin så man kan gå till adminlogin
+    pattern: "{controller=Auth}/{action=SignIn}/{id?}")
     .WithStaticAssets();
 
 app.Run();
+
+
 
 

@@ -31,6 +31,6 @@ public class SignUpFormModel
     public string ConfirmPassword { get; set; } = null!;
 
     [Display(Name = "Accept Terms")]
-    [Required(ErrorMessage = "You must accept the terms and conditions")]
+    [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the terms and conditions")]
     public bool AcceptTerms { get; set; }
 }

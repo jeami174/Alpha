@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-
 public class AuthController : Controller
 {
     private readonly IAuthService _authService;
@@ -14,26 +13,19 @@ public class AuthController : Controller
         _authService = authService;
     }
 
-
     // ------------------ SIGN IN ------------------
-
     [HttpGet]
-    public IActionResult SignIn()
-    {
-        return View();
-    }
+    public IActionResult SignIn() => View();
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignIn(SignInFormModel form)
     {
         if (!ModelState.IsValid)
         {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
-                );
+            var errors = ModelState.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray());
 
             return BadRequest(new { success = false, errors });
         }
@@ -47,42 +39,37 @@ public class AuthController : Controller
     }
 
     // ------------------ SIGN UP ------------------
-
     [HttpGet]
-    public IActionResult SignUp()
-    {
-        return View();
-    }
-
+    public IActionResult SignUp() => View();
 
     [HttpPost]
-    public async Task<IActionResult> SignUp(SignUpFormModel formData)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SignUp(SignUpFormModel form)
     {
         if (!ModelState.IsValid)
         {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(x => x.ErrorMessage).ToArray()
-                );
+            var errors = ModelState.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray());
 
             return BadRequest(new { success = false, errors });
         }
 
-        var result = await _authService.RegisterAsync(formData);
+        var result = await _authService.RegisterAsync(form);
 
         if (!result.Succeeded)
         {
-            return BadRequest(new { success = false, error = result.Errors.FirstOrDefault() ?? "Registration failed" });
+            return BadRequest(new
+            {
+                success = false,
+                error = result.Error ?? "Registration failed"
+            });
         }
 
         return Json(new { success = true, redirectUrl = Url.Action("Index", "Admin") });
     }
 
     // ------------------ SIGN OUT ------------------
-
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LogOut()
@@ -90,10 +77,15 @@ public class AuthController : Controller
         await _authService.LogOutAsync();
         return Json(new { success = true, redirectUrl = Url.Action("SignIn", "Auth") });
     }
-    public IActionResult ForgotPassword()
+
+    [HttpGet]
+    public IActionResult ForgotPassword() => View();
+
+    [HttpGet]
+    [Route("Denied")]
+    public IActionResult Denied()
     {
         return View();
     }
-
-
 }
+

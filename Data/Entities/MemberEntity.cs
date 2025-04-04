@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities;
 
+
 public class MemberEntity
 {
     [Key]
@@ -29,11 +30,24 @@ public class MemberEntity
 
     public int? AddressId { get; set; }
 
+    public string? ProjectId { get; set; }
+
+    public string? UserId { get; set; }
+
 
     [ForeignKey(nameof(RoleId))]
     public RoleEntity? Role { get; set; }
 
     [ForeignKey(nameof(AddressId))]
     public AddressEntity? Address { get; set; }
+
+    [ForeignKey(nameof(ProjectId))]
+    public ProjectEntity? Project { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public ApplicationUser? User { get; set; }
+
+    [NotMapped]
+    public string FullName => $"{FirstName} {LastName}";
 
 }

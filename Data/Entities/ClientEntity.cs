@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Entities;
 
+[Index(nameof(ClientName), IsUnique = true)]
 public class ClientEntity
 {
     [Key]
@@ -17,9 +19,11 @@ public class ClientEntity
 
 
     [Column(TypeName = "nvarchar(50)")]
-    public string? Location { get; set; } = null!;
+    public string? Location { get; set; }
 
 
     [Column(TypeName = "varchar(20)")]
     public string? Phone { get; set; }
+
+    public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }

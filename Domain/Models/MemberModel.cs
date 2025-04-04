@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using Domain.Models;
 
-namespace Business.Models;
+namespace Domain.Models;
 
 public class MemberModel
 {
@@ -16,6 +11,7 @@ public class MemberModel
     public string Email { get; set; } = null!;
     public string? Phone { get; set; }
     public DateTime? DateOfBirth { get; set; }
-    public RoleEntity? Role { get; set; }
-    public AddressEntity? Address { get; set; }
+
+    public RoleModel? Role { get; set; }
+    public AddressModel? Address { get; set; }
 }

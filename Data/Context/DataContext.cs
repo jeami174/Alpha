@@ -9,6 +9,11 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public DbSet<AddressEntity> Addresses { get; set; } = null!;
     public DbSet<MemberEntity> Members { get; set; } = null!;
     public DbSet<RoleEntity> MemberRoles { get; set; } = null!;
+    public DbSet<ProjectEntity> Projects { get; set; } = null!;
+    public DbSet<ClientEntity> Clients { get; set; } = null!;
+    public DbSet<StatusEntity> Statuses { get; set; } = null!;
+    public DbSet<NotificationEntity> Notifications { get; set; } = null!;
+    public DbSet<UserNotificationEntity> UserNotifications { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +28,34 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .WithMany(a => a.Members)
             .HasForeignKey(m => m.AddressId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<MemberEntity>()
+            .HasOne(m => m.Project)
+            .WithMany(p => p.Members)
+            .HasForeignKey(m => m.ProjectId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<ProjectEntity>()
+            .HasOne(p => p.Client)
+            .WithMany(c => c.Projects)
+            .HasForeignKey(p => p.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ProjectEntity>()
+            .HasOne(p => p.Status)
+            .WithMany(s => s.Projects)
+            .HasForeignKey(p => p.StatusId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserNotificationEntity>()
+            .HasOne(un => un.Notification)
+            .WithMany(n => n.UserNotifications)
+            .HasForeignKey(un => un.NotificationId);
+
+        modelBuilder.Entity<UserNotificationEntity>()
+            .HasOne(un => un.User)
+            .WithMany() //Fudnera på vart du vill lägga navigering vill du lägga i applikation user istället?
+            .HasForeignKey(un => un.UserId);
 
         base.OnModelCreating(modelBuilder);
     }

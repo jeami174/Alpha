@@ -4,7 +4,7 @@ namespace Business.Interfaces;
 
 public interface IAuthService
 {
-    Task<(bool Succeeded, string[] Errors)> RegisterAsync(SignUpFormModel form);
-    Task<(bool Succeeded, string? Error)> SignInAsync(SignInFormModel form);
-    Task LogOutAsync();
+    Task<ServiceResult<bool>> RegisterAsync(SignUpFormModel form);
+    Task<ServiceResult<bool>> SignInAsync(SignInFormModel form);
+    Task<ServiceResult<bool>> LogOutAsync();
 }
