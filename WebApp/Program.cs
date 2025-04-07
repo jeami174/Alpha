@@ -72,6 +72,73 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+// 9. Seed Roles
+async Task SeedRolesAsync(IServiceProvider services)
+{
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
+// 10. Seed Default Admin + Member
+async Task SeedDefaultAdminAsync(IServiceProvider services)
+{
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var memberRepository = services.GetRequiredService<IMemberRepository>();
+
+    var adminEmail = "admin@domain.com";
+    var adminPassword = "BytMig123!";
+
+    var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+    if (existingAdmin == null)
+    {
+        var adminUser = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            FirstName = "System",
+            LastName = "Administrator"
+        };
+
+        var createResult = await userManager.CreateAsync(adminUser, adminPassword);
+        if (createResult.Succeeded)
+        {
+            if (!await roleManager.RoleExistsAsync("Admin"))
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+
+            var member = new MemberEntity
+            {
+                FirstName = adminUser.FirstName,
+                LastName = adminUser.LastName,
+                Email = adminUser.Email!,
+                UserId = adminUser.Id
+            };
+
+            await memberRepository.CreateAsync(member);
+            await memberRepository.SaveToDatabaseAsync();
+        }
+    }
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAsync(services);
+    await SeedDefaultAdminAsync(services);
+}
+
+// 11. Routing
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -80,7 +147,6 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-
 
 
 

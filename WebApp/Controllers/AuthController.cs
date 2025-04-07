@@ -33,7 +33,7 @@ public class AuthController : Controller
         var result = await _authService.SignInAsync(form);
 
         if (result.Succeeded)
-            return Json(new { success = true, redirectUrl = Url.Action("Index", "Admin") });
+            return Json(new { success = true, redirectUrl = result.Result });
 
         return BadRequest(new { success = false, error = result.Error });
     }
@@ -66,8 +66,9 @@ public class AuthController : Controller
             });
         }
 
-        return Json(new { success = true, redirectUrl = Url.Action("Index", "Admin") });
+        return Json(new { success = true, redirectUrl = result.Result });
     }
+
 
     // ------------------ SIGN OUT ------------------
     [HttpPost]

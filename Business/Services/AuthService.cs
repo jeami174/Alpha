@@ -1,11 +1,9 @@
-﻿using Business.Factories;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.AspNetCore.Identity;
-
-namespace Business.Services;
+using Microsoft.Extensions.Logging;
 
 public class AuthService : IAuthService
 {
@@ -13,65 +11,106 @@ public class AuthService : IAuthService
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IUserService _userService;
     private readonly IMemberRepository _memberRepository;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IUserService userService,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        ILogger<AuthService> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userService = userService;
         _memberRepository = memberRepository;
+        _logger = logger;
     }
 
-    public async Task<ServiceResult<bool>> RegisterAsync(SignUpFormModel form)
+    public async Task<ServiceResult<string>> RegisterAsync(SignUpFormModel form)
     {
         if (form == null)
-            return ServiceResult<bool>.Failure("Invalid form data", 400);
+            return ServiceResult<string>.Failure("Invalid form data", 400);
 
-        var userResult = await _userService.CreateUserAsync(form.Email, form.Password, form.FirstName, form.LastName, "user");
+        var email = form.Email.Trim().ToLower();
+        var existingUser = await _userManager.FindByEmailAsync(email);
+
+        if (existingUser != null)
+        {
+            _logger.LogWarning("Registration failed: email '{Email}' is already in use.", email);
+            return ServiceResult<string>.Failure("Email already registered", 409);
+        }
+
+        var userResult = await _userService.CreateUserAsync(email, form.Password, form.FirstName, form.LastName, "User");
+
         if (!userResult.Succeeded)
-            return ServiceResult<bool>.Failure(userResult.Error ?? "Could not create user", userResult.StatusCode);
+        {
+            _logger.LogError("User creation failed: {Error}", userResult.Error);
+            return ServiceResult<string>.Failure(userResult.Error ?? "User creation failed", 500);
+        }
 
         var user = userResult.Result!;
 
-        var member = new MemberEntity
+        try
         {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email!,
-            UserId = user.Id
-        };
+            var member = new MemberEntity
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
+                UserId = user.Id,
+                RoleId = null,         
+                AddressId = null,
+                ProjectId = null
+            };
 
-        await _memberRepository.CreateAsync(member);
-        await _memberRepository.SaveToDatabaseAsync();
+            await _memberRepository.CreateAsync(member);
+            await _memberRepository.SaveToDatabaseAsync();
 
-        await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
-        return ServiceResult<bool>.Success(true, 201);
+            return ServiceResult<string>.Success("/projects");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating member for user {Email}", email);
+            return ServiceResult<string>.Failure("Unexpected error occurred during registration.", 500);
+        }
     }
 
-    public async Task<ServiceResult<bool>> SignInAsync(SignInFormModel form)
+    public async Task<ServiceResult<string>> SignInAsync(SignInFormModel form)
     {
         if (form == null)
-            return ServiceResult<bool>.Failure("Missing login data", 400);
+            return ServiceResult<string>.Failure("Invalid login data", 400);
 
-        var user = await _userManager.FindByEmailAsync(form.Email);
+        var user = await _userManager.FindByEmailAsync(form.Email.Trim().ToLower());
         if (user == null)
-            return ServiceResult<bool>.Failure("Invalid login attempt", 401);
+        {
+            _logger.LogWarning("Login failed: User not found with email {Email}", form.Email);
+            return ServiceResult<string>.Failure("Invalid login attempt", 401);
+        }
 
         var result = await _signInManager.PasswordSignInAsync(user, form.Password, form.RememberMe, false);
 
-        return result.Succeeded
-            ? ServiceResult<bool>.Success(true)
-            : ServiceResult<bool>.Failure("Invalid credentials", 401);
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning("Login failed: Incorrect credentials for user {Email}", form.Email);
+            return ServiceResult<string>.Failure("Invalid credentials", 401);
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var redirectUrl = "/admin";
+
+
+        _logger.LogInformation("User {Email} signed in successfully. Redirect to {RedirectUrl}", user.Email, redirectUrl);
+
+        return ServiceResult<string>.Success(redirectUrl);
     }
 
     public async Task<ServiceResult<bool>> LogOutAsync()
     {
         await _signInManager.SignOutAsync();
+        _logger.LogInformation("User signed out successfully.");
         return ServiceResult<bool>.Success(true);
     }
 }
