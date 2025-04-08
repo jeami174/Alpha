@@ -1,4 +1,6 @@
-﻿<header class="topbar">
+﻿@model WebApp.ViewModels.UserProfileViewModel
+
+<header class="topbar">
     <div class="search-container">
         <img src="/images/icons/Search.svg" alt="Search Icon" class="icon" />
         <input type="text" placeholder="Search anything..." />
@@ -12,21 +14,24 @@
 
             <div class="settings-dropdown hidden">
                 <div class="user-info">
-                    <img src="/uploads/members/avatars/default.svg" alt="User" class="avatar-small" />
-                    <span>Tommy Mattin-Lassei</span>
+                    <img src="@Model.ImagePath" alt="User" class="avatar-small" />
+                    <span>@Model.FullName</span>
                 </div>
                 <div class="dark-mode-toggle">
                     <img src="/images/icons/Setting.svg" class="icon-small" />
                     <span>Dark Mode</span>
                     <input type="checkbox" disabled />
                 </div>
-                <a href="#" id="logoutButton" class="logout-btn">
-                    <img src="/images/icons/Logout.svg" class="icon-small" />
-                    Logout
-                </a>
+                <form method="post" asp-controller="Auth" asp-action="LogOut">
+                    <button type="submit" class="logout-btn">
+                        <img src="/images/icons/Logout.svg" class="icon-small" />
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
 
-        <img src="/uploads/members/avatars/default.svg" alt="User Avatar" class="avatar" />
+        <img src="@Model.ImagePath" alt="User Avatar" class="avatar" />
     </div>
 </header>
+

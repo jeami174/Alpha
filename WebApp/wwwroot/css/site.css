@@ -154,7 +154,6 @@ section > header {
     .portal > .logotype {
         grid-area: logotype;
         padding: 1.75rem 1.5rem;
-
         border-right: 1px solid var(--border200);
     }
 
@@ -247,9 +246,7 @@ h6 {
 
 /* LINKS */
 
-
 /* LÄGG IN AKTIV, OCH HOOVER*/
-
 .tab-link {
     font-family: var(--font-main);
     color: var(--text-color);
@@ -258,7 +255,6 @@ h6 {
     text-decoration: none;
     transition: var(--transition-time);
 }
-
 /* LÄGG IN AKTIV, OCH HOOVER*/
 
 /* BUTTONS */
@@ -293,7 +289,6 @@ h6 {
     color: var(--heading-color);
     border-color: var(--gray100);
     font-size: 0.9375rem;
-
 }
 
     .btn-gray:hover {
@@ -322,10 +317,21 @@ h6 {
     align-content: center;
 }
 
-.btn-add::before {
-    content: '\2b';
-    font-family: var(--font-fa);
+    .btn-add::before {
+        content: '\2b';
+        font-family: var(--font-fa);
+    }
+
+.btn-delete {
+    background-color: var(--red-dark);
+    color: #fff;
+    align-content: center;
+    width: 100%;
 }
+
+    .btn-delete:hover {
+        background-color: var(--red-dimmed);
+    }
 
 .btn-close {
     cursor: pointer;
@@ -338,6 +344,7 @@ h6 {
     justify-content: center;
     align-items: center;
 }
+
     .btn-close::after {
         content: '\58';
         font-family: var(--font-fa);
@@ -366,7 +373,6 @@ h6 {
         display: flex;
         align-items: center;
     }
-
 /*LOGOTYPE END*/
 
 /*NAVLINKS START*/
@@ -404,7 +410,6 @@ h6 {
             color: var(--navlink-text-active-color);
             background-color: var(--navlink-background-active-color);
         }
-
 /*NAVLINKS END*/
 
 /* LIST START */
@@ -417,29 +422,29 @@ h6 {
         grid-template-columns: auto 3fr 3fr 2fr 2fr 2fr 50px;
     }
 
-.client-list .client-info {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-areas: "image name"" image email";
-    column-gap: 1rem;
-    align-items: center;
-}
-
-    .client-list .client-info .client-image {
-        grid-area: image;
-        width: 48px;
-        height: 48px;
+    .client-list .client-info {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas: "image name"" image email";
+        column-gap: 1rem;
+        align-items: center;
     }
 
-    .client-list .client-info .client-name {
-        grid-area: name;
-        font-weight: var(--font-bold);
-    }
+        .client-list .client-info .client-image {
+            grid-area: image;
+            width: 48px;
+            height: 48px;
+        }
 
-    .client-list .client-info .client-email {
-        grid-area: email;
-        color: var(--text-color-muted);
-    }
+        .client-list .client-info .client-name {
+            grid-area: name;
+            font-weight: var(--font-bold);
+        }
+
+        .client-list .client-info .client-email {
+            grid-area: email;
+            color: var(--text-color-muted);
+        }
 /* LIST END */
 
 /* TABLES START */
@@ -454,7 +459,6 @@ table {
         width: 100%;
         border-radius: 16px;
         padding: 1rem;
-
     }
 
     table thead
@@ -502,89 +506,87 @@ form {
     position: relative;
 }
 
-    form input,
-    form select,
-    form textarea {
-        width: 100%;
-        font-size: 15px;
-        font-weight: var(--font-regular);
-        padding: 10px 16px;
-        border-radius: 14px;
-        border: 1px solid var(--border100, #EBEEF2);
-        outline: none;
-    }
+form input,
+form select,
+form textarea {
+    width: 100%;
+    font-size: 15px;
+    font-weight: var(--font-regular);
+    padding: 10px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border100, #EBEEF2);
+    outline: none;
+}
 
-    form label {
-        font-size: 15px;
-        font-weight: var(--font-semibold);
-        color: var(--heading-color);
-    }
+form label {
+    font-size: 15px;
+    font-weight: var(--font-semibold);
+    color: var(--heading-color);
+}
 
-        form input:focus,
-        form select:focus,
-        form textarea:focus {
-            border: 1px solid var(--border300);
-        }
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border: 1px solid var(--border300);
+}
 
-        form input::placeholder,
-        form select::placeholder,
-        form textarea::placeholder {
-            color: var(--body-light);
-            font-size: 15px;
-            font-weight: var(--font-regular);
-        }
+form input::placeholder,
+form select::placeholder,
+form textarea::placeholder {
+    color: var(--body-light);
+    font-size: 15px;
+    font-weight: var(--font-regular);
+}
 
-    form .input-validation-error {
-        border-color: var(--red);
-    }
+form .input-validation-error {
+    border-color: var(--red);
+}
 
-    form .field-validation-error {
-        position: absolute;
-        z-index: 1;
-        right: 0.18rem;
-        top: 5px;
-        font-size: 0.8em;
-        background-color: rgba(255, 102, 64, 0.10);
-        color: #E94D3F;
-        padding: 0.4rem 1rem;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-    }
+form .field-validation-error {
+    position: absolute;
+    z-index: 1;
+    right: 0.18rem;
+    top: 5px;
+    font-size: 0.8em;
+    background-color: rgba(255, 102, 64, 0.10);
+    color: #E94D3F;
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
 
 form.extended-validation .field-validation-error,
-    form.extended-validation .extended-field-validation-error {
-        position: static;
-        display: block;
-        margin-top: 0.2rem;
-        font-size: 0.8em;
-        background-color: transparent;
-        color: #E94D3F;
-        padding: 0;
-        border: none;
-    }
+form.extended-validation .extended-field-validation-error {
+    position: static;
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.8em;
+    background-color: transparent;
+    color: #E94D3F;
+    padding: 0;
+    border: none;
+}
 
-
-    form .form-message {
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        background-color: rgba(255, 102, 64, 0.10);
-        color: #E94D3F;
-        padding: 0.6rem 1rem;
-        margin-bottom: 1rem;
-        border-radius: 12px;
-        display: none;
-        text-align: center;
-    }
+form .form-message {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    background-color: rgba(255, 102, 64, 0.10);
+    color: #E94D3F;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    display: none;
+    text-align: center;
+}
 
 input[type="checkbox"] {
     height: 15px;
     width: 15px;
     accent-color: var(--accent);
 }
-
 /* FORM END */
 
 /* SIGN UP FORM START */
@@ -594,13 +596,12 @@ input[type="checkbox"] {
     padding-inline: 4rem;
 }
 
-.signup-form .btn-gray {
-    display: inline-flex;
-    align-items: center;
-    width: 100%;
-    padding: 0.7rem 1.25rem;
-}
-
+    .signup-form .btn-gray {
+        display: inline-flex;
+        align-items: center;
+        width: 100%;
+        padding: 0.7rem 1.25rem;
+    }
 
 .signup-title {
     text-align: center;
@@ -609,7 +610,6 @@ input[type="checkbox"] {
 
 .SignUp-Footer {
     margin-top: 3.5rem;
-
     text-align: center;
 }
 
@@ -624,13 +624,12 @@ input[type="checkbox"] {
         font-weight: var(--font-semibold);
     }
 
-
-
 .SignUp-Divider {
     display: flex;
     align-items: center;
     margin: 2rem 0;
 }
+
     .SignUp-Divider hr {
         flex: 1;
         border: none;
@@ -653,7 +652,6 @@ input[type="checkbox"] {
     flex: 1;
 }
 
-
 .signup-form button.btn-blue {
     width: 100%;
     padding: 0.7rem 1.25rem;
@@ -675,11 +673,10 @@ input[type="checkbox"] {
     position: relative;
 }
 
-    .field-group .input-with-icon input {
-        width: 100%;
-        padding-right: 2.5rem;
-    }
-
+.field-group .input-with-icon input {
+    width: 100%;
+    padding-right: 2.5rem;
+}
 
 .toggle-password {
     position: absolute;
@@ -694,7 +691,6 @@ input[type="checkbox"] {
         width: 20px;
         height: auto;
     }
-
 /* SIGN UP FORM END */
 
 /* SIGN IN FORM START */
@@ -713,11 +709,11 @@ input[type="checkbox"] {
         padding: 0.7rem 1.25rem;
     }
 
-    .signin-title {
-        text-align: center;
-        margin-bottom: 1rem;
-        margin-top: 2rem;
-    }
+.signin-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
 
 .SignIn-Divider {
     display: flex;
@@ -743,16 +739,16 @@ input[type="checkbox"] {
     text-align: center;
 }
 
-.SignIn-Footer p {
-    font-size: 0.9375rem;
-    font-weight: var(--font-semibold);
-}
+    .SignIn-Footer p {
+        font-size: 0.9375rem;
+        font-weight: var(--font-semibold);
+    }
 
-.SignIn-Footer a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: var(--font-semibold);
-}
+    .SignIn-Footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: var(--font-semibold);
+    }
 
 .signin-form button.btn-blue {
     width: 100%;
@@ -783,7 +779,7 @@ input[type="checkbox"] {
     font-weight: var(--font-regular);
     font-size: 0.9375rem;
 }
-
+/* SIGN IN FORM END */
 
 /* MODAL START */
 .modal {
@@ -837,13 +833,9 @@ input[type="checkbox"] {
     background-color: #bbb;
     border-radius: 16px;
 }
-
 /* MODAL END */
 
 /* STATUES START */
-
-
-
 /* STATUES END */
 
 /* BADGES */
@@ -852,9 +844,6 @@ input[type="checkbox"] {
     border-radius: 10px;
     padding: 0.5rem 1rem;
 }
-
-
-
 
 /* IMAGE-PREVIEWER */
 
@@ -1020,10 +1009,11 @@ input[type="checkbox"] {
     width: 550px;
 }
 
-
 #editClientModal .modal-content {
     width: 550px;
 }
+
+/* MEMBERS */
 
 #members {
     display: grid;
@@ -1044,30 +1034,37 @@ input[type="checkbox"] {
     z-index: 1100;
 }
 
-    #addMemberModal .modal-content .dob-group {
-        display: flex;
-        gap: 1rem;
-        width: 100%;
-        justify-content: space-between;
-    }
 
-    #editMemberModal .modal-content .dob-group {
-        display: flex;
-        gap: 1rem;
-        width: 100%;
-        justify-content: space-between;
-    }
+#addMemberModal .modal-content .dob-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
 
-        #addMemberModal .modal-content .dob-group select {
-            display: flex;
-            font-size: 15px;
-            color: var(--body-dark);
-            padding: 14px 14px 14px 16px;
-            border: 1px solid var(--border100);
-            border-radius: 14px;
-            justify-content: center;
-            align-items: flex-start;
-        }
+#editMemberModal .modal-content .dob-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#addMemberModal .modal-content .dob-group select {
+    display: flex;
+    font-size: 15px;
+    color: var(--body-dark);
+    padding: 14px 14px 14px 16px;
+    border: 1px solid var(--border100);
+    border-radius: 14px;
+    justify-content: center;
+    align-items: flex-start;
+}
 
 #editMemberModal .modal-content .dob-group select {
     display: flex;
@@ -1080,11 +1077,11 @@ input[type="checkbox"] {
     align-items: flex-start;
 }
 
-        #addMemberModal .modal-content .dob-group .custom-select {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
+#addMemberModal .modal-content .dob-group .custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
 
 #editMemberModal .modal-content .dob-group .custom-select {
     position: relative;
@@ -1092,14 +1089,13 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-
-            #addMemberModal .modal-content .dob-group .custom-select select {
-                width: 100%;
-                padding-right: 2.5rem;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                appearance: none;
-            }
+#addMemberModal .modal-content .dob-group .custom-select select {
+    width: 100%;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
 
 #editMemberModal .modal-content .dob-group .custom-select select {
     width: 100%;
@@ -1108,18 +1104,19 @@ input[type="checkbox"] {
     -moz-appearance: none;
     appearance: none;
 }
-            #addMemberModal .modal-content .dob-group .custom-select::after {
-                content: '\f078';
-                font-family: var(--font-fa); 
-                font-weight: 900;
-                position: absolute;
-                top: 50%;
-                right: 1rem;
-                transform: translateY(-50%);
-                pointer-events: none;
-                font-size: 15px;
-                color: var(--body-dark);
-            }
+
+#addMemberModal .modal-content .dob-group .custom-select::after {
+    content: '\f078';
+    font-family: var(--font-fa);
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 15px;
+    color: var(--body-dark);
+}
 
 #editMemberModal .modal-content .dob-group .custom-select::after {
     content: '\f078';
@@ -1134,20 +1131,19 @@ input[type="checkbox"] {
     color: var(--body-dark);
 }
 
-    #addMemberModal .modal-content .name-group {
-        display: flex;
-        gap: 1rem;
-    }
+#addMemberModal .modal-content .name-group {
+    display: flex;
+    gap: 1rem;
+}
 
 #editMemberModal .modal-content .name-group {
     display: flex;
     gap: 1rem;
 }
 
-
-        #addMemberModal .modal-content .name-field {
-            flex: 1;
-        }
+#addMemberModal .modal-content .name-field {
+    flex: 1;
+}
 
 #editMemberModal .modal-content .name-field {
     flex: 1;
@@ -1163,7 +1159,6 @@ input[type="checkbox"] {
     gap: 1rem;
 }
 
-
 #addMemberModal .modal-content .address-field {
     flex: 1;
 }
@@ -1171,7 +1166,6 @@ input[type="checkbox"] {
 #editMemberModal .modal-content .address-field {
     flex: 1;
 }
-
 
 #addProjectModal .modal-content {
     width: 550px;
@@ -1263,14 +1257,13 @@ input[type="checkbox"] {
     color: var(--body-dark);
 }
 
-.member-card-email{
+.member-card-email {
     margin-bottom: 0.5rem;
 }
 
 .member-card-phone {
     margin-bottom: 1rem;
 }
-
 
 .btn-member {
     margin-top: auto;
@@ -1296,6 +1289,7 @@ input[type="checkbox"] {
         pointer-events: none;
     }
 
+
 .member-card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -1304,7 +1298,6 @@ input[type="checkbox"] {
 }
 
 /* DENIED PAGE */
-
 .denied-box {
     text-align: center;
     padding: 2rem;
@@ -1321,4 +1314,19 @@ input[type="checkbox"] {
 .btn-denied {
     margin-top: 1rem;
     text-decoration: none;
+}
+
+/* Forgot password page */
+
+.forgot-passwordheader {
+    margin-bottom: 1rem;
+}
+
+.forgot-password-p {
+    margin-bottom: 1rem;
+}
+
+.btn-forgot {
+    width: 100%;
+    margin-top: 2rem;
 }

@@ -6,7 +6,7 @@ namespace Business.Factories;
 
 public class MemberFactory
 {
-    public MemberEntity Create(AddMemberForm form, RoleEntity role)
+    public MemberEntity Create(AddMemberForm form, RoleEntity role, string imageName)
     {
         return new MemberEntity
         {
@@ -15,7 +15,8 @@ public class MemberFactory
             Email = form.MemberEmail,
             Phone = form.Phone,
             DateOfBirth = form.DateOfBirth,
-            Role = role
+            Role = role,
+            ImageName = imageName
         };
     }
 
@@ -39,7 +40,9 @@ public class MemberFactory
         return new MemberModel
         {
             Id = entity.Id,
-            ImageName = entity.ImageName,
+            ImageName = string.IsNullOrWhiteSpace(entity.ImageName)
+                ? "uploads/members/avatars/default.svg"
+                : entity.ImageName.Replace("\\", "/"),
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             Email = entity.Email,

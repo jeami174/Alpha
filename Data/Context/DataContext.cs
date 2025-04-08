@@ -54,7 +54,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
 
         modelBuilder.Entity<UserNotificationEntity>()
             .HasOne(un => un.User)
-            .WithMany() //Fudnera på vart du vill lägga navigering vill du lägga i applikation user istället?
+            .WithMany()
             .HasForeignKey(un => un.UserId);
 
         base.OnModelCreating(modelBuilder);

@@ -1,4 +1,4 @@
-﻿@model             Domain.Models.MemberModel
+﻿@model Domain.Models.MemberModel
 
 <div class="member-card" data-member-id="@Model.Id">
     <button class="edit-btn"
@@ -10,13 +10,14 @@
     <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
 
     <h4>@Model.FirstName @Model.LastName</h4>
+
     @if (!string.IsNullOrWhiteSpace(Model.Role?.Name))
     {
         <div class="member-card-title">@Model.Role.Name</div>
     }
+
     <div class="member-card-email">@Model.Email</div>
     <div class="member-card-phone">@Model.Phone</div>
 
     <button class="btn btn-gray btn-member">Message</button>
 </div>
-

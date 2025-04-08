@@ -12,19 +12,22 @@ public class AuthService : IAuthService
     private readonly IUserService _userService;
     private readonly IMemberRepository _memberRepository;
     private readonly ILogger<AuthService> _logger;
+    private readonly IFileStorageService _fileStorageService;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IUserService userService,
         IMemberRepository memberRepository,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IFileStorageService fileStorageService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userService = userService;
         _memberRepository = memberRepository;
         _logger = logger;
+        _fileStorageService = fileStorageService;
     }
 
     public async Task<ServiceResult<string>> RegisterAsync(SignUpFormModel form)
@@ -53,13 +56,16 @@ public class AuthService : IAuthService
 
         try
         {
+            var randomAvatarPath = _fileStorageService.GetRandomAvatar();
+
             var member = new MemberEntity
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email!,
                 UserId = user.Id,
-                RoleId = null,         
+                ImageName = randomAvatarPath,
+                RoleId = null,
                 AddressId = null,
                 ProjectId = null
             };
@@ -98,10 +104,7 @@ public class AuthService : IAuthService
             return ServiceResult<string>.Failure("Invalid credentials", 401);
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
         var redirectUrl = "/admin";
-
-
         _logger.LogInformation("User {Email} signed in successfully. Redirect to {RedirectUrl}", user.Email, redirectUrl);
 
         return ServiceResult<string>.Success(redirectUrl);
@@ -112,5 +115,37 @@ public class AuthService : IAuthService
         await _signInManager.SignOutAsync();
         _logger.LogInformation("User signed out successfully.");
         return ServiceResult<bool>.Success(true);
+    }
+
+    public async Task<ServiceResult<string>> GeneratePasswordResetTokenAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return ServiceResult<string>.Failure("If an account with that email exists, you can reset your password.", 200);
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        return ServiceResult<string>.Success(token);
+    }
+
+    public async Task<ServiceResult<bool>> ResetPasswordAsync(ResetPasswordFormModel form)
+    {
+        var user = await _userManager.FindByEmailAsync(form.Email);
+        if (user == null)
+        {
+            return ServiceResult<bool>.Failure("User not found", 404);
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, form.Token, form.NewPassword);
+        if (result.Succeeded)
+        {
+            return ServiceResult<bool>.Success(true);
+        }
+        else
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            return ServiceResult<bool>.Failure(errors, 400);
+        }
     }
 }

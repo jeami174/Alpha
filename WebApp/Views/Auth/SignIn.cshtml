@@ -9,15 +9,13 @@
     <div class="surface">
         <h1 class="form-header signin-title">Login</h1>
 
-        
-
         <form class="form signin-form form extended-validation" method="post" asp-action="SignIn" asp-controller="Auth" novalidate>
 
             <!-- Google login -->
             <button class="btn btn-gray google-btn" type="button">
                 <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
                 Login with Google
-                </button>
+            </button>
 
             <div class="SignIn-Divider">
                 <hr />
@@ -39,30 +37,29 @@
                 <label asp-for="Password"></label>
                 <div class="field-group">
                     <div class="input-with-icon">
-                    <input asp-for="Password" data-val="false" autocomplete="off" id="passwordField" />
-                    <span id="togglePassword" class="toggle-password">
-                        <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
-                    </span>
+                        <input asp-for="Password" data-val="false" id="passwordField" />
+                        <span id="togglePassword" class="toggle-password">
+                            <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
+                        </span>
                     </div>
                     <span asp-validation-for="Password"></span>
                 </div>
             </div>
-            <!-- Remember Me -->
+
+            <!-- Remember Me och Forgot Password -->
             <div class="form-options">
                 <div class="remember">
                     <input asp-for="RememberMe" />
                     <label asp-for="RememberMe">Remember Me</label>
                 </div>
                 <div class="forgot">
-                    <a href="#">Forgot Password?</a>
+                    <a asp-action="ForgotPassword" asp-controller="Auth">Forgot Password?</a>
                 </div>
             </div>
 
             <div class="form-message"></div>
             <!-- Submit -->
             <button type="submit" class="btn btn-blue">Log In</button>
-
-            
         </form>
 
         <!-- Footer -->

@@ -13,16 +13,19 @@ public class AddressService : IAddressService
         _addressRepository = addressRepository;
     }
 
-    public async Task<AddressEntity> GetOrCreateAddressAsync(string street, string postalCode, string city)
+    public async Task<AddressEntity?> GetOrCreateAddressAsync(string? street, string? postalCode, string? city)
     {
-        street = street.Trim();
-        postalCode = postalCode.Trim();
-        city = city.Trim();
+        street = string.IsNullOrWhiteSpace(street) ? string.Empty : street.Trim();
+        postalCode = string.IsNullOrWhiteSpace(postalCode) ? string.Empty : postalCode.Trim();
+        city = string.IsNullOrWhiteSpace(city) ? string.Empty : city.Trim();
+
+        if (string.IsNullOrEmpty(street) && string.IsNullOrEmpty(postalCode) && string.IsNullOrEmpty(city))
+            return null;
 
         var existing = await _addressRepository.GetOneAsync(a =>
-            a.Street.ToLower() == street.ToLower() &&
-            a.PostalCode.ToLower() == postalCode.ToLower() &&
-            a.City.ToLower() == city.ToLower()
+            (a.Street ?? "").ToLower() == street.ToLower() &&
+            (a.PostalCode ?? "").ToLower() == postalCode.ToLower() &&
+            (a.City ?? "").ToLower() == city.ToLower()
         );
 
         if (existing != null)
@@ -40,4 +43,5 @@ public class AddressService : IAddressService
 
         return newAddress;
     }
+
 }

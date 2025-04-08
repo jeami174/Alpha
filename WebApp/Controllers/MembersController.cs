@@ -3,102 +3,110 @@ using Business.Models;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApp.Helpers;
 
-namespace WebApp.Controllers;
-
-[Authorize(Policy = "Admins")]
-public class MembersController(IMemberService memberService, IFileStorageService fileStorageService) : Controller
+namespace WebApp.Controllers
 {
-    private readonly IMemberService _memberService = memberService;
-    private readonly IFileStorageService _fileStorageService = fileStorageService;
-
-    public async Task<IActionResult> Index()
+    [Authorize(Policy = "Admins")]
+    public class MembersController : Controller
     {
-        var result = await _memberService.GetAllMembersAsync();
-        return View(result.Succeeded ? result.Result : new List<MemberModel>());
-    }
+        private readonly IMemberService _memberService;
+        private readonly IFileStorageService _fileStorageService;
 
-    [HttpPost]
-    public async Task<IActionResult> AddMember(AddMemberForm form)
-    {
-        if (!ModelState.IsValid)
+        public MembersController(IMemberService memberService, IFileStorageService fileStorageService)
         {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
-                );
-
-            return BadRequest(new { success = false, errors });
+            _memberService = memberService;
+            _fileStorageService = fileStorageService;
         }
 
-        string imageName = form.MemberImage is { Length: > 0 }
-            ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
-            : _fileStorageService.GetRandomAvatar();
-
-        var result = await _memberService.AddMemberAsync(form, imageName);
-
-        if (result.Succeeded)
-            return Ok(new { success = true });
-
-        return BadRequest(new { success = false, error = result.Error });
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> EditMember(int id)
-    {
-        var result = await _memberService.GetMemberByIdAsync(id);
-        if (!result.Succeeded || result.Result == null)
-            return NotFound();
-
-        var member = result.Result;
-
-        var form = new EditMemberForm
+        public async Task<IActionResult> Index()
         {
-            Id = member.Id,
-            FirstName = member.FirstName,
-            LastName = member.LastName,
-            MemberEmail = member.Email,
-            Phone = member.Phone,
-            DateOfBirth = member.DateOfBirth,
-            ImageName = member.ImageName,
-            RoleName = member.Role?.Name,
-            Street = member.Address?.Street,
-            PostalCode = member.Address?.PostalCode,
-            City = member.Address?.City
-        };
-
-        return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", form);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> EditMember(EditMemberForm form)
-    {
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
-                );
-
-            return BadRequest(new { success = false, errors });
+            var result = await _memberService.GetAllMembersAsync();
+            return View(result.Succeeded ? result.Result : new List<MemberModel>());
         }
 
-        if (form.MemberImage is { Length: > 0 })
+        [HttpPost]
+        public async Task<IActionResult> AddMember(AddMemberForm form)
         {
-            string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
-            form.ImageName = newImageName;
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { success = false, errors });
+            }
+
+            string imageName = form.MemberImage is { Length: > 0 }
+                ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
+                : _fileStorageService.GetRandomAvatar();
+
+            var result = await _memberService.AddMemberAsync(form, imageName);
+            if (result.Succeeded)
+                return Ok(new { success = true });
+            return BadRequest(new { success = false, error = result.Error });
         }
 
-        var result = await _memberService.UpdateMemberAsync(form.Id, form);
+        [HttpGet]
+        public async Task<IActionResult> EditMember(int id)
+        {
+            var result = await _memberService.GetMemberByIdAsync(id);
+            if (!result.Succeeded || result.Result == null)
+                return NotFound();
 
-        if (result.Succeeded)
-            return Ok(new { success = true });
+            var member = result.Result;
+            var form = new EditMemberForm
+            {
+                Id = member.Id,
+                FirstName = member.FirstName,
+                LastName = member.LastName,
+                MemberEmail = member.Email,
+                Phone = member.Phone,
+                DateOfBirth = member.DateOfBirth,
+                ImageName = member.ImageName,
+                RoleName = member.Role?.Name,
+                Street = member.Address?.Street,
+                PostalCode = member.Address?.PostalCode,
+                City = member.Address?.City
+            };
 
-        return BadRequest(new { success = false, error = result.Error });
+            return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", form);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditMember(EditMemberForm form)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { success = false, errors });
+            }
+
+            if (form.MemberImage is { Length: > 0 })
+            {
+                string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
+                form.ImageName = newImageName;
+            }
+
+            var result = await _memberService.UpdateMemberAsync(form.Id, form);
+            if (result.Succeeded)
+                return Ok(new { success = true });
+            return BadRequest(new { success = false, error = result.Error });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteMember(int id)
+        {
+            var result = await _memberService.DeleteMemberAsync(id);
+            if (result.Succeeded)
+                return Ok(new { success = true });
+            return BadRequest(new { success = false, error = result.Error });
+        }
     }
 }

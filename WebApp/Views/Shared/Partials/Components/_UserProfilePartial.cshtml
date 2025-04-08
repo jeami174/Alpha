@@ -1,0 +1,16 @@
+﻿@using WebApp.ViewModels
+@model UserProfileViewModel
+
+<div class="user-info">
+    <img src="@Model.ImagePath" alt="User" class="avatar-small" />
+    <span>@Model.FullName</span>
+</div>
+<div class="dark-mode-toggle">
+    <img src="/images/icons/Setting.svg" class="icon-small" />
+    <span>Dark Mode</span>
+    <input type="checkbox" disabled />
+</div>
+<a href="#" id="logoutButton" class="logout-btn">
+    <img src="/images/icons/Logout.svg" class="icon-small" />
+    Logout
+</a>

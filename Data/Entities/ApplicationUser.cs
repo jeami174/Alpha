@@ -14,5 +14,5 @@ public class ApplicationUser : IdentityUser
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
 
-    public MemberEntity? Member { get; set; } //TA bort om det inte funkar.
+    public MemberEntity? Member { get; set; }
 }
