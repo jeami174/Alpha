@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-[Authorize(Roles = "admin")]
+[Authorize(Policy = "Admins")]
 [Route("clients")]
 public class ClientsController : Controller
 {

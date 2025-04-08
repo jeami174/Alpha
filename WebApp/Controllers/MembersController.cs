@@ -1,11 +1,13 @@
 ﻿using Business.Interfaces;
 using Business.Models;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Helpers;
 
 namespace WebApp.Controllers;
 
+[Authorize(Policy = "Admins")]
 public class MembersController(IMemberService memberService, IFileStorageService fileStorageService) : Controller
 {
     private readonly IMemberService _memberService = memberService;

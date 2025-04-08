@@ -36,10 +36,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 });
 
-// 4. MVC
+// 4. Authorization Policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admins", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Users", policy => policy.RequireRole("Admin", "User"));
+});
+
+// 5. MVC
 builder.Services.AddControllersWithViews();
 
-// 5. Services
+// 6. Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
@@ -49,7 +56,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
-// 6. Repositories
+// 7. Repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
@@ -57,14 +64,14 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 
-// 7. Factories
+// 8. Factories
 builder.Services.AddScoped<MemberFactory>();
 builder.Services.AddScoped<UserFactory>();
 builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddScoped<ProjectFactory>();
 builder.Services.AddScoped<StatusFactory>();
 
-// 8. Run app
+// 9. Build app
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -72,8 +79,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-// 9. Seed Roles
+// 10. Seed Roles
 async Task SeedRolesAsync(IServiceProvider services)
 {
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -88,7 +94,7 @@ async Task SeedRolesAsync(IServiceProvider services)
     }
 }
 
-// 10. Seed Default Admin + Member
+// 11. Seed Default Admin + Member
 async Task SeedDefaultAdminAsync(IServiceProvider services)
 {
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
@@ -131,6 +137,7 @@ async Task SeedDefaultAdminAsync(IServiceProvider services)
     }
 }
 
+// 12. Run seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -138,7 +145,7 @@ using (var scope = app.Services.CreateScope())
     await SeedDefaultAdminAsync(services);
 }
 
-// 11. Routing
+// 13. Routing
 app.MapStaticAssets();
 
 app.MapControllerRoute(

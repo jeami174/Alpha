@@ -1,5 +1,6 @@
 ﻿using Business.Interfaces;
 using Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
@@ -79,14 +80,20 @@ public class AuthController : Controller
         return Json(new { success = true, redirectUrl = Url.Action("SignIn", "Auth") });
     }
 
+    // ------------------ FORGOT PASSWORD ------------------
+
     [HttpGet]
     public IActionResult ForgotPassword() => View();
 
-    [HttpGet]
-    [Route("Denied")]
+
+    // ------------------ ACCESS DENIED ------------------
+
+    [HttpGet("/Auth/Denied")]
+    [AllowAnonymous]
     public IActionResult Denied()
     {
         return View();
     }
+
 }
 

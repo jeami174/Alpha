@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Policy = "Users")]
 [Route("admin")]
 public class AdminController : Controller
 {
@@ -24,7 +24,7 @@ public class AdminController : Controller
         return View();
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Admins")]
     [Route("members")]
     public async Task<IActionResult> Members()
     {
@@ -34,7 +34,7 @@ public class AdminController : Controller
             : Problem(result.Error ?? "Could not load members");
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Admins")]
     [Route("clients")]
     public async Task<IActionResult> Clients()
     {
@@ -44,3 +44,4 @@ public class AdminController : Controller
             : Problem(result.Error ?? "Could not load clients");
     }
 }
+

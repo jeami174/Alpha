@@ -1,19 +1,31 @@
-﻿﻿<nav class="nav-links">
+﻿@{
+    var isAdmin = (await AuthorizationService.AuthorizeAsync(User, "Admins")).Succeeded;
+    var isUser = (await AuthorizationService.AuthorizeAsync(User, "Users")).Succeeded;
+}
 
+<nav class="nav-links">
+    <!-- Synligt för alla users -->
     <a class="nav-link @(Context.Request.Path == "/" ? "active": "")" asp-action="Index" asp-controller="Admin">
         <i class="fa-solid fa-compass"></i>
         <span>Dashboard</span>
     </a>
+
     <a class="nav-link @(Context.Request.Path == "/projects" ? "active": "")" asp-action="Projects" asp-controller="Projects">
         <i class="fa-solid fa-briefcase"></i>
         <span>Projects</span>
     </a>
-    <a class="nav-link @(Context.Request.Path == "/admin/members" ? "active": "")" asp-action="Members" asp-controller="Admin">
-        <i class="fa-solid fa-user-group"></i>
-        <span>Team Members</span>
-    </a>
-    <a class="nav-link @(Context.Request.Path == "/admin/clients" ? "active": "")" asp-action="Clients" asp-controller="Admin">
-        <i class="fa-solid fa-handshake-simple"></i>
-        <span>Clients</span>
-    </a>
+
+    <!-- Endast för Admin -- valde att sydda upp med policies efter Hans video -->
+    @if (isAdmin)
+    {
+        <a class="nav-link @(Context.Request.Path == "/admin/members" ? "active": "")" asp-action="Members" asp-controller="Admin">
+            <i class="fa-solid fa-user-group"></i>
+            <span>Team Members</span>
+        </a>
+
+        <a class="nav-link @(Context.Request.Path == "/admin/clients" ? "active": "")" asp-action="Clients" asp-controller="Admin">
+            <i class="fa-solid fa-handshake-simple"></i>
+            <span>Clients</span>
+        </a>
+    }
 </nav>

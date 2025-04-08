@@ -5,7 +5,7 @@ namespace WebApp.Controllers;
 
 
 
-[Authorize]
+[Authorize(Policy = "Users")]
 
 [Route("Projects")]
 public class ProjectsController : Controller
