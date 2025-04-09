@@ -25,5 +25,7 @@ public class ClientEntity
     [Column(TypeName = "varchar(20)")]
     public string? Phone { get; set; }
 
+    public string? ImageName { get; set; }
+
     public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 ﻿using Business.Interfaces;
 using Business.Models;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,9 +40,17 @@ public class AdminController : Controller
     public async Task<IActionResult> Clients()
     {
         var result = await _clientService.GetAllAsync();
-        return result.Succeeded
-            ? View(result.Result)
-            : Problem(result.Error ?? "Could not load clients");
+
+        if (!result.Succeeded)
+            return Problem(result.Error ?? "Could not load clients");
+
+        var viewModel = new Domain.ViewModels.ClientPageViewModel
+        {
+            Clients = result.Result ?? Enumerable.Empty<ClientModel>(),
+            NewClientForm = new AddClientForm()
+        };
+
+        return View(viewModel);
     }
 }
 

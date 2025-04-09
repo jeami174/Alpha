@@ -2,45 +2,46 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace Infrastructure.Services;
-
-public class FileStorageService : IFileStorageService
+namespace Infrastructure.Services
 {
-    private readonly IWebHostEnvironment _env;
-
-    public FileStorageService(IWebHostEnvironment env)
+    public class FileStorageService : IFileStorageService
     {
-        _env = env;
-    }
+        private readonly IWebHostEnvironment _env;
 
-    public async Task<string> SaveFileAsync(IFormFile file, string subFolder)
-    {
-        var extension = Path.GetExtension(file.FileName);
-        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+        public FileStorageService(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
 
-        var uploadFolder = Path.Combine(_env.WebRootPath, "uploads", "members", subFolder);
-        Directory.CreateDirectory(uploadFolder);
+        public async Task<string> SaveFileAsync(IFormFile file, string subFolder)
+        {
+            var extension = Path.GetExtension(file.FileName);
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
 
-        var filePath = Path.Combine(uploadFolder, uniqueFileName);
-        using var stream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
+            var uploadFolder = Path.Combine(_env.WebRootPath, "uploads", subFolder);
+            Directory.CreateDirectory(uploadFolder);
 
-        return Path.Combine("uploads", "members", subFolder, uniqueFileName).Replace("\\", "/");
-    }
+            var filePath = Path.Combine(uploadFolder, uniqueFileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
 
-    public string GetRandomAvatar()
-    {
-        var avatarFolder = Path.Combine(_env.WebRootPath, "uploads", "members", "avatars");
+            return Path.Combine("uploads", subFolder, uniqueFileName).Replace("\\", "/");
+        }
 
-        if (!Directory.Exists(avatarFolder))
-            return "uploads/members/avatars/default.svg";
+        public string GetRandomAvatar(string subFolder)
+        {
+            var avatarFolder = Path.Combine(_env.WebRootPath, "uploads", subFolder);
 
-        var files = Directory.GetFiles(avatarFolder);
-        if (files.Length == 0)
-            return "uploads/members/avatars/default.svg";
+            if (!Directory.Exists(avatarFolder))
+                return Path.Combine("uploads", subFolder, "default.svg").Replace("\\", "/");
 
-        var random = new Random();
-        var file = files[random.Next(files.Length)];
-        return Path.Combine("uploads", "members", "avatars", Path.GetFileName(file)).Replace("\\", "/");
+            var files = Directory.GetFiles(avatarFolder);
+            if (files.Length == 0)
+                return Path.Combine("uploads", subFolder, "default.svg").Replace("\\", "/");
+
+            var random = new Random();
+            var file = files[random.Next(files.Length)];
+            return Path.Combine("uploads", subFolder, Path.GetFileName(file)).Replace("\\", "/");
+        }
     }
 }

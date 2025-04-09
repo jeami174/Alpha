@@ -1,0 +1,23 @@
+﻿@model Domain.Models.ClientModel
+
+<div class="member-card" data-client-id="@Model.ClientId">
+    <button class="edit-btn"
+            data-fetch-url='@Url.Action("EditClient", "Clients", new { id = Model.ClientId })'
+            data-container="editClientContainer">
+        <img src="~/Images/Icons/More 2.svg" alt="Edit" class="member-card-edit" />
+    </button>
+
+    <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
+
+    <h4>@Model.ClientName</h4>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Location))
+    {
+        <div class="member-card-title">@Model.Location</div>
+    }
+
+    <div class="member-card-email">@Model.ClientEmail</div>
+    <div class="member-card-phone">@Model.Phone</div>
+
+    <button class="btn btn-gray btn-member">Message</button>
+</div>

@@ -56,7 +56,7 @@ public class AuthService : IAuthService
 
         try
         {
-            var randomAvatarPath = _fileStorageService.GetRandomAvatar();
+            var randomAvatarPath = _fileStorageService.GetRandomAvatar("members/avatars");
 
             var member = new MemberEntity
             {

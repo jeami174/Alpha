@@ -1,8 +1,7 @@
-﻿@model AddClientForm
+﻿@model Business.Models.AddClientForm
 
 <div id="addClientModal" class="modal">
     <div class="modal-content">
-        
         <div class="modal-header">
             <h3>Add Client</h3>
             <button type="button" class="btn-close" data-close="true"></button>
@@ -10,12 +9,12 @@
         <div class="scroll-container">
             <div class="inner-padding">
                 <form novalidate method="post" asp-action="AddClient" asp-controller="Clients" enctype="multipart/form-data">
-            
+                    @Html.AntiForgeryToken()
 
                     <div class="image-previewer square">
                         <img src="" class="image-preview" />
-                        <input asp-for="ClientImage" accept="image/*" class="hide"/>
-                        </div>
+                        <input asp-for="ClientImage" accept="image/*" class="hide" />
+                    </div>
 
                     <div class="form-group">
                         <label asp-for="ClientName"></label>

@@ -1,8 +1,7 @@
-﻿@model EditClientForm
+﻿@model Business.Models.EditClientForm
 
 <div id="editClientModal" class="modal">
     <div class="modal-content">
-
         <div class="modal-header">
             <h3>Edit Client</h3>
             <button type="button" class="btn-close" data-close="true"></button>
@@ -10,16 +9,16 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
+                <form novalidate method="post" action="/clients/edit" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="ImageName" type="hidden" />
 
-                <form novalidate method="post" asp-action="EditClient" asp-controller="Clients">
-            
-                    <input asp-for="Id" readonly type="hidden" />
-            
-                    <div class="image-previewer square">
-                        <img src="" class="image-preview" />
-                        <input asp-for="ClientImage" accept="image/*" class="hide" />
+                    <div class="image-previewer square @(string.IsNullOrWhiteSpace(Model.ImageName) ? "" : "selected")">
+                        <img src="~/@Model.ImageName" class="image-preview" />
+                        <input asp-for="ClientImage" type="file" accept="image/*" class="hide" />
                     </div>
-            
+
                     <div class="form-group">
                         <label asp-for="ClientName"></label>
                         <div class="field-group">
@@ -27,6 +26,7 @@
                             <span asp-validation-for="ClientName"></span>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label asp-for="ClientEmail"></label>
                         <div class="field-group">
@@ -34,6 +34,7 @@
                             <span asp-validation-for="ClientEmail"></span>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Location"></label>
                         <div class="field-group">
@@ -41,6 +42,7 @@
                             <span asp-validation-for="Location"></span>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Phone"></label>
                         <div class="field-group">
@@ -49,7 +51,11 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-submit btn-blue">Create</button>
+                    <button type="submit" class="btn btn-submit btn-blue">Save Changes</button>
+                </form>
+                <form novalidate method="post" asp-action="DeleteClient" asp-controller="Clients" onsubmit="return confirm('Are you sure you want to delete this client?');" style="margin-top:1rem;">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-blue btn-delete">Delete</button>
                 </form>
             </div>
         </div>

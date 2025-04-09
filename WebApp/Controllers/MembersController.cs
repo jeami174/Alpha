@@ -12,6 +12,9 @@ namespace WebApp.Controllers
         private readonly IMemberService _memberService;
         private readonly IFileStorageService _fileStorageService;
 
+        private const string UserUploadsFolder = "members/useruploads";
+        private const string AvatarsFolder = "members/avatars";
+
         public MembersController(IMemberService memberService, IFileStorageService fileStorageService)
         {
             _memberService = memberService;
@@ -39,8 +42,8 @@ namespace WebApp.Controllers
             }
 
             string imageName = form.MemberImage is { Length: > 0 }
-                ? await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads")
-                : _fileStorageService.GetRandomAvatar();
+                ? await _fileStorageService.SaveFileAsync(form.MemberImage, UserUploadsFolder)
+                : _fileStorageService.GetRandomAvatar(AvatarsFolder);
 
             var result = await _memberService.AddMemberAsync(form, imageName);
             if (result.Succeeded)
@@ -90,7 +93,7 @@ namespace WebApp.Controllers
 
             if (form.MemberImage is { Length: > 0 })
             {
-                string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, "useruploads");
+                string newImageName = await _fileStorageService.SaveFileAsync(form.MemberImage, UserUploadsFolder);
                 form.ImageName = newImageName;
             }
 

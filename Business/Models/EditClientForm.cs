@@ -7,6 +7,8 @@ public class EditClientForm
 {
     public int Id { get; set; }
 
+    public string? ImageName { get; set; }
+
     [Display(Name = "Client Image", Prompt = "Upload a image")]
     [DataType(DataType.Upload)]
     public IFormFile? ClientImage { get; set; }
