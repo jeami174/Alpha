@@ -11,17 +11,22 @@
 
         <div class="settings-menu-wrapper">
             <img src="/images/icons/Setting.svg" alt="Settings" class="icon settings-toggle" />
-
             <div class="settings-dropdown hidden">
                 <div class="user-info">
                     <img src="@Model.ImagePath" alt="User" class="avatar-small" />
                     <span>@Model.FullName</span>
                 </div>
                 <div class="dark-mode-toggle">
-                    <img src="/images/icons/Setting.svg" class="icon-small" />
-                    <span>Dark Mode</span>
-                    <input type="checkbox" disabled />
+                    <div class="toggle-label">
+                        <img src="/images/icons/Setting.svg" class="icon-small" />
+                        <span>Dark Mode</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" disabled />
+                        <span class="slider"></span>
+                    </label>
                 </div>
+                <hr class="dropdown-separator" />
                 <form method="post" asp-controller="Auth" asp-action="LogOut">
                     <button type="submit" class="logout-btn">
                         <img src="/images/icons/Logout.svg" class="icon-small" />
@@ -30,8 +35,11 @@
                 </form>
             </div>
         </div>
-
-        <img src="@Model.ImagePath" alt="User Avatar" class="avatar" />
+        <div class="topbar-avatar-wrapper">
+            <div class="topbar-separator"></div>
+            <img src="@Model.ImagePath" alt="User Avatar" class="avatar" />
+        </div>
     </div>
+
 </header>
 

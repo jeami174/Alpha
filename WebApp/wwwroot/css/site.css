@@ -166,11 +166,11 @@ section > header {
 
     .portal > .top-menu {
         grid-area: topbar;
-        padding: 1rem 2rem;
+        padding: 1rem 1rem;
         border-bottom: 1px solid var(--border200);
         display: grid;
         grid-template-columns: 1fr auto;
-        gap: 5rem;
+        gap: 2rem;
         align-items: center;
     }
 
@@ -897,6 +897,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
 }
 
 .search-container {
@@ -916,19 +917,38 @@ input[type="checkbox"] {
 .topbar-icons {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1.5rem;
     position: relative;
 }
 
+.topbar-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.topbar-separator {
+    height: 1.75rem;
+    width: 1px;
+    background-color: var(--border200);
+}
+
 .icon {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
 }
 
+.settings-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+}
+
 .avatar {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
 }
 
@@ -938,13 +958,13 @@ input[type="checkbox"] {
 
 .settings-dropdown {
     position: absolute;
-    top: 120%;
+    top: 175%;
     right: 0;
     background: #fff;
     border-radius: 0.875rem;
     box-shadow: 0px 16px 80px 0px rgba(4, 15, 21, 0.15), 0px 40px 20px -30px rgba(4, 15, 21, 0.10);
-    width: 18.75rem;
-    height: 12.625rem;
+    width: 20rem;
+    height: 14rem;
     padding: 1rem;
     z-index: 10;
     display: flex;
@@ -959,29 +979,92 @@ input[type="checkbox"] {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     font-weight: 600;
-    border-radius: 0.875rem;
+    border-radius: 14px;
     background: var(--Grey-100, #F5F7FA);
-    height: 4rem;
+    height: auto;
+    padding: 1rem;
 }
 
 .avatar-small {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    background-color: #fff;
+    padding: 2px;
 }
 
 .icon-small {
     width: 1.25rem;
     height: 1.25rem;
-    margin-right: 0.75rem;
+    margin-right: 0.8rem;
 }
 
 .dark-mode-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+}
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #E3E5E8;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 17px;
+        width: 17px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    }
+
+.toggle-switch input:checked + .slider {
+    background-color: var(--accent);
+}
+
+    .toggle-switch input:checked + .slider:before {
+        transform: translateX(18px);
+    }
+
+.dropdown-separator {
+    border: none;
+    border-top: 1px solid var(--gray200);
+    margin: 0.5rem 0;
 }
 
 .logout-btn {
@@ -993,6 +1076,7 @@ input[type="checkbox"] {
     font-weight: 400;
     display: flex;
     align-items: center;
+    padding-left: 0.5rem;
 }
 
 #projects {
