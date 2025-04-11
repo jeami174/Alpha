@@ -2,7 +2,6 @@
 // 1. Hjälpfunktioner
 // ----------------------------------------
 
-// Funktion för att hämta anti-forgery-token från det dolda formuläret
 function getRequestVerificationToken() {
     const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
     return tokenElement ? tokenElement.value : '';
@@ -111,21 +110,6 @@ function bindTogglePassword() {
             }
         });
     }
-}
-
-const settingsToggle = document.querySelector('.settings-toggle');
-const dropdown = document.querySelector('.settings-dropdown');
-
-if (settingsToggle && dropdown) {
-    settingsToggle.addEventListener('click', () => {
-        dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!settingsToggle.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
 }
 
 // ----------------------------------------
@@ -306,10 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bindCloseButtons();
     bindFormSubmitHandlers();
     bindTogglePassword();
+    setupDropdownToggles();
 
-    // -------------------------------
-    // Logout handler (secure POST)
-    // -------------------------------
     const logoutButton = document.getElementById('logoutButton');
 
     if (logoutButton) {
@@ -339,3 +321,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ----------------------------------------
+// 5. Dropdown Toggle (modulär för flera)
+// ----------------------------------------
+
+function setupDropdownToggles() {
+    const toggles = document.querySelectorAll('.dropdown-toggle');
+
+    toggles.forEach(toggle => {
+        const dropdownId = toggle.getAttribute('data-dropdown');
+        const dropdown = document.getElementById(dropdownId);
+
+        if (dropdown) {
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Om dropdownen är dold: stäng andra och öppna den här
+                if (dropdown.classList.contains('hidden')) {
+                    closeAllDropdowns();
+                    dropdown.classList.remove('hidden');
+                } else {
+                    // Om den redan är öppen: stäng den
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-toggle')) {
+            closeAllDropdowns();
+        }
+    });
+}
+
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.classList.add('hidden');
+    });
+}
+

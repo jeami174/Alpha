@@ -7,11 +7,24 @@
     </div>
 
     <div class="topbar-icons">
-        <img src="/images/icons/Notification.svg" alt="Notifications" class="icon" />
+        <!-- Notifications toggle -->
+        <div class="notification-menu-wrapper">
+        <button class="notification-btn dropdown-toggle" data-dropdown="notificationsDropdown">
+            <img src="/images/icons/Notification.svg" alt="Notifications" />
+            <span class="notification-dot"></span>
+        </button>
 
+        <!-- Notifications dropdown -->
+        <div class="notifications-menu-wrapper hidden dropdown-menu" id="notificationsDropdown">
+            @await Html.PartialAsync("~/Views/Shared/Partials/Components/_NotificationsMenu.cshtml", new List<WebApp.ViewModels.NotificationViewModel>()) <!-- Kom ihåg att göra dynamisk sen -->
+        </div>
+        </div>
+        <!-- Settings toggle -->
         <div class="settings-menu-wrapper">
-            <img src="/images/icons/Setting.svg" alt="Settings" class="icon settings-toggle" />
-            <div class="settings-dropdown hidden">
+            <img src="/images/icons/Setting.svg" alt="Settings" class="icon settings-toggle dropdown-toggle" data-dropdown="settingsDropdown" />
+
+            <!-- Settings dropdown -->
+            <div class="settings-dropdown hidden dropdown-menu" id="settingsDropdown">
                 <div class="user-info">
                     <img src="@Model.ImagePath" alt="User" class="avatar-small" />
                     <span>@Model.FullName</span>
@@ -35,11 +48,23 @@
                 </form>
             </div>
         </div>
+
+        <!-- Avatar -->
         <div class="topbar-avatar-wrapper">
             <div class="topbar-separator"></div>
             <img src="@Model.ImagePath" alt="User Avatar" class="avatar" />
         </div>
     </div>
-
 </header>
+
+
+
+
+
+
+
+
+
+
+
 

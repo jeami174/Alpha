@@ -1,0 +1,26 @@
+﻿@model IEnumerable<WebApp.ViewModels.NotificationViewModel>
+
+<div class="settings-dropdown notifications-dropdown">
+    <div class="notifications-header">
+        <h4>Notifications</h4>
+        @if (Model.Any())
+        {
+            <div class="notification-count">@Model.Count()</div>
+        }
+    </div>
+    <hr class="dropdown-separator" />
+
+    <div class="notification-list">
+        @foreach (var notification in Model)
+        {
+            <div class="notification-item">
+                <img src="@notification.ImagePath" alt="User" class="notification-avatar" />
+                <div class="notification-content">
+                    <div class="notification-text">@notification.Message</div>
+                    <div class="notification-time">@notification.Timestamp.ToString("g")</div>
+                </div>
+                <button class="notification-close">×</button>
+            </div>
+        }
+    </div>
+</div>
