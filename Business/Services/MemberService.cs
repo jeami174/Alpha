@@ -10,27 +10,18 @@ using System.Diagnostics;
 
 namespace Business.Services
 {
-    public class MemberService : IMemberService
+    public class MemberService(
+        IMemberRepository memberRepository,
+        IRoleRepository roleRepository,
+        IAddressService addressService,
+        MemberFactory memberFactory,
+        UserManager<ApplicationUser> userManager) : IMemberService
     {
-        private readonly IMemberRepository _memberRepository;
-        private readonly IRoleRepository _roleRepository;
-        private readonly IAddressService _addressService;
-        private readonly MemberFactory _memberFactory;
-        private readonly UserManager<ApplicationUser> _userManager;
-
-        public MemberService(
-            IMemberRepository memberRepository,
-            IRoleRepository roleRepository,
-            IAddressService addressService,
-            MemberFactory memberFactory,
-            UserManager<ApplicationUser> userManager)
-        {
-            _memberRepository = memberRepository;
-            _roleRepository = roleRepository;
-            _addressService = addressService;
-            _memberFactory = memberFactory;
-            _userManager = userManager;
-        }
+        private readonly IMemberRepository _memberRepository = memberRepository;
+        private readonly IRoleRepository _roleRepository = roleRepository;
+        private readonly IAddressService _addressService = addressService;
+        private readonly MemberFactory _memberFactory = memberFactory;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         public async Task<ServiceResult<IEnumerable<MemberModel>>> GetAllMembersAsync()
         {

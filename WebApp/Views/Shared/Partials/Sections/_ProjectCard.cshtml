@@ -1,0 +1,44 @@
+﻿@model WebApp.ViewModels.ProjectCardViewModel
+@using WebApp.Helpers
+
+<div class="member-card" data-member-id="@Model.Id">
+    <button class="edit-btn"
+            data-fetch-url="@Url.Action("EditProject", "ProjectCrud", new { id = Model.Id })"
+            data-container="editProjectContainer">
+        <img src="~/Images/Icons/More 2.svg" alt="Edit" class="project-card-edit" />
+    </button>
+
+    <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
+
+    <h4>@Model.ProjectName</h4>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ClientName))
+    {
+        <div class="project-card-client">@Model.ClientName</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <div class="project-card-description">@Model.Description</div>
+    }
+
+    <div class="project-card-footer">
+        @if (Model.EndDate.HasValue)
+        {
+            var timeLeft = ProjectHelper.GetTimeLeft(Model.EndDate);
+            var isEndingSoon = ProjectHelper.IsEndingSoon(Model.EndDate);
+            var isCompleted = ProjectHelper.IsCompleted(Model.EndDate);
+
+            <span class="project-card-deadline @(isCompleted ? "ended" : isEndingSoon ? "soon" : "")">
+                @timeLeft
+            </span>
+        }
+
+        <div class="project-card-members">
+            @foreach (var memberImg in Model.MemberImageNames)
+            {
+                <img src="~/@memberImg" alt="Member" class="member-card-avatar" />
+            }
+        </div>
+    </div>
+</div>

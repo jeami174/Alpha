@@ -8,19 +8,13 @@ namespace WebApp.Controllers
 {
     [Authorize(Policy = "Admins")]
     [Route("clients")]
-    public class ClientsController : Controller
+    public class ClientsController(IClientService clientService, IFileStorageService fileStorageService) : Controller
     {
-        private readonly IClientService _clientService;
-        private readonly IFileStorageService _fileStorageService;
+        private readonly IClientService _clientService = clientService;
+        private readonly IFileStorageService _fileStorageService = fileStorageService;
 
         private const string ClientUploadsFolder = "clients/clientuploads";
         private const string ClientAvatarFolder = "Clients/avatars";
-
-        public ClientsController(IClientService clientService, IFileStorageService fileStorageService)
-        {
-            _clientService = clientService;
-            _fileStorageService = fileStorageService;
-        }
 
         [HttpPost("add")]
         [ValidateAntiForgeryToken]

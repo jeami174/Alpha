@@ -23,12 +23,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
 	  <ProjectReference Include="..\Business\Business.csproj" />
+	  <ProjectReference Include="..\Domain\Domain.csproj" />
 	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\Projects\" />
     <Folder Include="wwwroot\uploads\Clients\clientuploads\" />
+    <Folder Include="wwwroot\uploads\projects\projectuploads\" />
   </ItemGroup>
 
 </Project>

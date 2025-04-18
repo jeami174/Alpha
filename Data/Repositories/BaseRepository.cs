@@ -112,10 +112,6 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
                 query = includeExpression(query);
             }
             var entity = await query.FirstOrDefaultAsync(predicate);
-            if (entity != null)
-            {
-                _context.Entry(entity).State = EntityState.Modified;
-            }
             return entity;
         }
         catch (Exception ex)

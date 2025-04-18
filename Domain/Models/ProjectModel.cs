@@ -1,6 +1,6 @@
-﻿using Domain.Models;
+﻿using Business.Models;
 
-namespace Business.Models;
+namespace Domain.Models;
 
 public class ProjectModel
 {
@@ -19,8 +19,6 @@ public class ProjectModel
     public DateTime Created { get; set; }
 
     public decimal? Budget { get; set; }
-
-    public string StatusName { get; set; } = null!;
 
     public ClientModel ClientModel { get; set; } = null!;
 

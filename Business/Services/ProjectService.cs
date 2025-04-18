@@ -8,66 +8,71 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services;
 
-public class ProjectService : IProjectService
+public class ProjectService(
+    IProjectRepository projectRepository,
+    IClientRepository clientRepository,
+    IStatusRepository statusRepository,
+    IMemberRepository memberRepository,
+    ProjectFactory projectFactory) : IProjectService
 {
-    private readonly IProjectRepository _projectRepository;
-    private readonly IClientRepository _clientRepository;
-    private readonly IStatusRepository _statusRepository;
-    private readonly IMemberRepository _memberRepository;
-    private readonly ProjectFactory _projectFactory;
-
-    public ProjectService(
-        IProjectRepository projectRepository,
-        IClientRepository clientRepository,
-        IStatusRepository statusRepository,
-        IMemberRepository memberRepository,
-        ProjectFactory projectFactory)
-    {
-        _projectRepository = projectRepository;
-        _clientRepository = clientRepository;
-        _statusRepository = statusRepository;
-        _memberRepository = memberRepository;
-        _projectFactory = projectFactory;
-    }
+    private readonly IProjectRepository _projectRepository = projectRepository;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IStatusRepository _statusRepository = statusRepository;
+    private readonly IMemberRepository _memberRepository = memberRepository;
+    private readonly ProjectFactory _projectFactory = projectFactory;
 
     // CREATE
-    public async Task<ServiceResult<bool>> CreateAsync(
-    AddProjectForm form,
-    int clientId,
-    int statusId,
-    List<int> memberIds,
-    string? imageName = null)
+    public async Task<ServiceResult<ProjectModel>> CreateAsync(
+        AddProjectForm form,
+        int clientId,
+        int statusId,               // låt den ligga kvar i signaturen
+        List<int> memberIds,
+        string imageName)
     {
-        if (form is null || string.IsNullOrWhiteSpace(form.ProjectName))
-            return ServiceResult<bool>.Failure("Missing required fields.");
+        await _projectRepository.BeginTransactionAsync();
 
-        var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
-        var status = await _statusRepository.GetOneAsync(s => s.Id == statusId);
-        var members = await _memberRepository.GetAllAsync();
-
-        if (client is null || status is null)
-            return ServiceResult<bool>.Failure("Invalid client or status.");
-
-        var selectedMembers = members.Where(m => memberIds.Contains(m.Id)).ToList();
-
-        var project = new ProjectEntity
+        try
         {
-            ProjectName = form.ProjectName,
-            Description = form.Description,
-            StartDate = form.StartDate ?? DateTime.Now,
-            EndDate = form.EndDate,
-            Budget = form.Budget,
-            Created = DateTime.Now,
-            ImageName = imageName,
-            Client = client,
-            Status = status,
-            Members = selectedMembers
-        };
+            // 1) Hämta bara client
+            var client = await _clientRepository
+                .GetOneAsync(c => c.ClientId == clientId);
 
-        await _projectRepository.CreateAsync(project);
-        await _projectRepository.SaveToDatabaseAsync();
+            if (client is null)
+                return ServiceResult<ProjectModel>
+                    .Failure("Client not found", 400);
 
-        return ServiceResult<bool>.Success(true, 201);
+            // 2) plocka ut medlemmar
+            var members = await _memberRepository.GetAllAsync();
+            var selectedMembers = members
+                .Where(m => memberIds.Contains(m.Id))
+                .ToList();
+
+            // 3) skapa projekt utan status‑objekt
+            var project = _projectFactory.Create(
+                form,
+                client,
+                selectedMembers,
+                imageName
+            );
+            project.ImageName = imageName;
+
+            // TODO: hämta status från DB
+            project.StatusId = 1;
+
+            // 4) spara som vanligt
+            await _projectRepository.CreateAsync(project);
+            await _projectRepository.SaveToDatabaseAsync();
+            await _projectRepository.CommitTransactionAsync();
+
+            var model = _projectFactory.Create(project);
+            return ServiceResult<ProjectModel>.Success(model, 201);
+        }
+        catch (Exception ex)
+        {
+            await _projectRepository.RollbackTransactionAsync();
+            return ServiceResult<ProjectModel>
+                .Failure($"Failed to create project: {ex.Message}", 500);
+        }
     }
 
     // READ ALL
@@ -112,37 +117,44 @@ public class ProjectService : IProjectService
     }
 
     // UPDATE
-    public async Task<ServiceResult<bool>> UpdateProjectAsync(string id, AddProjectForm form, int statusId, int clientId, List<int> memberIds)
+    public async Task<ServiceResult<ProjectModel>> UpdateProjectAsync(EditProjectForm form, int clientId, int statusId, List<int> memberIds, string? newImageName)
     {
         var project = await _projectRepository.GetOneWithDetailsAsync(
             q => q.Include(p => p.Members),
-            p => p.Id == id);
+            p => p.Id == form.Id);
 
         if (project == null)
-            return ServiceResult<bool>.Failure("Project not found.", 404);
+            return ServiceResult<ProjectModel>.Failure("Project not found", 404);
 
-        var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
-        var status = await _statusRepository.GetOneAsync(s => s.Id == statusId);
-        var allMembers = await _memberRepository.GetAllAsync();
+        await _projectRepository.BeginTransactionAsync();
 
-        if (client is null || status is null)
-            return ServiceResult<bool>.Failure("Client or status not found.");
+        try
+        {
+            var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
+            var status = await _statusRepository.GetOneAsync(s => s.Id == statusId);
+            var allMembers = await _memberRepository.GetAllAsync();
 
-        var selectedMembers = allMembers.Where(m => memberIds.Contains(m.Id)).ToList();
+            if (client == null || status == null)
+                return ServiceResult<ProjectModel>.Failure("Client or status not found", 400);
 
-        project.ProjectName = form.ProjectName;
-        project.Description = form.Description;
-        project.StartDate = form.StartDate ?? DateTime.Now;
-        project.EndDate = form.EndDate;
-        project.Budget = form.Budget;
-        project.Status = status;
-        project.Client = client;
-        project.Members = selectedMembers;
+            var selectedMembers = allMembers.Where(m => memberIds.Contains(m.Id)).ToList();
 
-        _projectRepository.Update(project);
-        await _projectRepository.SaveToDatabaseAsync();
+            _projectFactory.Update(project, form, client, status, selectedMembers);
 
-        return ServiceResult<bool>.Success(true);
+            project.ImageName = newImageName ?? form.ImageName;
+
+            _projectRepository.Update(project);
+            await _projectRepository.SaveToDatabaseAsync();
+            await _projectRepository.CommitTransactionAsync();
+
+            var model = _projectFactory.Create(project);
+            return ServiceResult<ProjectModel>.Success(model);
+        }
+        catch (Exception ex)
+        {
+            await _projectRepository.RollbackTransactionAsync();
+            return ServiceResult<ProjectModel>.Failure($"Failed to update project: {ex.Message}", 500);
+        }
     }
 
     // DELETE

@@ -1,5 +1,4 @@
-﻿using Domain.Models;
-
+﻿
 namespace Domain.Models;
 
 public class MemberModel

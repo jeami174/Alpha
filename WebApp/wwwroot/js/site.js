@@ -361,3 +361,14 @@ function closeAllDropdowns() {
     });
 }
 
+
+
+    function filterMembers() {
+        const searchValue = document.getElementById("memberSearchInput").value.toLowerCase();
+    const items = document.querySelectorAll("#memberSearchList .member-search-item");
+
+        items.forEach(item => {
+            const name = item.getAttribute("data-name");
+    item.style.display = name.includes(searchValue) ? "flex" : "none";
+        });
+    }

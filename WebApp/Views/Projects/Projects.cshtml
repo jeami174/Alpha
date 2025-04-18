@@ -1,9 +1,17 @@
-﻿﻿@{
+﻿@using WebApp.ViewModels
+@model WebApp.ViewModels.ProjectOverviewViewModel
+@{
     Layout = "_PortalLayout";
     ViewData["Title"] = "Projects";
 }
 
-<partial name="Partials/Sections/_AddProjectForm" />
+<partial name="Partials/Sections/_AddProjectForm"
+         model="new AddProjectFormViewModel {
+             FormData = new AddProjectFormData { Form = Model.AddProjectForm },
+             Clients = Model.Clients,
+             Members = Model.Members,
+             //Statuses = Model.Statuses
+         }" />
 
 <section id="projects">
     <header>
@@ -11,8 +19,11 @@
         <button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-blue btn-add">Add Project</button>
     </header>
 
-    <div class="surface">
+    @* <div class="surface"> *@
+    <div class="member-card-grid">
+        @foreach (var project in Model.Projects)
+        {
+            <partial name="~/Views/Shared/Partials/Sections/_ProjectCard.cshtml" model="project" />
+        }
     </div>
-
-
 </section>
