@@ -80,38 +80,61 @@ public class ProjectCrudController : Controller
             return NotFound();
 
         var project = projectResult.Result;
-        var editForm = new EditProjectForm
+
+        // Hämta listor för selects
+        var clientsResult = await _clientService.GetAllAsync();
+        var statusesResult = await _statusService.GetAllAsync();
+        var membersResult = await _memberService.GetAllMembersAsync();
+
+        var vm = new EditProjectFormViewModel
         {
-            Id = project.Id,
-            ProjectName = project.ProjectName,
-            Description = project.Description,
-            StartDate = project.StartDate,
-            EndDate = project.EndDate,
-            Budget = project.Budget,
-            ImageName = project.ImageName
+            FormData = new EditProjectFormData
+            {
+                Form = new EditProjectForm
+                {
+                    Id = project.Id,
+                    ImageName = project.ImageName,
+                    ProjectName = project.ProjectName,
+                    Description = project.Description ?? string.Empty,
+                    StartDate = project.StartDate,
+                    EndDate = project.EndDate,
+                    Budget = project.Budget
+                },
+                SelectedClientId = project.ClientModel.ClientId,
+                SelectedStatusId = project.StatusModel.Id,
+                SelectedMemberIds = project.MemberModels.Select(m => m.Id).ToList()
+            },
+            Clients = clientsResult.Result ?? Enumerable.Empty<ClientModel>(),
+            Statuses = statusesResult.Result ?? Enumerable.Empty<StatusModel>(),
+            Members = membersResult.Result ?? Enumerable.Empty<MemberModel>()
         };
 
-        return PartialView("~/Views/Shared/Partials/Project/_EditProjectForm.cshtml", editForm);
+        return PartialView(
+            "~/Views/Shared/Partials/Sections/_EditProjectForm.cshtml",
+            vm
+        );
     }
 
+    // POST: /projectcrud/edit
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditProject([FromForm] EditProjectFormData data)
+    public async Task<IActionResult> EditProject(EditProjectFormViewModel vm)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState
-                .Where(x => x.Value?.Errors?.Count > 0)
+                .Where(x => x.Value?.Errors.Count > 0)
                 .ToDictionary(
                     kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors?.Select(e => e.ErrorMessage).ToArray()
-                    ?? Array.Empty<string>());
-
+                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+                );
             return BadRequest(new { success = false, errors });
         }
 
+        var data = vm.FormData;
         var newImageName = data.Form.ProjectImage is { Length: > 0 }
-            ? await _fileStorageService.SaveFileAsync(data.Form.ProjectImage, ProjectUploadsFolder)
+            ? await _fileStorageService.SaveFileAsync(
+                  data.Form.ProjectImage, ProjectUploadsFolder)
             : data.Form.ImageName;
 
         var result = await _projectService.UpdateProjectAsync(

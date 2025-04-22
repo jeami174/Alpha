@@ -5,14 +5,6 @@
     ViewData["Title"] = "Projects";
 }
 
-<partial name="Partials/Sections/_AddProjectForm"
-         model="new AddProjectFormViewModel {
-             FormData = new AddProjectFormData { Form = Model.AddProjectForm },
-             Clients = Model.Clients,
-             Members = Model.Members,
-             //Statuses = Model.Statuses
-         }" />
-
 <section id="projects">
     <header>
         <h2>@ViewData["Title"]</h2>
@@ -27,3 +19,13 @@
         }
     </div>
 </section>
+
+<partial name="Partials/Sections/_AddProjectForm"
+         model="new AddProjectFormViewModel {
+             FormData = new AddProjectFormData { Form = Model.AddProjectForm },
+             Clients = Model.Clients,
+             Members = Model.Members,
+             //Statuses = Model.Statuses
+         }" />
+
+<div id="editProjectContainer"></div>

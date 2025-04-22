@@ -1,0 +1,138 @@
+﻿@model WebApp.ViewModels.EditProjectFormViewModel
+
+<div id="editProjectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Project</h3>
+            <button type="button" class="btn-close" data-close="true"></button>
+        </div>
+
+        <div class="scroll-container">
+            <div class="inner-padding">
+                <form novalidate method="post" action="/projectcrud/edit" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="FormData.Form.Id" type="hidden" />
+
+                    <div class="image-previewer square @(string.IsNullOrWhiteSpace(Model.FormData.Form.ImageName) ? "" : "selected")">
+                        <img src="~/@Model.FormData.Form.ImageName" class="image-preview" />
+                        <input asp-for="FormData.Form.ProjectImage"
+                               type="file"
+                               accept="image/*"
+                               class="hide" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FormData.Form.ProjectName"></label>
+                        <div class="field-group">
+                            <input asp-for="FormData.Form.ProjectName" />
+                            <span asp-validation-for="FormData.Form.ProjectName"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FormData.SelectedClientId">Client</label>
+                        <div class="field-group">
+                            <select asp-for="FormData.SelectedClientId"
+                                    asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))">
+                                <option value="">-- Select Client --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FormData.SelectedStatusId">Status</label>
+                        <div class="field-group">
+                            <select asp-for="FormData.SelectedStatusId"
+                                    asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
+                                <option value="">-- Select Status --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FormData.Form.Description"></label>
+                        <div class="field-group">
+                            <textarea asp-for="FormData.Form.Description"></textarea>
+                            <span asp-validation-for="FormData.Form.Description"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group date-group">
+                        <div>
+                            <label asp-for="FormData.Form.StartDate"></label>
+                            <div class="field-group">
+                                <input asp-for="FormData.Form.StartDate" type="date" />
+                                <span asp-validation-for="FormData.Form.StartDate"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <label asp-for="FormData.Form.EndDate"></label>
+                            <div class="field-group">
+                                <input asp-for="FormData.Form.EndDate" type="date" />
+                                <span asp-validation-for="FormData.Form.EndDate"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Members</label>
+                        <input id="memberSearchInput"
+                               type="text"
+                               placeholder="Search members..."
+                               onkeyup="filterMembers()" />
+
+                        <div id="memberSearchList" class="member-search-list">
+                            @foreach (var member in Model.Members)
+                            {
+                                var isChecked = Model.FormData.SelectedMemberIds.Contains(member.Id);
+                                <div class="member-search-item" data-name="@member.FirstName.ToLower()" style="display:flex;">
+                                    <input type="checkbox"
+                                           name="FormData.SelectedMemberIds"
+                                           value="@member.Id"
+                                           id="member-@member.Id"
+                                    @(isChecked ? "checked" : "") />
+                                    <label for="member-@member.Id">@member.FirstName</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FormData.Form.Budget"></label>
+                        <div class="field-group icon-input">
+                            <span class="icon-dollar"><i class="fas fa-dollar-sign"></i></span>
+                            <input asp-for="FormData.Form.Budget" />
+                            <span asp-validation-for="FormData.Form.Budget"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit btn-blue">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .member-search-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 5px;
+    }
+
+    .member-search-item {
+        margin-bottom: 4px;
+    }
+</style>
+
+<script>
+    function filterMembers() {
+      const term = document.getElementById("memberSearchInput").value.toLowerCase();
+      document.querySelectorAll("#memberSearchList .member-search-item")
+        .forEach(item => {
+          const name = item.getAttribute("data-name");
+          item.style.display = name.includes(term) ? "flex" : "none";
+        });
+    }
+</script>

@@ -1,21 +1,23 @@
 ﻿@model WebApp.ViewModels.ProjectCardViewModel
 @using WebApp.Helpers
 
-<div class="member-card" data-member-id="@Model.Id">
+<div class="project-card" data-member-id="@Model.Id">
     <button class="edit-btn"
             data-fetch-url="@Url.Action("EditProject", "ProjectCrud", new { id = Model.Id })"
             data-container="editProjectContainer">
         <img src="~/Images/Icons/More 2.svg" alt="Edit" class="project-card-edit" />
     </button>
 
-    <img src="~/@Model.ImageName" alt="Avatar" class="member-card-avatar" />
-
-    <h4>@Model.ProjectName</h4>
-
-    @if (!string.IsNullOrWhiteSpace(Model.ClientName))
-    {
-        <div class="project-card-client">@Model.ClientName</div>
-    }
+    <div class="project-card-header">
+        <img src="~/@Model.ImageName" alt="Avatar" class="project-card-avatar" />
+        <div class="project-card-header-text">
+            <h4>@Model.ProjectName</h4>       
+            @if (!string.IsNullOrWhiteSpace(Model.ClientName))
+            {
+                <div class="project-card-client">@Model.ClientName</div>
+            }
+        </div>
+    </div>
 
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {

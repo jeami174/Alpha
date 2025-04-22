@@ -1657,6 +1657,49 @@ input[type="checkbox"] {
     margin-bottom: 1rem;
 }
 
+/* PROJECTS */
+
+.project-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    align-items: center;
+    background-color: var(--surface);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    max-width: 21.87rem;
+    max-height: 17.25rem;
+}
+
+.project-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.project-card-avatar {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+}
+
+.project-card-header-text h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: var(--font-semibold);
+    color: var(--heading-color);
+}
+
+.project-card-client {
+    font-size: 15px;
+    color: var(--body-light);
+    font-weight: var(--font-regular);
+    margin-top: 0.25rem;
+}
+
 
 /* DENIED PAGE */
 .denied-box {
