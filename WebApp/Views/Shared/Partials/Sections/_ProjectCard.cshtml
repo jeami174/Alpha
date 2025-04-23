@@ -12,18 +12,27 @@
                        : "normal";
 
     string? badgeText = null;
+    string? iconPath = "Images/Icons/Time.svg";
 
     if (isNotStarted)
     {
         badgeText = "Not started";
+        iconPath = "Images/Icons/Time.svg";
     }
     else if (isCompleted)
     {
         badgeText = "Ended";
+        iconPath = "Images/Icons/Timered.svg";
+    }
+    else if (isEndingSoon)
+    {
+        badgeText = ProjectHelper.GetTimeLeft(Model.EndDate!.Value);
+        iconPath = "Images/Icons/Timered.svg";
     }
     else if (Model.EndDate.HasValue)
     {
         badgeText = ProjectHelper.GetTimeLeft(Model.EndDate.Value);
+        iconPath = "Images/Icons/Time.svg";
     }
 
     bool showBadge = badgeText != null;
@@ -56,7 +65,7 @@
     {
         <div class="project-card-deadline-and-members">
             <span class="project-card-deadline @badgeClass">
-                <img src="~/Images/Icons/Time.svg" alt="Clock" class="clock-icon" />
+                <img src="~/@iconPath" alt="Clock" class="clock-icon" />
                 @badgeText
             </span>
 
