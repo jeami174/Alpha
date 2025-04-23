@@ -23,8 +23,9 @@ public class EditProjectForm
     [Required(ErrorMessage = "Required")]
     public string Description { get; set; } = null!;
 
-    [Display(Name = "Start Date", Prompt = "")]
-    public DateTime? StartDate { get; set; }
+    [Display(Name = "Start Date", Prompt = "Select start date")]
+    [Required(ErrorMessage = "Required")]
+    public DateTime StartDate { get; set; }
 
     [Display(Name = "End Date", Prompt = "")]
     public DateTime? EndDate { get; set; }

@@ -54,7 +54,7 @@ public class ProjectFactory
         {
             ProjectName = form.ProjectName,
             Description = form.Description,
-            StartDate = form.StartDate ?? DateTime.Now,
+            StartDate = form.StartDate,
             EndDate = form.EndDate,
             Budget = form.Budget,
             Created = DateTime.Now,
@@ -73,7 +73,7 @@ public class ProjectFactory
         {
             ProjectName = form.ProjectName,
             Description = form.Description,
-            StartDate = form.StartDate ?? DateTime.Now,
+            StartDate = form.StartDate,
             EndDate = form.EndDate,
             Budget = form.Budget,
             Created = DateTime.Now,
@@ -88,7 +88,7 @@ public class ProjectFactory
     {
         entity.ProjectName = form.ProjectName;
         entity.Description = form.Description;
-        entity.StartDate = form.StartDate ?? DateTime.Now;
+        entity.StartDate = form.StartDate;
         entity.EndDate = form.EndDate;
         entity.Budget = form.Budget;
         entity.Client = client;

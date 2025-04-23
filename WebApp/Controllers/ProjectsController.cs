@@ -46,6 +46,7 @@ public class ProjectsController : Controller
             Description = p.Description,
             ClientName = p.ClientModel.ClientName,
             ImageName = p.ImageName ?? "uploads/projects/avatars/default.svg",
+            StartDate = p.StartDate,
             EndDate = p.EndDate,
             MemberImageNames = p.MemberModels.Select(m => m.ImageName ?? "uploads/members/default.svg").ToList()
         }).ToList();

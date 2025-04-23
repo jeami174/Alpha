@@ -20,7 +20,8 @@ public class AddProjectForm
     public string Description { get; set; } = null!;
 
     [Display(Name = "Start Date", Prompt = "Select start date")]
-    public DateTime? StartDate { get; set; }
+    [Required(ErrorMessage = "Required")]
+    public DateTime StartDate { get; set; } = DateTime.Today;
 
     [Display(Name = "End Date", Prompt = "Select end date")]
     public DateTime? EndDate { get; set; }

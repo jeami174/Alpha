@@ -1686,8 +1686,11 @@ input[type="checkbox"] {
     flex-shrink: 0;
 }
 
+.project-card-header-text {
+    padding-right: 1rem;
+}
+
 .project-card-header-text h4 {
-    margin: 0;
     font-size: 18px;
     font-weight: var(--font-semibold);
     color: var(--heading-color);
@@ -1700,6 +1703,74 @@ input[type="checkbox"] {
     margin-top: 0.25rem;
 }
 
+.project-card-description {
+    font-size: 15px;
+    color: var(--body-dark);
+}
+
+.project-card-deadline-and-members {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.project-card-deadline {
+    font-size: 14px;
+    color: var(--heading);
+    background-color: var(--gray200);
+    padding: 7px 10px 7px 7px;
+    border-radius: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.clock-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.project-card-members {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+    .project-card-members img {
+        display: block;
+        margin: 0;
+    }
+
+.project-card-memberimg {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.project-card-deadline.soon {
+    background-color: rgba(255, 102, 64, 0.10); 
+    color: var(--red-dark);
+}
+
+.project-card-deadline.ended {
+    background-color: rgba(255, 102, 64, 0.10);
+    color: var(--red-dark);
+}
+
+.project-card-deadline.not-started {
+    background-color: var(--gray200);
+    color: var(--heading);
+}
+
+.project-card-deadline.normal {
+    background-color: var(--gray200);
+    color: var(--heading);
+}
 
 /* DENIED PAGE */
 .denied-box {
