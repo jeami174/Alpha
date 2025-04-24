@@ -41,20 +41,50 @@
 <div class="project-card" data-member-id="@Model.Id">
 
     <div class="settings-menu-wrapper">
-
         <button class="edit-btn dropdown-toggle"
                 data-dropdown="projectEditDropdown-@Model.Id">
-            <img src="~/Images/Icons/More 2.svg" alt="Actions" class="project-card-edit" />
+            <img src="~/Images/Icons/More 2.svg"
+                 alt="Actions"
+                 class="project-card-edit" />
         </button>
 
-        <div class="settings-dropdown hidden dropdown-menu"
+        <div class="settings-dropdown project-dropdown hidden dropdown-menu"
              id="projectEditDropdown-@Model.Id">
+
+            <!-- Edit -->
             <button type="button"
-                    class="logout-btn edit-menu-item"
+                    class="edit-menu-item"
                     data-fetch-url='@Url.Action("EditProject", "ProjectCrud", new { id = Model.Id })'
                     data-container="editProjectContainer">
-                <img src="~/images/icons/Edit.svg" class="icon-small" alt="Edit" />
-                Edit
+                <img src="~/images/icons/Edit.svg"
+                     class="icon-small"
+                     alt="Edit" />
+                <span>Edit</span>
+            </button>
+
+            <!-- Add Member -->
+            <button type="button"
+                    class="edit-menu-item"
+                    data-action="add-member"
+                    data-id="@Model.Id">
+                <img src="~/images/icons/UserAdd.svg"
+                     class="icon-small"
+                     alt="Add Member" />
+                <span>Add Member</span>
+            </button>
+
+            <!-- Separator -->
+            <hr class="dropdown-separator" />
+
+            <!-- Delete Project -->
+            <button type="button"
+                    class="edit-menu-item trash-menu-item"
+                    data-action="delete-project"
+                    data-id="@Model.Id">
+                <img src="~/images/icons/TrashRed.svg"
+                     class="icon-small"
+                     alt="Delete Project" />
+                <span>Delete Project</span>
             </button>
         </div>
     </div>

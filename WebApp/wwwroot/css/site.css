@@ -1782,21 +1782,57 @@ input[type="checkbox"] {
         position: static;
     }
 
+.project-dropdown {
+    width: 14rem;
+    height: 11.75rem;
+    top: 110%;
+}
+
 .settings-dropdown .edit-menu-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 1rem 1rem;
     background: none;
     border: none;
     width: 100%;
     text-align: left;
     cursor: pointer;
+    font-size: 15px;
+    color: var(--Body-Dark);
+    gap: 0.5rem;
 }
 
-    .settings-dropdown .edit-menu-item .icon-small {
-        margin-right: 0.5rem;
-    }
+.project-dropdown .edit-menu-item:hover {
+    background-color: var(--gray100);
+    border-radius: 14px;
+}
 
+.settings-dropdown .edit-menu-item .icon-small {
+    margin-right: 0.25rem;
+}
+
+.dropdown-separator {
+    margin: 0;
+}
+
+.settings-dropdown .trash-menu-item {
+    color: var(--red);
+}
+
+.project-dropdown .trash-menu-item:hover {
+    background-color: var(--gray100);
+    border-radius: 14px;
+}
+
+.settings-dropdown.project-dropdown {
+    gap: 0.1rem;
+    padding: 0.5rem;
+}
+
+/* Sätt lite luft ovanför och under separator-linjen */
+.project-dropdown .dropdown-separator {
+    margin: 0.25rem 0;
+}
 
 /* DENIED PAGE */
 .denied-box {
