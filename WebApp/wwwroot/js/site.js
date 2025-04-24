@@ -277,7 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('[data-fetch-url]').forEach(element => {
-        element.addEventListener('click', () => {
+        element.addEventListener('click', (e) => {
+            closeAllDropdowns();
+
             const url = element.getAttribute('data-fetch-url');
             const container = element.getAttribute('data-container');
             if (url && container) {
