@@ -79,8 +79,7 @@
             <!-- Delete Project -->
             <button type="button"
                     class="edit-menu-item trash-menu-item"
-                    data-action="delete-project"
-                    data-id="@Model.Id">
+                    data-delete-url='@Url.Action("DeleteProject", "ProjectCrud", new { id = Model.Id })'>
                 <img src="~/images/icons/TrashRed.svg"
                      class="icon-small"
                      alt="Delete Project" />

@@ -338,17 +338,46 @@ function setupDropdownToggles() {
         if (dropdown) {
             toggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // Om dropdownen är dold: stäng andra och öppna den här
                 if (dropdown.classList.contains('hidden')) {
                     closeAllDropdowns();
                     dropdown.classList.remove('hidden');
                 } else {
-                    // Om den redan är öppen: stäng den
                     dropdown.classList.add('hidden');
                 }
             });
         }
     });
+
+
+    document.querySelectorAll('[data-delete-url]').forEach(btn => {
+        btn.addEventListener('click', async function (e) {
+            e.stopPropagation();
+            const url = this.getAttribute('data-delete-url');
+
+            if (!confirm('Are you sure you want to delete this project?')) return;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    },
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Could not delete project.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An unexpected error occurred.');
+            }
+        });
+    });
+
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-toggle')) {
@@ -365,12 +394,12 @@ function closeAllDropdowns() {
 
 
 
-    function filterMembers() {
-        const searchValue = document.getElementById("memberSearchInput").value.toLowerCase();
+function filterMembers() {
+    const searchValue = document.getElementById("memberSearchInput").value.toLowerCase();
     const items = document.querySelectorAll("#memberSearchList .member-search-item");
 
-        items.forEach(item => {
-            const name = item.getAttribute("data-name");
-    item.style.display = name.includes(searchValue) ? "flex" : "none";
-        });
-    }
+    items.forEach(item => {
+        const name = item.getAttribute("data-name");
+        item.style.display = name.includes(searchValue) ? "flex" : "none";
+    });
+}

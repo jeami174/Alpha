@@ -33,5 +33,5 @@ public class EditProjectForm
     [Display(Name = "Budget", Prompt = "")]
     public decimal? Budget { get; set; }
 
-    
+
 }
