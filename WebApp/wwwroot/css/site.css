@@ -1915,7 +1915,7 @@ input[type="checkbox"] {
 }
 
 
-/* ---- TAGGAR ---- */
+/* ---- TAGGAR ---- 
 .member-picker .tag {
     display: inline-flex;
     align-items: center;
@@ -1946,7 +1946,7 @@ input[type="checkbox"] {
     gap: 0.5rem;
 }
 
-/* ---- SÖKFÄLT + KNAPP ---- */
+/* ---- SÖKFÄLT + KNAPP ---- 
 .search-wrapper {
     display: inline-flex;
     align-items: center;
@@ -1967,7 +1967,7 @@ input[type="checkbox"] {
     color: var(--body-dark);
 }
 
-/* ---- DROPDOWN ---- */
+/* ---- DROPDOWN ---- 
 .members-list {
     position: absolute;
     top: calc(100% + 0.5rem);
@@ -2004,4 +2004,89 @@ input[type="checkbox"] {
 
     .members-list .no-results.hidden {
         display: none;
+    }
+*/
+
+.input-with-icon {
+    position: relative;
+}
+
+    .input-with-icon input {
+        padding-right: 2.5rem; /* utrymme för ikonen */
+    }
+
+.icon-inside-input {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: var(--body-light);
+    cursor: pointer;
+}
+
+.search-results {
+    background-color: var(--surface);
+    border: 1px solid var(--Border-100);
+    border-top: none;
+    border-radius: 0 0 13px 13px;
+    padding: 1rem;
+    width: 100%;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 20;
+    display: none;
+}
+
+.search-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+    .search-item:hover {
+        background: var(--gray400);
+        border-radius: 13px;
+    }
+
+    .search-item.active {
+        background-color: var(--gray300);
+    }
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--accent-dimmed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .8em;
+    font-weight: var(--font-bold);
+    color: var(--white);
+}
+
+.user-tag, .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    background-color: var(--border200);
+    font-size: .8em;
+    padding: .3rem .5rem;
+    border-radius: .8rem;
+    color: var(--body-dark);
+}
+
+span.btn-remove {
+    cursor: pointer;
+}
+
+    span.btn-remove:hover {
+        color: var(--accent-dark);
     }

@@ -1,4 +1,19 @@
 ﻿@model WebApp.ViewModels.AddProjectFormViewModel
+@using System.Text.Json
+
+@{
+    // Förbered pre-selected tags i JS-vänligt format
+    var preselectedTags = Model.Members
+        .Where(m => Model.FormData.SelectedMemberIds.Contains(m.Id))
+        .Select(m => new
+        {
+            id = m.Id,
+            tagName = $"{m.FirstName} {m.LastName}",
+            imageUrl = m.ImageName
+        });
+
+    var preselectedJson = JsonSerializer.Serialize(preselectedTags);
+}
 
 <div id="addProjectModal" class="modal">
     <div class="modal-content">
@@ -11,6 +26,9 @@
             <div class="inner-padding">
                 <form novalidate method="post" asp-action="AddProject" asp-controller="ProjectCrud" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
+
+                    <!-- Hidden field for member IDs -->
+                    <input type="hidden" asp-for="FormData.SelectedMemberIds" id="FormData_SelectedMemberIds" />
 
                     <div class="image-previewer square">
                         <img src="" class="image-preview" />
@@ -63,17 +81,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Members</label>
-                        <input id="memberSearchInput" type="text" placeholder="Search members..." onkeyup="filterMembers()" />
-
-                        <div id="memberSearchList" class="member-search-list">
-                            @foreach (var member in Model.Members)
-                            {
-                                <div class="member-search-item" data-name="@member.FirstName.ToLower()" style="display: flex;">
-                                    <input type="checkbox" name="FormData.SelectedMemberIds" value="@member.Id" id="member-@member.Id" />
-                                    <label for="member-@member.Id">@member.FirstName</label>
-                                </div>
-                            }
+                        <label asp-for="FormData.SelectedMemberIds" class="form-label">Members</label>
+                        <div id="add-project-tags" class="form-tag-select form-input">
+                            <input id="add-project-tag-search" type="text" class="form-tag-input" placeholder="Add tag(s)..." />
+                            <div id="add-project-tag-search-results" class="search-results"></div>
                         </div>
                     </div>
 
@@ -95,27 +106,22 @@
     </div>
 </div>
 
-<style>
-    .member-search-list {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 5px;
-    }
-
-    .member-search-item {
-        margin-bottom: 4px;
-    }
-</style>
-
 <script>
-    function filterMembers() {
-        const searchValue = document.getElementById("memberSearchInput").value.toLowerCase();
-        const items = document.querySelectorAll("#memberSearchList .member-search-item");
+    const preSelectedTags = @Html.Raw(preselectedJson);
 
-        items.forEach(item => {
-            const name = item.getAttribute("data-name");
-            item.style.display = name.includes(searchValue) ? "flex" : "none";
-        });
-    }
+    const searchTagsUrl = '@Url.Action("SearchTags", "Tags")';
+
+    initTagSelector({
+        containerId: 'add-project-tags',
+        inputId: 'add-project-tag-search',
+        selectedInputIds: 'FormData_SelectedMemberIds',
+        resultsId: 'add-project-tag-search-results',
+        searchUrl: (query) => `${searchTagsUrl}?term=${encodeURIComponent(query)}`,
+        displayProperty: 'tagName',
+        imageProperty: 'imageUrl',
+        tagClass: 'user-tag',
+        avatarFolder: '',
+        emptyMessage: 'No tags found.',
+        preselected: preSelectedTags
+    });
 </script>

@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Business.Models;
 using Domain.Models;
 
 namespace WebApp.ViewModels;
@@ -10,4 +11,5 @@ public class AddProjectFormViewModel
     public IEnumerable<MemberModel> Members { get; set; } = [];
 
     //public IEnumerable<StatusModel> Statuses { get; set; } = [];
+
 }

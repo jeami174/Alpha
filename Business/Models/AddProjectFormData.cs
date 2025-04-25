@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Business.Models;
 
 public class AddProjectFormData
 {
@@ -9,4 +10,13 @@ public class AddProjectFormData
     public int SelectedStatusId { get; set; }
 
     public List<int> SelectedMemberIds { get; set; } = new();
+
+    [NotMapped] // if you are using EF
+    public string SelectedMemberIdsRaw
+    {
+        get => string.Join(",", SelectedMemberIds);
+        set => SelectedMemberIds = string.IsNullOrWhiteSpace(value)
+            ? new List<int>()
+            : value.Split(',').Select(int.Parse).ToList();
+    }
 }

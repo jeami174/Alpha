@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Data.TempModels;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,11 +43,10 @@ namespace Business.Services
             return ServiceResult<MemberModel>.Success(model);
         }
 
-        public async Task<ServiceResult<IEnumerable<MemberModel>>> SearchMembersAsync(string searchTerm)
+        public async Task<List<MemberModel>> SearchMembersAsync(string searchTerm)
         {
             var results = await _memberRepository.SearchMembersAsync(searchTerm);
-            var models = results.Select(m => _memberFactory.Create(m));
-            return ServiceResult<IEnumerable<MemberModel>>.Success(models);
+            return results.Select(m => _memberFactory.Create(m)).ToList();
         }
 
         public async Task<ServiceResult<MemberModel>> AddMemberAsync(AddMemberForm form, string imageName)
