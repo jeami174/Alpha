@@ -81,8 +81,9 @@
 
                     <div class="form-group">
                         <label asp-for="FormData.SelectedMemberIds" class="form-label">Members</label>
-                        <div id="add-project-tags" class="form-tag-select form-input">
-                            <input id="add-project-tag-search" type="text" class="form-tag-input" placeholder="Add tag(s)..." />
+                        <div id="add-project-tags" class="form-tag-select icon-input">
+                            <input id="add-project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
                             <div id="add-project-tag-search-results" class="search-results"></div>
                         </div>
                     </div>
@@ -120,7 +121,7 @@
         imageProperty: 'imageUrl',
         tagClass: 'user-tag',
         avatarFolder: '',
-        emptyMessage: 'No tags found.',
+        emptyMessage: 'No members found.',
         preselected: preSelectedTags
     });
 </script>

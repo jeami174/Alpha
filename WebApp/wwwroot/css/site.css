@@ -2006,6 +2006,33 @@ input[type="checkbox"] {
         display: none;
     }
 */
+.form-tag-select {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 48px;
+    padding: 6px 12px;
+    border: 1px solid var(--border100);
+    border-radius: 14px;
+    background-color: #fff;
+    gap: 0.5rem;
+    position: relative;
+}
+
+    .form-tag-select:focus-within {
+        border-color: var(--border300);
+    }
+
+.user-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: var(--accent-dimmed);
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
 
 .input-with-icon {
     position: relative;
@@ -2014,6 +2041,23 @@ input[type="checkbox"] {
     .input-with-icon input {
         padding-right: 2.5rem;
     }
+
+
+.form-tag-input {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background-color: var(--surface);
+    width: 100%;
+}
+
+.form-tag-input:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background-color: var(--surface);
+    width: 100%;
+}
 
 .icon-inside-input {
     position: absolute;
@@ -2026,13 +2070,14 @@ input[type="checkbox"] {
 
 .search-results {
     background-color: var(--surface);
-    border: 1px solid var(--Border-100);
+    border: 1px solid var(--Border-300);
     border-top: none;
-    border-radius: 0 0 13px 13px;
+    border-radius: 0 0 .8rem .8rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     padding: 1rem;
     width: 100%;
     position: absolute;
-    top: calc(100% + 0.5rem);
+    top: 100%;
     left: 0;
     right: 0;
     max-height: 200px;
@@ -2052,11 +2097,12 @@ input[type="checkbox"] {
 
     .search-item:hover {
         background: var(--gray400);
-        border-radius: 13px;
+        border-radius: ,8rem;
     }
 
     .search-item.active {
-        background-color: var(--gray300);
+        background-color: var(--gray100);
+        border-radius: ,8rem;
     }
 
 .user-avatar {
@@ -2090,3 +2136,17 @@ span.btn-remove {
     span.btn-remove:hover {
         color: var(--accent-dark);
     }
+
+
+.icon-input {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 25px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--heading);
+}
