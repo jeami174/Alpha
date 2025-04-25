@@ -29,11 +29,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .HasForeignKey(m => m.AddressId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        modelBuilder.Entity<MemberEntity>()
-            .HasOne(m => m.Project)
-            .WithMany(p => p.Members)
-            .HasForeignKey(m => m.ProjectId)
-            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<ProjectEntity>()
+            .HasMany(p => p.Members)
+            .WithMany(m => m.Projects)
+            .UsingEntity(j => j.ToTable("ProjectMembers"));
 
         modelBuilder.Entity<ProjectEntity>()
             .HasOne(p => p.Client)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 using Business.Models;
 
 public class AddProjectFormData
@@ -11,7 +12,7 @@ public class AddProjectFormData
 
     public List<int> SelectedMemberIds { get; set; } = new();
 
-    [NotMapped] // if you are using EF
+    [NotMapped]
     public string SelectedMemberIdsRaw
     {
         get => string.Join(",", SelectedMemberIds);

@@ -66,8 +66,7 @@ public class AuthService : IAuthService
                 UserId = user.Id,
                 ImageName = randomAvatarPath,
                 RoleId = null,
-                AddressId = null,
-                ProjectId = null
+                AddressId = null
             };
 
             await _memberRepository.CreateAsync(member);

@@ -1,6 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.TempModels;
 
 namespace Data.Entities;
 
@@ -30,8 +31,6 @@ public class MemberEntity
 
     public int? AddressId { get; set; }
 
-    public string? ProjectId { get; set; }
-
     public string? UserId { get; set; }
 
 
@@ -41,11 +40,10 @@ public class MemberEntity
     [ForeignKey(nameof(AddressId))]
     public AddressEntity? Address { get; set; }
 
-    [ForeignKey(nameof(ProjectId))]
-    public ProjectEntity? Project { get; set; }
-
     [ForeignKey(nameof(UserId))]
     public ApplicationUser? User { get; set; }
+
+    public ICollection<ProjectEntity> Projects { get; set; } = new List<ProjectEntity>();
 
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";

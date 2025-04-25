@@ -2,7 +2,6 @@
 @using System.Text.Json
 
 @{
-    // Förbered pre-selected tags i JS-vänligt format
     var preselectedTags = Model.Members
         .Where(m => Model.FormData.SelectedMemberIds.Contains(m.Id))
         .Select(m => new
@@ -27,8 +26,8 @@
                 <form novalidate method="post" asp-action="AddProject" asp-controller="ProjectCrud" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
 
-                    <!-- Hidden field for member IDs -->
-                    <input type="hidden" asp-for="FormData.SelectedMemberIds" id="FormData_SelectedMemberIds" />
+                    <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />
+
 
                     <div class="image-previewer square">
                         <img src="" class="image-preview" />

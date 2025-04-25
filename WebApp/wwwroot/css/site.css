@@ -2012,7 +2012,7 @@ input[type="checkbox"] {
 }
 
     .input-with-icon input {
-        padding-right: 2.5rem; /* utrymme för ikonen */
+        padding-right: 2.5rem;
     }
 
 .icon-inside-input {

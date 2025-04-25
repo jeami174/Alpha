@@ -37,7 +37,7 @@ public class ProjectEntity
     [ForeignKey(nameof(ClientId))]
     public ClientEntity Client { get; set; } = null!;
 
-    public ICollection<MemberEntity> Members { get; set; } = new List<MemberEntity>();
+    public ICollection<MemberEntity> Members { get; set; } = [];
 
 
 

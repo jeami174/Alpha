@@ -91,7 +91,7 @@
             results.appendChild(noResult);
         } else {
             data.forEach(item => {
-                if (!selectedIds.includes(String(item.id))) { // 💡 säkerställ string jämförelse
+                if (!selectedIds.includes(String(item.id))) {
                     const resultItem = document.createElement('div');
                     resultItem.classList.add('search-item');
                     resultItem.dataset.id = item.id;
@@ -99,8 +99,8 @@
                     if (config.tagClass === 'user-tag') {
                         resultItem.innerHTML =
                             `
-                        <img class="user-avatar" src="${config.avatarFolder || ''}${item.imageUrl}">  <!-- 💡 OBS: imageUrl! -->
-                        <span>${item.tagName}</span> <!-- 💡 OBS: tagName! -->
+                        <img class="user-avatar" src="${config.avatarFolder || ''}${item.imageUrl}"> 
+                        <span>${item.tagName}</span>
                         `;
                     } else {
                         resultItem.innerHTML =
