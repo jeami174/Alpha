@@ -1,4 +1,18 @@
 ﻿@model WebApp.ViewModels.EditProjectFormViewModel
+@using System.Text.Json
+@{
+    var preselectedTags = Model.Members
+        .Where(m => Model.FormData.SelectedMemberIds.Contains(m.Id))
+        .Select(m => new
+        {
+            id = m.Id,
+            tagName = $"{m.FirstName} {m.LastName}",
+            imageUrl = m.ImageName ?? ""
+        })
+        .ToList();
+
+    var preselectedJson = JsonSerializer.Serialize(preselectedTags);
+}
 
 <div id="editProjectModal" class="modal">
     <div class="modal-content">
@@ -12,6 +26,8 @@
                 <form novalidate method="post" action="/projectcrud/edit" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input asp-for="FormData.Form.Id" type="hidden" />
+                    <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />
+
 
                     <div class="image-previewer square @(string.IsNullOrWhiteSpace(Model.FormData.Form.ImageName) ? "" : "selected")">
                         <img src="~/@Model.FormData.Form.ImageName" class="image-preview" />
@@ -75,25 +91,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Members</label>
-                        <input id="memberSearchInput"
-                               type="text"
-                               placeholder="Search members..."
-                               onkeyup="filterMembers()" />
-
-                        <div id="memberSearchList" class="member-search-list">
-                            @foreach (var member in Model.Members)
-                            {
-                                var isChecked = Model.FormData.SelectedMemberIds.Contains(member.Id);
-                                <div class="member-search-item" data-name="@member.FirstName.ToLower()" style="display:flex;">
-                                    <input type="checkbox"
-                                           name="FormData.SelectedMemberIds"
-                                           value="@member.Id"
-                                           id="member-@member.Id"
-                                    @(isChecked ? "checked" : "") />
-                                    <label for="member-@member.Id">@member.FirstName</label>
-                                </div>
-                            }
+                        <label asp-for="FormData.SelectedMemberIds" class="form-label">Members</label>
+                        <div id="edit-project-tags" class="form-tag-select icon-input">
+                            <input id="edit-project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <div id="edit-project-tag-search-results" class="search-results"></div>
                         </div>
                     </div>
 
@@ -113,26 +115,25 @@
     </div>
 </div>
 
-<style>
-    .member-search-list {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 5px;
-    }
-
-    .member-search-item {
-        margin-bottom: 4px;
-    }
-</style>
-
 <script>
-    function filterMembers() {
-      const term = document.getElementById("memberSearchInput").value.toLowerCase();
-      document.querySelectorAll("#memberSearchList .member-search-item")
-        .forEach(item => {
-          const name = item.getAttribute("data-name");
-          item.style.display = name.includes(term) ? "flex" : "none";
+    (() => {
+        const editPreSelectedTags = @Html.Raw(preselectedJson);
+        const searchTagsUrl = '@Url.Action("SearchTags", "Tags")';
+
+        console.log('Init editProject tags, preselected:', editPreSelectedTags);
+
+        initTagSelector({
+            containerId: 'edit-project-tags',
+            inputId: 'edit-project-tag-search',
+            selectedInputIds: 'FormData_SelectedMemberIds',
+            resultsId: 'edit-project-tag-search-results',
+            searchUrl: (query) => `${searchTagsUrl}?term=${encodeURIComponent(query)}`,
+            displayProperty: 'tagName',
+            imageProperty: 'imageUrl',
+            tagClass: 'user-tag',
+            avatarFolder: '',
+            emptyMessage: 'No members found.',
+            preselected: editPreSelectedTags
         });
-    }
+    })();
 </script>

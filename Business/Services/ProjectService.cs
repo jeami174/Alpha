@@ -21,11 +21,10 @@ public class ProjectService(
     private readonly IMemberRepository _memberRepository = memberRepository;
     private readonly ProjectFactory _projectFactory = projectFactory;
 
-    // CREATE
     public async Task<ServiceResult<ProjectModel>> CreateAsync(
         AddProjectForm form,
         int clientId,
-        int statusId,               // låt den ligga kvar i signaturen
+        int statusId,
         List<int> memberIds,
         string imageName)
     {
@@ -33,33 +32,27 @@ public class ProjectService(
 
         try
         {
-            // 1) Hämta bara client
-            var client = await _clientRepository
-                .GetOneAsync(c => c.ClientId == clientId);
+            var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
 
             if (client is null)
-                return ServiceResult<ProjectModel>
-                    .Failure("Client not found", 400);
+                return ServiceResult<ProjectModel>.Failure("Client not found", 400);
 
-            // 2) plocka ut medlemmar
-            var members = await _memberRepository.GetAllAsync();
-            var selectedMembers = members
-                .Where(m => memberIds.Contains(m.Id))
-                .ToList();
+            // 🚀 Ändra här:
+            var selectedMembers = await _memberRepository
+                .WhereAsync(m => memberIds.Contains(m.Id));
 
-            // 3) skapa projekt utan status‑objekt
             var project = _projectFactory.Create(
                 form,
                 client,
-                selectedMembers,
+                selectedMembers.ToList(), // 👈 här är de korrekt attached
                 imageName
             );
+
             project.ImageName = imageName;
 
             // TODO: hämta status från DB
             project.StatusId = 1;
 
-            // 4) spara som vanligt
             await _projectRepository.CreateAsync(project);
             await _projectRepository.SaveToDatabaseAsync();
             await _projectRepository.CommitTransactionAsync();
@@ -70,11 +63,9 @@ public class ProjectService(
         catch (Exception ex)
         {
             await _projectRepository.RollbackTransactionAsync();
-            return ServiceResult<ProjectModel>
-                .Failure($"Failed to create project: {ex.Message}", 500);
+            return ServiceResult<ProjectModel>.Failure($"Failed to create project: {ex.Message}", 500);
         }
     }
-
     // READ ALL
     public async Task<ServiceResult<IEnumerable<ProjectModel>>> GetAllProjectsAsync(string? sortBy = null, string? statusFilter = null)
     {
@@ -116,8 +107,12 @@ public class ProjectService(
         return ServiceResult<ProjectModel>.Success(_projectFactory.Create(project));
     }
 
-    // UPDATE
-    public async Task<ServiceResult<ProjectModel>> UpdateProjectAsync(EditProjectForm form, int clientId, int statusId, List<int> memberIds, string? newImageName)
+    public async Task<ServiceResult<ProjectModel>> UpdateProjectAsync(
+    EditProjectForm form,
+    int clientId,
+    int statusId,
+    List<int> memberIds,
+    string? newImageName)
     {
         var project = await _projectRepository.GetOneWithDetailsAsync(
             q => q.Include(p => p.Members),
@@ -132,14 +127,15 @@ public class ProjectService(
         {
             var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
             var status = await _statusRepository.GetOneAsync(s => s.Id == statusId);
-            var allMembers = await _memberRepository.GetAllAsync();
 
             if (client == null || status == null)
                 return ServiceResult<ProjectModel>.Failure("Client or status not found", 400);
 
-            var selectedMembers = allMembers.Where(m => memberIds.Contains(m.Id)).ToList();
+            // 🚀 Ändra här:
+            var selectedMembers = await _memberRepository
+                .WhereAsync(m => memberIds.Contains(m.Id));
 
-            _projectFactory.Update(project, form, client, status, selectedMembers);
+            _projectFactory.Update(project, form, client, status, selectedMembers.ToList());
 
             project.ImageName = newImageName ?? form.ImageName;
 
@@ -156,6 +152,7 @@ public class ProjectService(
             return ServiceResult<ProjectModel>.Failure($"Failed to update project: {ex.Message}", 500);
         }
     }
+
 
     // DELETE
     public async Task<ServiceResult<bool>> DeleteProjectAsync(string id)

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Data.Entities;
+using System.Linq.Expressions;
 
 
 namespace Data.Repositories;
@@ -46,6 +47,11 @@ public class MemberRepository(DataContext context) : BaseRepository<MemberEntity
             .Include(m => m.Role)
             .Include(m => m.Address)
             .FirstOrDefaultAsync(m => m.Id == id);
+    }
+
+    public async Task<IEnumerable<MemberEntity>> WhereAsync(Expression<Func<MemberEntity, bool>> predicate)
+    {
+        return await _dbSet.Where(predicate).ToListAsync();
     }
 }
 

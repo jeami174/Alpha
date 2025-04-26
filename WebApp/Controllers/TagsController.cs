@@ -10,18 +10,27 @@ public class TagsController(IMemberService memberService) : Controller
     [HttpGet]
     public async Task<IActionResult> SearchTags(string term)
     {
-        if (string.IsNullOrWhiteSpace(term))
-            return Json(new List<object>());
-
-        var members = await _memberService.SearchMembersAsync(term);
-
-        var result = members.Select(m => new
+        try
         {
-            id = m.Id,
-            tagName = $"{m.FirstName} {m.LastName}",
-            imageUrl = m.ImageName
-        });
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>());
 
-        return Json(result);
+            var members = await _memberService.SearchMembersAsync(term);
+
+            var result = members.Select(m => new
+            {
+                id = m.Id,
+                tagName = $"{m.FirstName} {m.LastName}",
+                imageUrl = m.ImageName
+            });
+
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            // Logga felet om du har en logger
+            return StatusCode(500, new { error = "An error occurred while searching for tags." });
+        }
     }
+
 }

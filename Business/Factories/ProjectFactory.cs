@@ -84,8 +84,14 @@ public class ProjectFactory
         };
     }
 
-    public void Update(ProjectEntity entity, EditProjectForm form, ClientEntity client, StatusEntity status, List<MemberEntity> members)
+    public void Update(
+        ProjectEntity entity,
+        EditProjectForm form,
+        ClientEntity client,
+        StatusEntity status,
+        List<MemberEntity> members)
     {
+        // Övriga fält
         entity.ProjectName = form.ProjectName;
         entity.Description = form.Description;
         entity.StartDate = form.StartDate;
@@ -93,7 +99,16 @@ public class ProjectFactory
         entity.Budget = form.Budget;
         entity.Client = client;
         entity.Status = status;
-        entity.Members = members;
+
+        // Här: rensa gamla och addera nya
+        entity.Members.Clear();
+        foreach (var m in members)
+        {
+            // EF Core är redan tracking för dessa MemberEntity, så det här sätter
+            // deras FK (ProjectId) till detta projects Id, och tar bort FK på
+            // de som blivit bortplockade.
+            entity.Members.Add(m);
+        }
     }
 
     public ProjectEntity Create(ProjectModel model)

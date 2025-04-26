@@ -125,22 +125,21 @@ function loadPartialView(url, containerId) {
 
             container.innerHTML = html;
 
+            // 🛑 NU: Kör alla scripts manuellt
+            container.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                document.body.appendChild(newScript);
+                oldScript.remove(); // rensa gamla script
+            });
+
             const modal = container.querySelector('.modal');
             if (modal) {
                 modal.style.display = 'flex';
-
-                const previewer = modal.querySelector('.image-previewer');
-                const imagePreview = previewer?.querySelector('.image-preview');
-
-                if (imagePreview?.src && !imagePreview.src.includes('base64')) {
-                    const imageUrl = imagePreview.src;
-                    fetch(imageUrl)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const file = new File([blob], "preview.jpg", { type: blob.type });
-                            processImage(file, imagePreview, previewer);
-                        });
-                }
             }
 
             bindImagePreviewers();
@@ -149,6 +148,7 @@ function loadPartialView(url, containerId) {
         })
         .catch(error => console.error('Error loading partial view:', error));
 }
+
 
 // ----------------------------------------
 // 3. Form Submit Handler
@@ -392,14 +392,3 @@ function closeAllDropdowns() {
     });
 }
 
-
-
-function filterMembers() {
-    const searchValue = document.getElementById("memberSearchInput").value.toLowerCase();
-    const items = document.querySelectorAll("#memberSearchList .member-search-item");
-
-    items.forEach(item => {
-        const name = item.getAttribute("data-name");
-        item.style.display = name.includes(searchValue) ? "flex" : "none";
-    });
-}

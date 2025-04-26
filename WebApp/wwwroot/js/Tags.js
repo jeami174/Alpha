@@ -1,4 +1,5 @@
 ﻿function initTagSelector(config) {
+    console.log("initTagSelector CALLED", config);
     let activeIndex = -1;
     let selectedIds = [];
 
@@ -24,6 +25,7 @@
     });
 
     input.addEventListener('input', () => {
+        
         const query = input.value.trim();
         activeIndex = -1;
 
