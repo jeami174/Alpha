@@ -1,6 +1,7 @@
 ﻿@model WebApp.ViewModels.AddMemberToProjectViewModel
 
 @{
+    // Tömmer ut prefix så vi binder direkt mot FormData.*
     ViewData.TemplateInfo.HtmlFieldPrefix = "";
 }
 
@@ -13,26 +14,29 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form method="post"
-                      asp-controller="ProjectCrud"
-                      asp-action="AddMemberToProject"
-                      novalidate>
+                <form id="add-member-form" novalidate method="post" asp-controller="ProjectCrud" asp-action="AddMemberToProject">
+
                     @Html.AntiForgeryToken()
+
+                    @* Doldt fält för vilken projectId vi lägger till *@
                     <input asp-for="FormData.ProjectId" type="hidden" />
 
                     <div class="form-group">
-                        <label for="FormData_SelectedMemberId" class="form-label">Select Member</label>
+                        <label asp-for="FormData.SelectedMemberId" class="form-label">Select Member</label>
                         <div class="field-group">
-                            <select asp-for="FormData.SelectedMemberId" class="custom-select" id="FormData_SelectedMemberId">
-                                <option value="">-- Select a member --</option>
-                                @foreach (var member in Model.Members)
-                                {
-                                    <option value="@member.Id">@member.FirstName @member.LastName</option>
-                                }
-                            </select>
-                            <span asp-validation-for="FormData.SelectedMemberId"></span>
+                            <div class="custom-select">
+                                <select asp-for="FormData.SelectedMemberId" id="FormData_SelectedMemberId" required>
+                                    <option value="">-- Select a member --</option>
+                                    @foreach (var member in Model.Members)
+                                    {
+                                        <option value="@member.Id">@member.FirstName @member.LastName</option>
+                                    }
+                                </select>
+                            </div>
+                            <span asp-validation-for="FormData.SelectedMemberId" class="text-danger"></span>
                         </div>
                     </div>
+
 
                     <button type="submit" class="btn btn-submit btn-blue">Save</button>
                 </form>

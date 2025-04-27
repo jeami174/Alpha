@@ -22,7 +22,7 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form novalidate method="post" action="/projectcrud/edit" enctype="multipart/form-data">
+                <form id="edit-project-form" novalidate method="post" action="/projectcrud/edit" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input asp-for="FormData.Form.Id" type="hidden" />
                     <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />
@@ -39,23 +39,20 @@
                             <span asp-validation-for="FormData.Form.ProjectName"></span>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label asp-for="FormData.SelectedClientId">Client</label>
-                        <div class="field-group">
-                            <select asp-for="FormData.SelectedClientId" asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))">
-                                <option value="">-- Select Client --</option>
-                            </select>
-                        </div>
+                        <label asp-for="FormData.SelectedClientId">Client Name</label>
+                        <select class="custom-select-dropdown" asp-for="FormData.SelectedClientId" asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))">
+                            <option value="">-- Select Client --</option>
+                        </select>
+                        <span asp-validation-for="FormData.SelectedClientId"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="FormData.SelectedStatusId">Status</label>
-                        <div class="field-group">
-                            <select asp-for="FormData.SelectedStatusId" asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
-                                <option value="">-- Select Status --</option>
-                            </select>
-                        </div>
+                        <select class="custom-select-dropdown" asp-for="FormData.SelectedStatusId" asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
+                            <option value="">-- Select Status --</option>
+                        </select>
+                        <span asp-validation-for="FormData.SelectedStatusId"></span>
                     </div>
 
                     <div class="form-group">

@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Business.Models;
 using Domain.Models;
 
 namespace WebApp.ViewModels
@@ -17,6 +18,7 @@ namespace WebApp.ViewModels
     {
         public string ProjectId { get; set; } = null!;
 
+        [Required(ErrorMessage = "Please select a member.")]
         public int? SelectedMemberId { get; set; }
     }
 }

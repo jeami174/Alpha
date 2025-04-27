@@ -558,6 +558,31 @@ form .field-validation-error {
     gap: 0.5rem;
 }
 
+#edit-project-form select.input-validation-error + .field-validation-error {
+    right: 2.3rem;
+    top: 30px;
+}
+
+#edit-project-form .field-validation-error {
+    top: 5px;
+}
+
+#add-member-form .field-validation-error {
+    position: static;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: #E94D3F;
+    background: none;
+    padding: 0;
+    display: block;
+    text-align: left;
+}
+
+#add-project-form select.input-validation-error + .field-validation-error {
+    right: 2.3rem;
+  
+}
+
 form.extended-validation .field-validation-error,
 form.extended-validation .extended-field-validation-error {
     position: static;
@@ -671,6 +696,8 @@ input[type="checkbox"] {
 
 .input-with-icon {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .field-group .input-with-icon input {
@@ -1499,7 +1526,7 @@ input[type="checkbox"] {
         #addProjectModal .modal-content .icon-input .icon-dollar {
             position: absolute;
             top: 50%;
-            left: 14px;
+            left: 1rem;
             transform: translateY(-50%);
             color: var(--body-dark);
             pointer-events: none;
@@ -1510,6 +1537,33 @@ input[type="checkbox"] {
             box-sizing: border-box;
         }
 
+#editProjectModal .icon-input {
+    position: relative;
+}
+
+#editProjectModal .icon-dollar {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--body-dark);
+    pointer-events: none;
+}
+
+#editProjectModal input {
+    padding-left: 2.5rem;
+    box-sizing: border-box;
+}
+
+#editProjectModal .date-group {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+    #editProjectModal .date-group > div {
+        flex: 1;
+    }
 
 .member-card {
     position: relative;
@@ -1875,37 +1929,18 @@ input[type="checkbox"] {
 }
 
     .custom-select select {
+        width: 100%;
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        width: 100%;
+        background-color: var(--surface);
+        border: 1px solid var(--border100);
+        border-radius: 14px;
         padding: 10px 2.5rem 10px 16px;
         font-size: 15px;
         font-weight: var(--font-regular);
-        border-radius: 14px;
-        border: 1px solid var(--border100);
-        color: var(--body-light);
-    }
-
-        .custom-select select:invalid {
-            color: var(--body-light);
-        }
-
-        .custom-select select:valid {
-            color: var(--heading);
-        }
-
-    .custom-select::after {
-        content: "\f078";
-        font-family: var(--font-fa);
-        font-weight: 900;
-        position: absolute;
-        top: 50%;
-        right: 1rem;
-        transform: translateY(-50%);
-        pointer-events: none;
-        font-size: 0.9rem;
-        color: var(--body-light);
+        color: var(--body-dark);
+        cursor: pointer;
     }
 
 .btn-project-add {
@@ -1914,97 +1949,6 @@ input[type="checkbox"] {
 }
 
 
-/* ---- TAGGAR ---- 
-.member-picker .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: var(--accent-dimmed);
-    border-radius: 999px;
-    padding: 0.25rem 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-    .member-picker .tag .chip-avatar {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-    }
-
-    .member-picker .tag .btn-remove {
-        background: none;
-        border: none;
-        font-size: 1rem;
-        cursor: pointer;
-        line-height: 1;
-    }
-
-.member-picker .field-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-/* ---- SÖKFÄLT + KNAPP ---- 
-.search-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-#memberSearch {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border100);
-    border-radius: 14px;
-}
-
-.btn-search {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.25rem;
-    color: var(--body-dark);
-}
-
-/* ---- DROPDOWN ---- 
-.members-list {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    left: 0;
-    right: 0;
-    background: var(--surface);
-    border: 1px solid var(--border200);
-    border-radius: 0.5rem;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 20;
-}
-
-    .members-list.hidden {
-        display: none;
-    }
-
-.member-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-}
-
-    .member-item:hover {
-        background: var(--gray100);
-    }
-
-.members-list .no-results {
-    text-align: center;
-    padding: 1rem;
-}
-
-    .members-list .no-results.hidden {
-        display: none;
-    }
-*/
 .form-tag-select {
     display: flex;
     flex-wrap: wrap;
@@ -2058,14 +2002,7 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-.icon-inside-input {
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    color: var(--body-light);
-    cursor: pointer;
-}
+
 
 .search-results {
     background-color: var(--surface);
@@ -2148,4 +2085,71 @@ span.btn-remove {
     transform: translateY(-50%);
     pointer-events: none;
     color: var(--heading);
+}
+
+.input-with-icon-inside {
+    position: relative;
+}
+
+    .input-with-icon-inside input {
+        padding-left: 2.5rem;
+    }
+
+.icon-inside-input {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--heading);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+
+.field-group select {
+    width: 100%;
+    font-size: 15px;
+    font-weight: var(--font-regular);
+    padding: 10px 16px;
+    padding-right: 6rem;
+    border-radius: 14px;
+    border: 1px solid var(--border100);
+    color: var(--body-dark);
+    background-color: var(--surface);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="4" viewBox="0 0 12 4"><circle cx="2" cy="2" r="2" fill="%231A1926"/><circle cx="10" cy="2" r="2" fill="%231A1926"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.75rem auto;
+}
+
+    .field-group select:focus {
+        border: 1px solid var(--border300);
+        outline: none;
+    }
+
+    .field-group select option {
+        color: var(--body-dark);
+    }
+
+.custom-select-dropdown {
+    width: 100%;
+    font-size: 15px;
+    font-weight: var(--font-regular);
+    padding: 10px 16px;
+    padding-right: 2.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border100);
+    color: var(--body-dark);
+    background-color: var(--surface);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="4" viewBox="0 0 12 4"><circle cx="2" cy="2" r="2" fill="%231A1926"/><circle cx="10" cy="2" r="2" fill="%231A1926"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.75rem auto;
 }

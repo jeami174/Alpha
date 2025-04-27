@@ -6,8 +6,11 @@
 document.addEventListener('click', e => {
     const btn = e.target.closest('[data-fetch-url]');
     if (!btn) return;
+
     e.preventDefault();
-    e.stopPropagation();
+    if (typeof closeAllDropdowns === 'function') {
+        closeAllDropdowns();
+    }
 
     const url = btn.getAttribute('data-fetch-url');
     const container = btn.getAttribute('data-container');
@@ -18,6 +21,7 @@ document.addEventListener('click', e => {
     console.log('[DEBUG] loadPartialView →', url, container);
     loadPartialView(url, container);
 });
+
 
 // 1. Hjälpfunktioner
 function getRequestVerificationToken() {
@@ -107,6 +111,11 @@ function bindTogglePassword() {
 
 // 2. Dynamisk Partial Loader
 function loadPartialView(url, containerId) {
+
+    if (typeof closeAllDropdowns === 'function') {
+        closeAllDropdowns();
+    }
+
     console.log('[DEBUG] loadPartialView called with', url, containerId);
     fetch(url)
         .then(res => {
@@ -115,26 +124,40 @@ function loadPartialView(url, containerId) {
         })
         .then(html => {
             const c = document.getElementById(containerId);
-            if (!c) { console.error('#' + containerId + ' saknas'); return; }
+            if (!c) {
+                console.error('#' + containerId + ' saknas');
+                return;
+            }
             c.innerHTML = html;
-            // exekvera alla <script>-taggar i partialen
+
+
             Array.from(c.querySelectorAll('script')).forEach(old => {
                 const ns = document.createElement('script');
-                if (old.src) { ns.src = old.src; ns.async = false; }
-                else ns.textContent = old.textContent;
+                if (old.src) {
+                    ns.src = old.src;
+                    ns.async = false;
+                } else {
+                    ns.textContent = old.textContent;
+                }
                 document.body.appendChild(ns);
                 old.remove();
             });
+
             const m = c.querySelector('.modal');
-            if (m) m.style.display = 'flex';
-            // re-bind alla handlers efter injektion
+            if (m) {
+                m.style.display = 'flex';
+            }
+
+
             bindImagePreviewers();
             bindCloseButtons();
             bindFormSubmitHandlers();
             bindTogglePassword();
             setupDropdownToggles();
         })
-        .catch(err => console.error('Error loading partial view:', err));
+        .catch(err => {
+            console.error('Error loading partial view:', err);
+        });
 }
 
 // 3. Form Submit Handlers
@@ -148,14 +171,12 @@ function bindFormSubmitHandlers() {
 
             clearErrorMessages(form);
 
-            // Bygg DateOfBirth (om sådana inputs finns)
             const d = form.querySelector('#dobDay')?.value;
             const mo = form.querySelector('#dobMonth')?.value;
             const y = form.querySelector('#dobYear')?.value;
             const hd = form.querySelector('input[name="DateOfBirth"]');
             if (hd) hd.value = (d && mo && y) ? `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}` : '';
 
-            // Klientvalidering – kolla om SelectedMemberIdsRaw är tom
             const selectedMembersInput = form.querySelector('input[name="FormData.SelectedMemberIdsRaw"]');
             if (selectedMembersInput && selectedMembersInput.value.trim() === '') {
                 const membersFieldGroup = form.querySelector('#project-tags');
@@ -176,7 +197,6 @@ function bindFormSubmitHandlers() {
                 return;
             }
 
-            // Klientvalidering – övriga fält (required)
             let hasError = false;
             form.querySelectorAll('[data-val="true"]').forEach(i => {
                 if (!i.value.trim()) {
@@ -201,7 +221,6 @@ function bindFormSubmitHandlers() {
                 return;
             }
 
-            // Skicka AJAX
             try {
                 const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
                 const j = await res.json();
@@ -214,7 +233,7 @@ function bindFormSubmitHandlers() {
                         window.location.reload();
                     }
                 } else if (res.status === 400) {
-                    // Server-side valideringsfel
+
                     if (j.errors) {
                         Object.keys(j.errors).forEach(k => {
                             const i = form.querySelector(`[name="${k}"]`);

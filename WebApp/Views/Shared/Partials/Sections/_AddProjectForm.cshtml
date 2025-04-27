@@ -23,7 +23,7 @@
 
         <div class="scroll-container">
             <div class="inner-padding">
-                <form novalidate method="post" asp-action="AddProject" asp-controller="ProjectCrud" enctype="multipart/form-data">
+                <form id="add-project-form" novalidate method="post" asp-action="AddProject" asp-controller="ProjectCrud" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
 
                     <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />

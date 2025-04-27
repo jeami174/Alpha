@@ -137,7 +137,7 @@ public class ProjectCrudController : Controller
 
         data.SelectedMemberIds = (data.SelectedMemberIdsRaw ?? "")
             .Split(",", StringSplitOptions.RemoveEmptyEntries)
-            .Where(id => int.TryParse(id, out _)) //Nytt Jeanette
+            .Where(id => int.TryParse(id, out _))
             .Select(id => int.Parse(id))
             .ToList();
 
@@ -193,7 +193,6 @@ public class ProjectCrudController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddMemberToProject(AddMemberToProjectViewModel vm)
     {
-        // 1) Grundvalidering
         if (vm.FormData == null
             || string.IsNullOrEmpty(vm.FormData.ProjectId)
             || !vm.FormData.SelectedMemberId.HasValue)
@@ -201,7 +200,6 @@ public class ProjectCrudController : Controller
             return BadRequest(new { success = false, error = "Invalid form data." });
         }
 
-        // 2) Hämta projekt
         var projectResult = await _projectService.GetProjectByIdAsync(vm.FormData.ProjectId);
         if (!projectResult.Succeeded || projectResult.Result == null)
         {
@@ -210,13 +208,11 @@ public class ProjectCrudController : Controller
 
         var project = projectResult.Result;
 
-        // 3) Lägg till medlem om hen inte redan finns
         var memberId = vm.FormData.SelectedMemberId.Value;
         if (!project.MemberModels.Any(m => m.Id == memberId))
         {
             project.MemberModels.Add(new MemberModel { Id = memberId });
 
-            // 4) Spara uppdateringen
             var updateResult = await _projectService.UpdateProjectAsync(
                 form: new EditProjectForm
                 {
@@ -244,7 +240,6 @@ public class ProjectCrudController : Controller
             }
         }
 
-        // 5) Allt gick bra
         return Ok(new { success = true });
     }
 
