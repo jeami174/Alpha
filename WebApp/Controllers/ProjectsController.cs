@@ -45,10 +45,14 @@ public class ProjectsController : Controller
             ProjectName = p.ProjectName,
             Description = p.Description,
             ClientName = p.ClientModel.ClientName,
-            ImageName = p.ImageName ?? "uploads/projects/avatars/default.svg",
+            ImageName = string.IsNullOrWhiteSpace(p.ImageName)
+                ? "uploads/projects/avatars/default.svg"
+                : p.ImageName.Replace("\\", "/"),
             StartDate = p.StartDate,
             EndDate = p.EndDate,
-            MemberImageNames = p.MemberModels.Select(m => m.ImageName ?? "uploads/members/default.svg").ToList()
+            MemberImageNames = p.MemberModels
+                .Select(m => m.ImageName!)
+                .ToList()
         }).ToList();
 
         var viewModel = new ProjectOverviewViewModel

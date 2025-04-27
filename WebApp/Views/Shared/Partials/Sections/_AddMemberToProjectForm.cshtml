@@ -1,0 +1,42 @@
+﻿@model WebApp.ViewModels.AddMemberToProjectViewModel
+
+@{
+    ViewData.TemplateInfo.HtmlFieldPrefix = "";
+}
+
+<div id="addMemberToProjectModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add Member</h3>
+            <button type="button" class="btn-close" data-close="true"></button>
+        </div>
+
+        <div class="scroll-container">
+            <div class="inner-padding">
+                <form method="post"
+                      asp-controller="ProjectCrud"
+                      asp-action="AddMemberToProject"
+                      novalidate>
+                    @Html.AntiForgeryToken()
+                    <input asp-for="FormData.ProjectId" type="hidden" />
+
+                    <div class="form-group">
+                        <label for="FormData_SelectedMemberId" class="form-label">Select Member</label>
+                        <div class="field-group">
+                            <select asp-for="FormData.SelectedMemberId" class="custom-select" id="FormData_SelectedMemberId">
+                                <option value="">-- Select a member --</option>
+                                @foreach (var member in Model.Members)
+                                {
+                                    <option value="@member.Id">@member.FirstName @member.LastName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="FormData.SelectedMemberId"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit btn-blue">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

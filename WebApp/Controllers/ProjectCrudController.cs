@@ -168,4 +168,86 @@ public class ProjectCrudController : Controller
             ? Ok(new { success = true })
             : BadRequest(new { success = false, error = result.Error });
     }
+
+    [HttpGet("add-member-modal/{id}", Name = "AddMemberModal")]
+    public async Task<IActionResult> LoadAddMemberToProjectModal(string id)
+    {
+        var membersResult = await _memberService.GetAllMembersAsync();
+        if (!membersResult.Succeeded)
+            return Problem(membersResult.Error ?? "Could not load members");
+
+        var vm = new AddMemberToProjectViewModel
+        {
+            FormData = new AddMemberToProjectForm { ProjectId = id },
+            Members = membersResult.Result ?? Array.Empty<MemberModel>()
+        };
+
+        return PartialView(
+            "~/Views/Shared/Partials/Sections/_AddMemberToProjectForm.cshtml",
+            vm
+        );
+    }
+
+    // POST /projectcrud/add-member
+    [HttpPost("add-member", Name = "AddMemberToProject")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddMemberToProject(AddMemberToProjectViewModel vm)
+    {
+        // 1) Grundvalidering
+        if (vm.FormData == null
+            || string.IsNullOrEmpty(vm.FormData.ProjectId)
+            || !vm.FormData.SelectedMemberId.HasValue)
+        {
+            return BadRequest(new { success = false, error = "Invalid form data." });
+        }
+
+        // 2) Hämta projekt
+        var projectResult = await _projectService.GetProjectByIdAsync(vm.FormData.ProjectId);
+        if (!projectResult.Succeeded || projectResult.Result == null)
+        {
+            return BadRequest(new { success = false, error = "Project not found." });
+        }
+
+        var project = projectResult.Result;
+
+        // 3) Lägg till medlem om hen inte redan finns
+        var memberId = vm.FormData.SelectedMemberId.Value;
+        if (!project.MemberModels.Any(m => m.Id == memberId))
+        {
+            project.MemberModels.Add(new MemberModel { Id = memberId });
+
+            // 4) Spara uppdateringen
+            var updateResult = await _projectService.UpdateProjectAsync(
+                form: new EditProjectForm
+                {
+                    Id = project.Id,
+                    ProjectName = project.ProjectName,
+                    Description = project.Description ?? string.Empty,
+                    StartDate = project.StartDate,
+                    EndDate = project.EndDate,
+                    Budget = project.Budget,
+                    ImageName = project.ImageName
+                },
+                clientId: project.ClientModel.ClientId,
+                statusId: project.StatusModel.Id,
+                memberIds: project.MemberModels.Select(m => m.Id).ToList(),
+                newImageName: project.ImageName
+            );
+
+            if (!updateResult.Succeeded)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    error = updateResult.Error ?? "Failed to add member."
+                });
+            }
+        }
+
+        // 5) Allt gick bra
+        return Ok(new { success = true });
+    }
+
+
+
 }

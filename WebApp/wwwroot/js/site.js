@@ -245,7 +245,6 @@ function bindFormSubmitHandlers() {
     });
 }
 
-
 // 4. Init på laddning
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-modal="true"]').forEach(b => {
