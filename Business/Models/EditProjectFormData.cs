@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Business.Models;
@@ -11,6 +12,7 @@ public class EditProjectFormData
 
     public int SelectedStatusId { get; set; }
 
+    [Required(ErrorMessage = "You must select at least one member.")]
     public List<int> SelectedMemberIds { get; set; } = new();
 
     [NotMapped]

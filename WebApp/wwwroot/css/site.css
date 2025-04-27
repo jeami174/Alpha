@@ -1830,7 +1830,6 @@ input[type="checkbox"] {
     padding: 0.5rem;
 }
 
-/* Sätt lite luft ovanför och under separator-linjen */
 .project-dropdown .dropdown-separator {
     margin: 0.25rem 0;
 }
@@ -2097,12 +2096,12 @@ input[type="checkbox"] {
 
     .search-item:hover {
         background: var(--gray400);
-        border-radius: ,8rem;
+        border-radius: 0.8rem;
     }
 
     .search-item.active {
         background-color: var(--gray100);
-        border-radius: ,8rem;
+        border-radius: 0.8rem;
     }
 
 .user-avatar {

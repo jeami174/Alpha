@@ -1,185 +1,159 @@
-﻿function initTagSelector(config) {
-    console.log("initTagSelector CALLED", config);
-    let activeIndex = -1;
-    let selectedIds = [];
+﻿/**
+ * tags.js – Tag Selector med rootElement-stöd
+ */
+function initTagSelector(config) {
+    const root = (config.rootElement instanceof HTMLElement)
+        ? config.rootElement
+        : document;
+    const container = root.querySelector('#' + config.containerId);
+    const input = root.querySelector('#' + config.inputId);
+    const results = root.querySelector('#' + config.resultsId);
+    const hidden = root.querySelector('#' + config.selectedInputIds);
 
-    const tagContainer = document.getElementById(config.containerId);
-    const input = document.getElementById(config.inputId);
-    const results = document.getElementById(config.resultsId);
-    const selectedInputIds = document.getElementById(config.selectedInputIds);
-
-    if (Array.isArray(config.preselected)) {
-        config.preselected.forEach(item => addTag(item));
+    if (!container || !input || !results || !hidden) {
+        console.error('initTagSelector saknar element', config);
+        return;
     }
 
-    input.addEventListener('focus', () => {
-        tagContainer.classList.add('focused');
-        results.classList.add('focused');
-    });
+    let selectedIds = [];
+    let activeIndex = -1;
+    let debounceTimer;
 
-    input.addEventListener('blur', () => {
-        setTimeout(() => {
-            tagContainer.classList.remove('focused');
-            results.classList.remove('focused');
-        }, 100);
-    });
-
-    input.addEventListener('input', () => {
-        
-        const query = input.value.trim();
-        activeIndex = -1;
-
-        if (query.length === 0) {
-            results.style.display = 'none';
-            results.innerHTML = '';
-            return;
+    // Uppdatera det dolda input-fältet, nytt
+    function updateHidden() {
+        if (selectedIds.length === 0) {
+            hidden.value = '';
+        } else {
+            hidden.value = selectedIds.join(',');
         }
+    }
 
-        fetch(config.searchUrl(query))
-            .then(r => r.json())
-            .then(data => renderSearchResults(data));
+    // Lägg till en tagg i UI och intern array
+    function addTag(item) {
+        const id = String(item.id);
+        if (selectedIds.includes(id)) return;
+        selectedIds.push(id);
+        updateHidden();
+
+        const tag = document.createElement('div');
+        tag.classList.add(config.tagClass || 'tag');
+        tag.innerHTML = config.imageProperty && item[config.imageProperty]
+            ? `<img class="user-avatar" src="${config.avatarFolder}${item[config.imageProperty]}" />
+               <span>${item[config.displayProperty]}</span>`
+            : `<span>${item[config.displayProperty]}</span>`;
+
+        const btn = document.createElement('span');
+        btn.classList.add('btn-remove');
+        btn.textContent = '×';
+
+        btn.addEventListener('click', () => {
+            // Ta bort id, uppdatera hidden, ta bort element, och göm results
+            selectedIds = selectedIds.filter(x => x !== id);
+            updateHidden();
+            tag.remove();
+            results.innerHTML = '';
+            results.style.display = 'none';
+        });
+
+        tag.appendChild(btn);
+        container.insertBefore(tag, input);
+    }
+
+    // Rendera sökresultat i dropp-listan
+    function renderResults(data) {
+        results.innerHTML = '';
+        if (!data.length) {
+            results.innerHTML = `<div class="search-item">
+                ${config.emptyMessage || 'No results'}
+            </div>`;
+        } else {
+            data.forEach(item => {
+                const id = String(item.id);
+                if (!selectedIds.includes(id)) {
+                    const div = document.createElement('div');
+                    div.classList.add('search-item');
+                    div.innerHTML = config.imageProperty && item[config.imageProperty]
+                        ? `<img class="user-avatar" src="${config.avatarFolder}${item[config.imageProperty]}" />
+                           <span>${item[config.displayProperty]}</span>`
+                        : `<span>${item[config.displayProperty]}</span>`;
+
+                    div.addEventListener('click', () => {
+                        addTag(item);
+                        results.innerHTML = '';
+                        results.style.display = 'none';
+                        input.value = '';
+                    });
+
+                    results.appendChild(div);
+                }
+            });
+        }
+        results.style.display = 'block';
+    }
+
+    // Debounced fetch + render
+    input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const q = input.value.trim();
+            activeIndex = -1;
+
+            if (!q) {
+                results.innerHTML = '';
+                results.style.display = 'none';
+                return;
+            }
+
+            fetch(config.searchUrl(q))
+                .then(r => r.json())
+                .then(renderResults)
+                .catch(err => console.error('initTagSelector fetch error:', err));
+        }, 300);
     });
 
-    input.addEventListener('keydown', (e) => {
+    // Piltangenter & Enter & Backspace
+    input.addEventListener('keydown', e => {
         const items = results.querySelectorAll('.search-item');
+        if (!items.length) return;
 
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
-                if (items.length > 0) {
-                    activeIndex = (activeIndex + 1) % items.length;
-                    updateActiveItem(items);
-                }
+                activeIndex = (activeIndex + 1) % items.length;
+                items.forEach(i => i.classList.remove('active'));
+                items[activeIndex].classList.add('active');
+                items[activeIndex].scrollIntoView({ block: 'nearest' });
                 break;
-
             case 'ArrowUp':
                 e.preventDefault();
-                if (items.length > 0) {
-                    activeIndex = (activeIndex - 1 + items.length) % items.length;
-                    updateActiveItem(items);
-                }
+                activeIndex = (activeIndex - 1 + items.length) % items.length;
+                items.forEach(i => i.classList.remove('active'));
+                items[activeIndex].classList.add('active');
+                items[activeIndex].scrollIntoView({ block: 'nearest' });
                 break;
-
             case 'Enter':
-                e.preventDefault();
-                if (activeIndex >= 0 && items[activeIndex]) {
+                if (activeIndex >= 0) {
+                    e.preventDefault();
                     items[activeIndex].click();
                 }
                 break;
-
             case 'Backspace':
                 if (input.value === '') {
-                    removeLastTag();
+                    const tags = container.querySelectorAll('.' + (config.tagClass || 'tag'));
+                    if (tags.length) {
+                        tags[tags.length - 1].querySelector('.btn-remove').click();
+                    }
                 }
                 break;
         }
     });
 
-    function updateActiveItem(items) {
-        items.forEach(item => item.classList.remove('active'));
-        if (items[activeIndex]) {
-            items[activeIndex].classList.add('active');
-            items[activeIndex].scrollIntoView({ block: 'nearest' });
-        }
+    // Förvalda tags (preselected)
+    if (Array.isArray(config.preselected)) {
+        config.preselected.forEach(addTag);
+        updateHidden();
     }
-
-    function renderSearchResults(data) {
-        results.innerHTML = '';
-
-        if (data.length === 0) {
-            const noResult = document.createElement('div');
-            noResult.classList.add('search-item');
-            noResult.textContent = config.emptyMessage || 'No results';
-            results.appendChild(noResult);
-        } else {
-            data.forEach(item => {
-                if (!selectedIds.includes(String(item.id))) {
-                    const resultItem = document.createElement('div');
-                    resultItem.classList.add('search-item');
-                    resultItem.dataset.id = item.id;
-
-                    if (config.tagClass === 'user-tag') {
-                        resultItem.innerHTML =
-                            `
-                        <img class="user-avatar" src="${config.avatarFolder || ''}${item.imageUrl}"> 
-                        <span>${item.tagName}</span>
-                        `;
-                    } else {
-                        resultItem.innerHTML =
-                            `
-                        <span>${item.tagName}</span>
-                        `;
-                    }
-
-                    resultItem.addEventListener('click', () => addTag(item));
-                    results.appendChild(resultItem);
-                }
-            });
-        }
-
-        results.style.display = 'block';
-    }
-
-    function addTag(item) {
-        const id = String(item.id);
-        if (selectedIds.includes(id)) return;
-
-        selectedIds.push(id);
-        updateSelectedIdsInput();
-
-        const tag = document.createElement('div');
-        tag.classList.add(config.tagClass || 'tag');
-
-        if (config.tagClass === 'user-tag') {
-            tag.innerHTML =
-                `
-            <img class="user-avatar" src="${config.avatarFolder || ''}${item.imageUrl}">
-            <span>${item.tagName}</span>
-            `;
-        } else {
-            tag.innerHTML =
-                `
-            <span>${item.tagName}</span>
-            `;
-        }
-
-        const removeBtn = document.createElement('span');
-        removeBtn.textContent = 'x';
-        removeBtn.classList.add('btn-remove');
-        removeBtn.dataset.id = id;
-        removeBtn.addEventListener('click', (e) => {
-            selectedIds = selectedIds.filter(i => i !== id);
-            tag.remove();
-            updateSelectedIdsInput();
-            e.stopPropagation();
-        });
-
-        tag.appendChild(removeBtn);
-        tagContainer.insertBefore(tag, input);
-
-        input.value = '';
-        results.innerHTML = '';
-        results.style.display = 'none';
-    }
-
-    function updateSelectedIdsInput() {
-        if (selectedInputIds) {
-            selectedInputIds.value = selectedIds.join(',');
-        }
-    }
-
-    function removeLastTag() {
-        const tags = tagContainer.querySelectorAll(`.${config.tagClass}`);
-        if (tags.length === 0) return;
-
-        const lastTag = tags[tags.length - 1];
-        const lastId = lastTag.querySelector('.btn-remove').dataset.id;
-
-        selectedIds = selectedIds.filter(id => id !== lastId);
-        lastTag.remove();
-        updateSelectedIdsInput();
-    }
-
 }
 
+// Exponera globalt
 window.initTagSelector = initTagSelector;

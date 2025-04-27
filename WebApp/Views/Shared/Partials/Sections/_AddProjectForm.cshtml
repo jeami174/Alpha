@@ -8,8 +8,8 @@
         {
             id = m.Id,
             tagName = $"{m.FirstName} {m.LastName}",
-            imageUrl = m.ImageName
-        });
+            imageUrl = m.ImageName ?? ""
+        }).ToList();
 
     var preselectedJson = JsonSerializer.Serialize(preselectedTags);
 }
@@ -28,7 +28,6 @@
 
                     <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />
 
-
                     <div class="image-previewer square">
                         <img src="" class="image-preview" />
                         <input asp-for="FormData.Form.ProjectImage" accept="image/*" class="hide" />
@@ -45,9 +44,7 @@
                     <div class="form-group">
                         <label for="FormData.SelectedClientId">Client</label>
                         <div class="field-group custom-select select-text">
-                            <select asp-for="FormData.SelectedClientId"
-                                    asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))"
-                                    required>
+                            <select asp-for="FormData.SelectedClientId" asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))" required>
                                 <option value="" disabled selected hidden>-- Select Client --</option>
                             </select>
                             <span asp-validation-for="FormData.SelectedClientId"></span>
@@ -80,20 +77,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="FormData.SelectedMemberIds" class="form-label">Members</label>
-                        <div id="add-project-tags" class="form-tag-select icon-input">
-                            <input id="add-project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
+                        <label class="form-label">Members</label>
+                        <div id="project-tags" class="form-tag-select icon-input">
+                            <input id="project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
                             <i class="fa fa-search search-icon" aria-hidden="true"></i>
-                            <div id="add-project-tag-search-results" class="search-results"></div>
+                            <div id="project-tag-search-results" class="search-results"></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="FormData.Form.Budget"></label>
                         <div class="field-group icon-input">
-                            <span class="icon-dollar">
-                                <i class="fas fa-dollar-sign"></i>
-                            </span>
+                            <span class="icon-dollar"><i class="fas fa-dollar-sign"></i></span>
                             <input asp-for="FormData.Form.Budget" />
                             <span asp-validation-for="FormData.Form.Budget"></span>
                         </div>
@@ -107,21 +102,24 @@
 </div>
 
 <script>
-    const preSelectedTags = @Html.Raw(preselectedJson);
+    document.addEventListener('DOMContentLoaded', function () {
+        const preSelectedTags = @Html.Raw(preselectedJson);
+        const searchTagsUrl = '@Url.Action("SearchTags", "Tags")';
 
-    const searchTagsUrl = '@Url.Action("SearchTags", "Tags")';
+        console.log('Init project tags', preSelectedTags);
 
     initTagSelector({
-        containerId: 'add-project-tags',
-        inputId: 'add-project-tag-search',
+        containerId: 'project-tags',
+        inputId: 'project-tag-search',
         selectedInputIds: 'FormData_SelectedMemberIds',
-        resultsId: 'add-project-tag-search-results',
-        searchUrl: (query) => `${searchTagsUrl}?term=${encodeURIComponent(query)}`,
+        resultsId: 'project-tag-search-results',
+        searchUrl: (query) => '/tags/searchtags?term=' + encodeURIComponent(query),
         displayProperty: 'tagName',
         imageProperty: 'imageUrl',
         tagClass: 'user-tag',
         avatarFolder: '',
         emptyMessage: 'No members found.',
-        preselected: preSelectedTags
+        preselected: @Html.Raw(preselectedJson)
+    });
     });
 </script>

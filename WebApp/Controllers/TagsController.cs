@@ -28,7 +28,6 @@ public class TagsController(IMemberService memberService) : Controller
         }
         catch (Exception ex)
         {
-            // Logga felet om du har en logger
             return StatusCode(500, new { error = "An error occurred while searching for tags." });
         }
     }

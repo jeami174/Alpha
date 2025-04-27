@@ -86,7 +86,7 @@ public class ProjectCrudController : Controller
         var membersResult = await _memberService.GetAllMembersAsync();
 
         var allMembers = (membersResult.Result ?? Enumerable.Empty<MemberModel>())
-            .UnionBy(project.MemberModels, m => m.Id) // lägg till projektmedlemmar om saknas
+            .UnionBy(project.MemberModels, m => m.Id)
             .ToList();
 
         var vm = new EditProjectFormViewModel
@@ -112,7 +112,6 @@ public class ProjectCrudController : Controller
             Members = allMembers
         };
 
-        // OBS: Viktigt! Skapa raw för JS
         vm.FormData.SelectedMemberIdsRaw = string.Join(",", vm.FormData.SelectedMemberIds);
 
         return PartialView("~/Views/Shared/Partials/Sections/_EditProjectForm.cshtml", vm);
@@ -138,6 +137,7 @@ public class ProjectCrudController : Controller
 
         data.SelectedMemberIds = (data.SelectedMemberIdsRaw ?? "")
             .Split(",", StringSplitOptions.RemoveEmptyEntries)
+            .Where(id => int.TryParse(id, out _)) //Nytt Jeanette
             .Select(id => int.Parse(id))
             .ToList();
 

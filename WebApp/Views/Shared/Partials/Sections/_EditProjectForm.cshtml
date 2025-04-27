@@ -8,8 +8,7 @@
             id = m.Id,
             tagName = $"{m.FirstName} {m.LastName}",
             imageUrl = m.ImageName ?? ""
-        })
-        .ToList();
+        }).ToList();
 
     var preselectedJson = JsonSerializer.Serialize(preselectedTags);
 }
@@ -28,13 +27,9 @@
                     <input asp-for="FormData.Form.Id" type="hidden" />
                     <input type="hidden" asp-for="FormData.SelectedMemberIdsRaw" id="FormData_SelectedMemberIds" />
 
-
                     <div class="image-previewer square @(string.IsNullOrWhiteSpace(Model.FormData.Form.ImageName) ? "" : "selected")">
                         <img src="~/@Model.FormData.Form.ImageName" class="image-preview" />
-                        <input asp-for="FormData.Form.ProjectImage"
-                               type="file"
-                               accept="image/*"
-                               class="hide" />
+                        <input asp-for="FormData.Form.ProjectImage" accept="image/*" class="hide" />
                     </div>
 
                     <div class="form-group">
@@ -48,8 +43,7 @@
                     <div class="form-group">
                         <label asp-for="FormData.SelectedClientId">Client</label>
                         <div class="field-group">
-                            <select asp-for="FormData.SelectedClientId"
-                                    asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))">
+                            <select asp-for="FormData.SelectedClientId" asp-items="@(new SelectList(Model.Clients, "ClientId", "ClientName"))">
                                 <option value="">-- Select Client --</option>
                             </select>
                         </div>
@@ -58,8 +52,7 @@
                     <div class="form-group">
                         <label asp-for="FormData.SelectedStatusId">Status</label>
                         <div class="field-group">
-                            <select asp-for="FormData.SelectedStatusId"
-                                    asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
+                            <select asp-for="FormData.SelectedStatusId" asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
                                 <option value="">-- Select Status --</option>
                             </select>
                         </div>
@@ -91,11 +84,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="FormData.SelectedMemberIds" class="form-label">Members</label>
-                        <div id="edit-project-tags" class="form-tag-select icon-input">
-                            <input id="edit-project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
+                        <label class="form-label">Members</label>
+                        <div id="project-tags" class="form-tag-select icon-input">
+                            <input id="project-tag-search" type="text" class="form-tag-input" placeholder="Add member..." />
                             <i class="fa fa-search search-icon" aria-hidden="true"></i>
-                            <div id="edit-project-tag-search-results" class="search-results"></div>
+                            <div id="project-tag-search-results" class="search-results"></div>
                         </div>
                     </div>
 
@@ -117,23 +110,25 @@
 
 <script>
     (() => {
-        const editPreSelectedTags = @Html.Raw(preselectedJson);
+        const modal = document.getElementById('editProjectModal');
+        const preSelectedTags = @Html.Raw(preselectedJson);
         const searchTagsUrl = '@Url.Action("SearchTags", "Tags")';
 
-        console.log('Init editProject tags, preselected:', editPreSelectedTags);
+        console.log('Init tags (Edit)', preSelectedTags);
 
         initTagSelector({
-            containerId: 'edit-project-tags',
-            inputId: 'edit-project-tag-search',
+            rootElement: modal,
+            containerId: 'project-tags',
+            inputId: 'project-tag-search',
+            resultsId: 'project-tag-search-results',
             selectedInputIds: 'FormData_SelectedMemberIds',
-            resultsId: 'edit-project-tag-search-results',
             searchUrl: (query) => `${searchTagsUrl}?term=${encodeURIComponent(query)}`,
             displayProperty: 'tagName',
             imageProperty: 'imageUrl',
             tagClass: 'user-tag',
             avatarFolder: '',
             emptyMessage: 'No members found.',
-            preselected: editPreSelectedTags
+            preselected: preSelectedTags
         });
     })();
 </script>

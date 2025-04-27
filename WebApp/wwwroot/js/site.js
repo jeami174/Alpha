@@ -1,34 +1,45 @@
 ﻿// ----------------------------------------
-// 1. Hjälpfunktioner
+// site.js - Global JavaScript
 // ----------------------------------------
 
+// 0. Global click-delegat för alla [data-fetch-url]
+document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-fetch-url]');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const url = btn.getAttribute('data-fetch-url');
+    const container = btn.getAttribute('data-container');
+    if (!url || !container) {
+        console.error('Saknar data-fetch-url eller data-container på', btn);
+        return;
+    }
+    console.log('[DEBUG] loadPartialView →', url, container);
+    loadPartialView(url, container);
+});
+
+// 1. Hjälpfunktioner
 function getRequestVerificationToken() {
-    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
-    return tokenElement ? tokenElement.value : '';
+    const t = document.querySelector('input[name="__RequestVerificationToken"]');
+    return t ? t.value : '';
 }
 
 function clearErrorMessages(form) {
-    form.querySelectorAll('[data-val="true"]').forEach(input => {
-        input.classList.remove('input-validation-error');
+    form.querySelectorAll('[data-val="true"]').forEach(i => i.classList.remove('input-validation-error'));
+    form.querySelectorAll('[data-valmsg-for]').forEach(s => {
+        s.innerText = '';
+        s.classList.remove('field-validation-error', 'extended-field-validation-error');
     });
-
-    form.querySelectorAll('[data-valmsg-for]').forEach(span => {
-        span.innerText = '';
-        span.classList.remove('field-validation-error', 'extended-field-validation-error');
-    });
-
-    const formMessage = form.querySelector('.form-message');
-    if (formMessage) {
-        formMessage.innerText = '';
-        formMessage.style.display = 'none';
-    }
+    const msg = form.querySelector('.form-message');
+    if (msg) { msg.innerText = ''; msg.style.display = 'none'; }
 }
 
 async function loadImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => reject(new Error("Failed to load file."));
-        reader.onload = (e) => {
+        reader.onload = e => {
             const img = new Image();
             img.onerror = () => reject(new Error("Failed to load image."));
             img.onload = () => resolve(img);
@@ -44,13 +55,12 @@ async function processImage(file, imagePreview, previewer, previewSize = 150) {
         const canvas = document.createElement('canvas');
         canvas.width = previewSize;
         canvas.height = previewSize;
-
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, previewSize, previewSize);
         imagePreview.src = canvas.toDataURL('image/jpeg');
         previewer.classList.add('selected');
-    } catch (error) {
-        console.error('Failed on image processing', error);
+    } catch (err) {
+        console.error('Failed on image processing', err);
     }
 }
 
@@ -58,233 +68,191 @@ function bindImagePreviewers() {
     document.querySelectorAll('.image-previewer').forEach(previewer => {
         const fileInput = previewer.querySelector('input[type="file"]');
         const imagePreview = previewer.querySelector('.image-preview');
-
         previewer.addEventListener('click', () => fileInput.click());
-
         fileInput.addEventListener('change', ({ target: { files } }) => {
-            const file = files[0];
-            if (file) processImage(file, imagePreview, previewer);
+            if (files[0]) processImage(files[0], imagePreview, previewer);
         });
     });
 }
 
 function bindCloseButtons() {
-    document.querySelectorAll('[data-close="true"]').forEach(button => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.querySelectorAll('form').forEach(form => {
-                    form.reset();
-                    clearErrorMessages(form);
-                    form.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
-                    const imagePreview = form.querySelector('.image-preview');
-                    if (imagePreview) imagePreview.src = '';
-                    const imagePreviewer = form.querySelector('.image-previewer');
-                    if (imagePreviewer) imagePreviewer.classList.remove('selected');
-                });
-            }
+    document.querySelectorAll('[data-close="true"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modal = btn.closest('.modal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            modal.querySelectorAll('form').forEach(f => {
+                f.reset();
+                clearErrorMessages(f);
+                f.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
+                const prev = f.querySelector('.image-preview'); if (prev) prev.src = '';
+                const prevw = f.querySelector('.image-previewer'); if (prevw) prevw.classList.remove('selected');
+            });
         });
     });
 }
 
 function bindTogglePassword() {
-    const togglePassword = document.getElementById('togglePassword');
-    if (togglePassword) {
-        togglePassword.addEventListener('click', function () {
-            const passwordField = document.getElementById('passwordField');
-            if (passwordField) {
-                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordField.setAttribute('type', type);
-            }
-        });
-    }
-
-    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    if (toggleConfirmPassword) {
-        toggleConfirmPassword.addEventListener('click', function () {
-            const confirmPasswordField = document.getElementById('confirmPasswordField');
-            if (confirmPasswordField) {
-                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                confirmPasswordField.setAttribute('type', type);
-            }
-        });
-    }
+    const t1 = document.getElementById('togglePassword');
+    if (t1) t1.addEventListener('click', () => {
+        const p = document.getElementById('passwordField');
+        if (p) p.type = p.type === 'password' ? 'text' : 'password';
+    });
+    const t2 = document.getElementById('toggleConfirmPassword');
+    if (t2) t2.addEventListener('click', () => {
+        const p = document.getElementById('confirmPasswordField');
+        if (p) p.type = p.type === 'password' ? 'text' : 'password';
+    });
 }
 
-// ----------------------------------------
-// 2. Dynamisk Partial Loader Funktion
-// ----------------------------------------
-
+// 2. Dynamisk Partial Loader
 function loadPartialView(url, containerId) {
+    console.log('[DEBUG] loadPartialView called with', url, containerId);
     fetch(url)
-        .then(response => response.text())
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+        })
         .then(html => {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-
-            container.innerHTML = html;
-
-            // 🛑 NU: Kör alla scripts manuellt
-            container.querySelectorAll('script').forEach(oldScript => {
-                const newScript = document.createElement('script');
-                if (oldScript.src) {
-                    newScript.src = oldScript.src;
-                } else {
-                    newScript.textContent = oldScript.textContent;
-                }
-                document.body.appendChild(newScript);
-                oldScript.remove(); // rensa gamla script
+            const c = document.getElementById(containerId);
+            if (!c) { console.error('#' + containerId + ' saknas'); return; }
+            c.innerHTML = html;
+            // exekvera alla <script>-taggar i partialen
+            Array.from(c.querySelectorAll('script')).forEach(old => {
+                const ns = document.createElement('script');
+                if (old.src) { ns.src = old.src; ns.async = false; }
+                else ns.textContent = old.textContent;
+                document.body.appendChild(ns);
+                old.remove();
             });
-
-            const modal = container.querySelector('.modal');
-            if (modal) {
-                modal.style.display = 'flex';
-            }
-
+            const m = c.querySelector('.modal');
+            if (m) m.style.display = 'flex';
+            // re-bind alla handlers efter injektion
             bindImagePreviewers();
             bindCloseButtons();
             bindFormSubmitHandlers();
+            bindTogglePassword();
+            setupDropdownToggles();
         })
-        .catch(error => console.error('Error loading partial view:', error));
+        .catch(err => console.error('Error loading partial view:', err));
 }
 
-
-// ----------------------------------------
-// 3. Form Submit Handler
-// ----------------------------------------
-
+// 3. Form Submit Handlers
 function bindFormSubmitHandlers() {
     document.querySelectorAll('form').forEach(form => {
-        let isSubmitting = false;
-
-        form.addEventListener('submit', async (e) => {
+        let busy = false;
+        form.addEventListener('submit', async e => {
             e.preventDefault();
-            if (isSubmitting) return;
-            isSubmitting = true;
+            if (busy) return;
+            busy = true;
 
             clearErrorMessages(form);
 
-            const day = form.querySelector('#dobDay')?.value;
-            const month = form.querySelector('#dobMonth')?.value;
-            const year = form.querySelector('#dobYear')?.value;
-            const hiddenDobInput = form.querySelector('input[name="DateOfBirth"]');
+            // Bygg DateOfBirth (om sådana inputs finns)
+            const d = form.querySelector('#dobDay')?.value;
+            const mo = form.querySelector('#dobMonth')?.value;
+            const y = form.querySelector('#dobYear')?.value;
+            const hd = form.querySelector('input[name="DateOfBirth"]');
+            if (hd) hd.value = (d && mo && y) ? `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}` : '';
 
-            if (hiddenDobInput) {
-                hiddenDobInput.value = (!day || !month || !year)
-                    ? ''
-                    : `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            }
-
-            let hasError = false;
-            form.querySelectorAll('[data-val="true"]').forEach(input => {
-                if (!input.value.trim()) {
-                    hasError = true;
-                    input.classList.add('input-validation-error');
-                    const span = form.querySelector(`[data-valmsg-for="${input.name}"]`);
-                    if (span) {
-                        const customMessage = form.classList.contains('extended-validation')
-                            ? input.getAttribute('data-val-required') || 'This field is required'
-                            : 'Field is required';
-                        span.innerText = customMessage;
-                        span.classList.add('field-validation-error');
+            // Klientvalidering – kolla om SelectedMemberIdsRaw är tom
+            const selectedMembersInput = form.querySelector('input[name="FormData.SelectedMemberIdsRaw"]');
+            if (selectedMembersInput && selectedMembersInput.value.trim() === '') {
+                const membersFieldGroup = form.querySelector('#project-tags');
+                if (membersFieldGroup) {
+                    const errorSpan = form.querySelector('[data-valmsg-for="FormData.SelectedMemberIdsRaw"]');
+                    if (errorSpan) {
+                        errorSpan.innerText = 'You must select at least one member.';
+                        errorSpan.classList.add('field-validation-error');
                     }
+                    membersFieldGroup.classList.add('input-validation-error');
                 }
-            });
-
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalText = submitButton?.getAttribute("data-original-text") || submitButton?.innerText;
-
-            if (hasError) {
-                isSubmitting = false;
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerText = originalText;
+                busy = false;
+                const btn = form.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = btn.getAttribute('data-original-text') || btn.innerText;
                 }
                 return;
             }
 
-            const formData = new FormData(form);
+            // Klientvalidering – övriga fält (required)
+            let hasError = false;
+            form.querySelectorAll('[data-val="true"]').forEach(i => {
+                if (!i.value.trim()) {
+                    hasError = true;
+                    i.classList.add('input-validation-error');
+                    const sp = form.querySelector(`[data-valmsg-for="${i.name}"]`);
+                    if (sp) {
+                        sp.innerText = form.classList.contains('extended-validation')
+                            ? i.getAttribute('data-val-required') || 'This field is required'
+                            : 'Field is required';
+                        sp.classList.add('field-validation-error');
+                    }
+                }
+            });
 
+            const btn = form.querySelector('button[type="submit"]');
+            const txt = btn?.getAttribute('data-original-text') || btn?.innerText;
+
+            if (hasError) {
+                busy = false;
+                if (btn) { btn.disabled = false; btn.innerText = txt; }
+                return;
+            }
+
+            // Skicka AJAX
             try {
-                const res = await fetch(form.action, {
-                    method: 'post',
-                    body: formData
-                });
-
-                const data = await res.json();
+                const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+                const j = await res.json();
 
                 if (res.ok) {
-                    if (data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        const modal = form.closest('.modal');
-                        if (modal) modal.style.display = 'none';
+                    if (j.redirectUrl) window.location.href = j.redirectUrl;
+                    else {
+                        const mo = form.closest('.modal');
+                        if (mo) mo.style.display = 'none';
                         window.location.reload();
                     }
                 } else if (res.status === 400) {
-                    if (data.errors) {
-                        Object.keys(data.errors).forEach(key => {
-                            const input = form.querySelector(`[name="${key}"]`);
-                            if (input) input.classList.add('input-validation-error');
-                            const span = form.querySelector(`[data-valmsg-for="${key}"]`);
-                            if (span) {
-                                span.innerText = data.errors[key].join('\n');
-                                span.classList.add('field-validation-error');
+                    // Server-side valideringsfel
+                    if (j.errors) {
+                        Object.keys(j.errors).forEach(k => {
+                            const i = form.querySelector(`[name="${k}"]`);
+                            if (i) i.classList.add('input-validation-error');
+                            const sp = form.querySelector(`[data-valmsg-for="${k}"]`);
+                            if (sp) {
+                                sp.innerText = j.errors[k].join('\n');
+                                sp.classList.add('field-validation-error');
                             }
                         });
                     }
-
-                    if (data.error) {
-                        const summary = form.querySelector('.form-message');
-                        if (summary) {
-                            summary.innerText = data.error;
-                            summary.style.display = 'block';
+                    if (j.error) {
+                        const msg = form.querySelector('.form-message');
+                        if (msg) {
+                            msg.innerText = j.error;
+                            msg.style.display = 'block';
                         }
                     }
-
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.innerText = originalText;
-                    }
-
-                    isSubmitting = false;
+                    busy = false;
+                    if (btn) { btn.disabled = false; btn.innerText = txt; }
                 }
-            } catch (error) {
-                console.log('Failed to submit form', error);
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerText = originalText;
-                }
-                isSubmitting = false;
+            } catch (err) {
+                console.error('Submit failed', err);
+                if (btn) { btn.disabled = false; btn.innerText = txt; }
+                busy = false;
             }
         });
     });
 }
 
-// ----------------------------------------
-// 4. Init – DOMContentLoaded
-// ----------------------------------------
 
+// 4. Init på laddning
 document.addEventListener('DOMContentLoaded', () => {
-    const modalButtons = document.querySelectorAll('[data-modal="true"]');
-    modalButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const modalTarget = button.getAttribute('data-target');
-            const modal = document.querySelector(modalTarget);
-            if (modal) modal.style.display = 'flex';
-        });
-    });
-
-    document.querySelectorAll('[data-fetch-url]').forEach(element => {
-        element.addEventListener('click', (e) => {
-            closeAllDropdowns();
-
-            const url = element.getAttribute('data-fetch-url');
-            const container = element.getAttribute('data-container');
-            if (url && container) {
-                loadPartialView(url, container);
-            }
+    document.querySelectorAll('[data-modal="true"]').forEach(b => {
+        b.addEventListener('click', () => {
+            const t = b.getAttribute('data-target');
+            const m = document.querySelector(t);
+            if (m) m.style.display = 'flex';
         });
     });
 
@@ -294,101 +262,66 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTogglePassword();
     setupDropdownToggles();
 
-    const logoutButton = document.getElementById('logoutButton');
+    const lo = document.getElementById('logoutButton');
+    if (lo) lo.addEventListener('click', async e => {
+        e.preventDefault();
+        try {
+            const r = await fetch('/Auth/LogOut', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': getRequestVerificationToken()
+                }
+            });
+            const d = await r.json();
+            if (r.ok && d.redirectUrl) window.location.href = d.redirectUrl;
+            else window.location.reload();
+        } catch (err) {
+            console.error('Logout failed', err);
+        }
+    });
+});
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', async (e) => {
-            e.preventDefault();
-
+// 5. Dropdown-menyer
+function setupDropdownToggles() {
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        const dd = document.getElementById(toggle.getAttribute('data-dropdown'));
+        if (!dd) return;
+        toggle.addEventListener('click', e => {
+            e.stopPropagation();
+            const wasHidden = dd.classList.contains('hidden');
+            closeAllDropdowns();
+            if (wasHidden) dd.classList.remove('hidden');
+        });
+    });
+    document.querySelectorAll('[data-delete-url]').forEach(btn => {
+        btn.addEventListener('click', async e => {
+            e.stopPropagation();
+            if (!confirm('Are you sure you want to delete this project?')) return;
             try {
-                const res = await fetch('/Auth/LogOut', {
+                const r = await fetch(btn.getAttribute('data-delete-url'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'RequestVerificationToken': getRequestVerificationToken()
                     }
                 });
-
-                const data = await res.json();
-
-                if (res.ok && data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    console.warn('Unexpected logout response:', data);
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Logout failed', error);
-            }
-        });
-    }
-});
-
-// ----------------------------------------
-// 5. Dropdown Toggle (modulär för flera)
-// ----------------------------------------
-
-function setupDropdownToggles() {
-    const toggles = document.querySelectorAll('.dropdown-toggle');
-
-    toggles.forEach(toggle => {
-        const dropdownId = toggle.getAttribute('data-dropdown');
-        const dropdown = document.getElementById(dropdownId);
-
-        if (dropdown) {
-            toggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (dropdown.classList.contains('hidden')) {
-                    closeAllDropdowns();
-                    dropdown.classList.remove('hidden');
-                } else {
-                    dropdown.classList.add('hidden');
-                }
-            });
-        }
-    });
-
-
-    document.querySelectorAll('[data-delete-url]').forEach(btn => {
-        btn.addEventListener('click', async function (e) {
-            e.stopPropagation();
-            const url = this.getAttribute('data-delete-url');
-
-            if (!confirm('Are you sure you want to delete this project?')) return;
-
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'RequestVerificationToken': getRequestVerificationToken()
-                    },
-                });
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Could not delete project.');
-                }
+                const d = await r.json();
+                if (r.ok && d.success) window.location.reload();
+                else alert(d.error || 'Could not delete project.');
             } catch (err) {
                 console.error(err);
                 alert('An unexpected error occurred.');
             }
         });
     });
-
-
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', e => {
         if (!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-toggle')) {
             closeAllDropdowns();
         }
     });
 }
-
 function closeAllDropdowns() {
-    document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        menu.classList.add('hidden');
-    });
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
 }
 
