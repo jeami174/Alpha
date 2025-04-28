@@ -11,10 +11,12 @@
         <button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-blue btn-add">Add Project</button>
     </header>
 
+    <div class="project-tabs-wrapper">
     <div class="project-tabs">
-        <button type="button" class="tab-link active" data-filter="all">All</button>
-        <button type="button" class="tab-link" data-filter="started">Started</button>
-        <button type="button" class="tab-link" data-filter="completed">Completed</button>
+        <button type="button" id="counter-projects" class="tab-link active" data-filter="all">All</button>
+        <button type="button" id="counter-projects" class="tab-link" data-filter="started">Started</button>
+        <button type="button" id="counter-projects" class="tab-link" data-filter="completed">Completed</button>
+    </div>
     </div>
 
     @* <div class="surface"> *@
@@ -41,6 +43,24 @@
     document.addEventListener('DOMContentLoaded', function () {
         const tabs = document.querySelectorAll('.tab-link');
         const cards = document.querySelectorAll('.project-card');
+
+        const counts = {
+            all: cards.length,
+            started: 0,
+            completed: 0
+        };
+
+        cards.forEach(card => {
+            const status = card.getAttribute('data-status');
+            if (status === 'started' || status === 'completed') counts.started++;
+            if (status === 'completed') counts.completed++;
+        });
+
+        tabs.forEach(tab => {
+            const filter = tab.getAttribute('data-filter');
+            const count = counts[filter] ?? 0;
+            tab.innerHTML += ` [${count}]`;
+        });
 
         tabs.forEach(tab => {
             tab.addEventListener('click', function () {

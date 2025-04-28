@@ -1895,6 +1895,30 @@ input[type="checkbox"] {
     margin: 0.25rem 0;
 }
 
+#counter-projects {
+    color: var(--body-light);
+    background-color: var(--background);
+    border: none;
+    font-family: Nunito;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+    margin-right: 2rem;
+}
+
+    #counter-projects.active {
+        color: var(--accent);
+        border-bottom: 3px solid var(--accent);
+        padding-bottom: 8px;
+    }
+
+.project-tabs-wrapper {
+    border-bottom: 1px solid var(--border200);
+    margin-bottom: 1.5rem;
+}
+
 /* DENIED PAGE */
 .denied-box {
     text-align: center;
