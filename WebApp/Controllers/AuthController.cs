@@ -1,27 +1,33 @@
-﻿using Business.Interfaces;
+﻿using System.Security.Claims;
+using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
-public class AuthController : Controller
+public class AuthController(IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService) : Controller
 {
-    private readonly IAuthService _authService;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IAuthService _authService = authService;
+    private readonly INotificationService _notificationService = notificationService;
+    private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IProjectService _projectService = projectService;
+    private readonly IMemberService _memberService = memberService;
 
-
-    public AuthController(IAuthService authService, UserManager<ApplicationUser> userManager)
-    {
-        _authService = authService;
-        _userManager = userManager;
-    }
 
     // ------------------ SIGN IN ------------------
+
     [HttpGet]
-    public IActionResult SignIn() => View();
+    public IActionResult SignIn()
+    {
+        return View();
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -39,10 +45,78 @@ public class AuthController : Controller
         var result = await _authService.SignInAsync(form);
 
         if (result.Succeeded)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+                if (isAdmin)
+                {
+                    var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
+                    var newMembers = await _memberService.GetNewMembersAsync(user.LastLogin);
+
+                    foreach (var project in newProjects)
+                    {
+                        var notification = new NotificationModel
+                        {
+                            Id = project.Id,
+                            Message = $"New project: {project.ProjectName}",
+                            ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
+                            Created = project.Created
+                        };
+
+                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                    }
+
+                    foreach (var member in newMembers)
+                    {
+                        var notification = new NotificationModel
+                        {
+                            Id = member.Id.ToString(),
+                            Message = $"New member: {member.FirstName} {member.LastName}",
+                            ImagePath = member.ImageName ?? "/uploads/members/avatars/default.svg",
+                            Created = member.Created
+                        };
+
+                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                    }
+                }
+                else
+                {
+                    var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
+
+                    foreach (var project in newProjects)
+                    {
+                        var notification = new NotificationModel
+                        {
+                            Id = project.Id,
+                            Message = $"New project: {project.ProjectName}",
+                            ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
+                            Created = project.Created
+                        };
+
+                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                    }
+                }
+
+                // Uppdatera LastLogin till nu!
+                user.LastLogin = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
+            }
+
             return Json(new { success = true, redirectUrl = result.Result });
+        }
 
         return BadRequest(new { success = false, error = result.Error });
     }
+
+
+
 
     // ------------------ SIGN UP ------------------
     [HttpGet]

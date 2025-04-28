@@ -7,23 +7,10 @@ namespace Data.Repositories;
 
 public class ProjectRepository(DataContext context) : BaseRepository<ProjectEntity>(context), IProjectRepository
 {
-    public async Task<IEnumerable<ProjectEntity>> GetByStatusAsync(string statusName)
-    {
-        if (string.IsNullOrWhiteSpace(statusName))
-            return [];
-
-        return await _dbSet
-            .Include(p => p.Status)
-            .Include(p => p.Client)
-            .Include(p => p.Members)
-            .Where(p => p.Status != null && p.Status.StatusName == statusName)
-            .ToListAsync();
-    }
 
     public async Task<IEnumerable<ProjectEntity>> GetAllSortedByNameAsync(bool ascending = true)
     {
         var query = _dbSet
-            .Include(p => p.Status)
             .Include(p => p.Client)
             .Include(p => p.Members);
 
@@ -35,7 +22,6 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
     public async Task<IEnumerable<ProjectEntity>> GetAllSortedByDateAsync(bool sortByStartDate = true, bool ascending = true)
     {
         var query = _dbSet
-            .Include(p => p.Status)
             .Include(p => p.Client)
             .Include(p => p.Members);
 
@@ -47,5 +33,14 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
             return ascending
                 ? await query.OrderBy(p => p.EndDate).ToListAsync()
                 : await query.OrderByDescending(p => p.EndDate).ToListAsync();
+    }
+
+    public async Task<IEnumerable<ProjectEntity>> GetCreatedAfterAsync(DateTime since)
+    {
+        return await _dbSet
+            .Where(p => p.Created > since)
+            .Include(p => p.Client)
+            .Include(p => p.Members)
+            .ToListAsync();
     }
 }

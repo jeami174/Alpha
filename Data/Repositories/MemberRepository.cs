@@ -53,5 +53,12 @@ public class MemberRepository(DataContext context) : BaseRepository<MemberEntity
     {
         return await _dbSet.Where(predicate).ToListAsync();
     }
+
+    public async Task<IEnumerable<MemberEntity>> GetCreatedAfterAsync(DateTime since)
+    {
+        return await _dbSet
+            .Where(m => m.Created > since)
+            .ToListAsync();
+    }
 }
 

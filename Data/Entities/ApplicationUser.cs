@@ -6,7 +6,7 @@ public class ApplicationUser : IdentityUser
 {
     [ProtectedPersonalData]
     public string FirstName { get; set; } = null!;
-    
+
     [ProtectedPersonalData]
     public string LastName { get; set; } = null!;
 
@@ -15,4 +15,8 @@ public class ApplicationUser : IdentityUser
     public string FullName => $"{FirstName} {LastName}";
 
     public MemberEntity? Member { get; set; }
+
+    public ICollection<NotificationDismissedEntity> DismissedNotification { get; set; } = [];
+
+    public DateTime LastLogin { get; set; } = DateTime.UtcNow;
 }

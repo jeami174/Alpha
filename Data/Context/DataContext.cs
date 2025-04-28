@@ -16,9 +16,11 @@ public class DataContext : IdentityDbContext<ApplicationUser>
     public DbSet<RoleEntity> MemberRoles { get; set; } = null!;
     public DbSet<ProjectEntity> Projects { get; set; } = null!;
     public DbSet<ClientEntity> Clients { get; set; } = null!;
-    public DbSet<StatusEntity> Statuses { get; set; } = null!;
+
     public DbSet<NotificationEntity> Notifications { get; set; } = null!;
-    public DbSet<UserNotificationEntity> UserNotifications { get; set; } = null!;
+    public DbSet<NotificationTargetGroupEntity> NotificationTargetGroups { get; set; } = null!;
+    public DbSet<NotificationTypeEntity> NotificationTypes { get; set; } = null!;
+    public DbSet<NotificationDismissedEntity> NotificationDismissed { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -69,23 +71,32 @@ public class DataContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(p => p.ClientId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Project -> Status (1:n)
-        modelBuilder.Entity<ProjectEntity>()
-            .HasOne(p => p.Status)
-            .WithMany(s => s.Projects)
-            .HasForeignKey(p => p.StatusId)
+        // NotificationEntity relations
+        modelBuilder.Entity<NotificationEntity>()
+            .HasOne(n => n.NotificationTargetGroup)
+            .WithMany(tg => tg.Notifications)
+            .HasForeignKey(n => n.NotificationTargetGroupId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<NotificationEntity>()
+            .HasOne(n => n.NotificationType)
+            .WithMany(nt => nt.Notifications)
+            .HasForeignKey(n => n.NotificationTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // NotificationDismissedEntity relations
+        modelBuilder.Entity<NotificationDismissedEntity>()
+            .HasOne(nd => nd.User)
+            .WithMany()
+            .HasForeignKey(nd => nd.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // UserNotification relations
-        modelBuilder.Entity<UserNotificationEntity>()
-            .HasOne(un => un.Notification)
-            .WithMany(n => n.UserNotifications)
-            .HasForeignKey(un => un.NotificationId);
+        modelBuilder.Entity<NotificationDismissedEntity>()
+            .HasOne(nd => nd.Notification)
+            .WithMany(n => n.DismissedNotification)
+            .HasForeignKey(nd => nd.NotificationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<UserNotificationEntity>()
-            .HasOne(un => un.User)
-            .WithMany()
-            .HasForeignKey(un => un.UserId);
 
         base.OnModelCreating(modelBuilder);
     }

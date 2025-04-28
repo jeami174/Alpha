@@ -33,12 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Databases\" />
-    <Folder Include="Databases\" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <Folder Include="Databases\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

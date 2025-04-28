@@ -8,6 +8,7 @@ using Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Services;
+using WebApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,33 +47,36 @@ builder.Services.AddAuthorization(options =>
 // 5. MVC
 builder.Services.AddControllersWithViews();
 
-// 6. Services
+// 6. SignalR
+builder.Services.AddSignalR();
+
+// 7. Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
-builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
-// 7. Repositories
+// 8. Repositories
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-// 8. Factories
+
+// 9. Factories
 builder.Services.AddScoped<MemberFactory>();
 builder.Services.AddScoped<UserFactory>();
 builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddScoped<ProjectFactory>();
-builder.Services.AddScoped<StatusFactory>();
 
-// 9. Build app
+// 10. Build app
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -80,7 +84,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 10. Seed Roles
+// 11. Seed Roles
 async Task SeedRolesAsync(IServiceProvider services)
 {
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -95,7 +99,7 @@ async Task SeedRolesAsync(IServiceProvider services)
     }
 }
 
-// 11. Seed Default Admin + Member
+// 12. Seed Default Admin + Member
 async Task SeedDefaultAdminAsync(IServiceProvider services)
 {
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
@@ -138,7 +142,7 @@ async Task SeedDefaultAdminAsync(IServiceProvider services)
     }
 }
 
-// 12. Run seeding
+// 13. Run seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -146,13 +150,16 @@ using (var scope = app.Services.CreateScope())
     await SeedDefaultAdminAsync(services);
 }
 
-// 13. Routing
+// 14. Routing
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=SignIn}/{id?}")
     .WithStaticAssets();
+
+// 15. SignalR hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
 

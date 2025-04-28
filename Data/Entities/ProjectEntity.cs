@@ -30,10 +30,6 @@ public class ProjectEntity
 
     public int ClientId { get; set; }
 
-
-    [ForeignKey(nameof(StatusId))]
-    public StatusEntity? Status { get; set; }
-
     [ForeignKey(nameof(ClientId))]
     public ClientEntity Client { get; set; } = null!;
 

@@ -109,6 +109,42 @@ function bindTogglePassword() {
     });
 }
 
+function updateRelativeTimes() {
+    const elements = document.querySelectorAll('.notification-time')
+    const now = new Date()
+
+    elements.forEach(el => {
+        const created = new Date(el.getAttribute('data-created'))
+        if (isNaN(created.getTime())) return
+
+        const diff = now - created
+        const diffSeconds = Math.floor(diff / 1000);
+        const diffMinutes = Math.floor(diffSeconds / 60)
+        const diffHours = Math.floor(diffMinutes / 60)
+        const diffDays = Math.floor(diffHours / 24)
+        const diffWeeks = Math.floor(diffDays / 7)
+
+        let relativeTime = ''
+
+        if (diffMinutes < 1) {
+            relativeTime = 'just now'
+        } else if (diffMinutes < 60) {
+            relativeTime = diffMinutes + ' min ago'
+        } else if (diffHours < 2) {
+            relativeTime = diffHours + ' hour ago'
+        } else if (diffHours < 24) {
+            relativeTime = diffHours + ' hours ago'
+        } else if (diffDays < 2) {
+            relativeTime = diffDays + ' day ago'
+        } else if (diffDays < 7) {
+            relativeTime = diffDays + ' days ago'
+        } else {
+            relativeTime = diffWeeks + ' weeks ago'
+        }
+        el.textContent = relativeTime
+    });
+}
+
 // 2. Dynamisk Partial Loader
 function loadPartialView(url, containerId) {
 
@@ -298,7 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Logout failed', err);
         }
     });
+
+    // --- Lägg till Notifications ---
+    loadNotifications();
+    setInterval(updateRelativeTimes, 60000); // Uppdatera tider var 60:e sekund
+    updateRelativeTimes(); // Uppdatera tider direkt vid laddning
 });
+
 
 // 5. Dropdown-menyer
 function setupDropdownToggles() {
@@ -342,4 +384,37 @@ function setupDropdownToggles() {
 function closeAllDropdowns() {
     document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
 }
+
+async function loadNotifications() {
+    try {
+        const response = await fetch('/api/notifications');
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+
+        const notifications = await response.json();
+        const list = document.getElementById('notification-list');
+
+        notifications.forEach(notification => {
+            const item = document.createElement('div');
+            item.className = 'notification-item';
+            item.setAttribute('data-id', notification.id);
+
+            item.innerHTML = `
+                <img src="${notification.imagePath}" alt="User" class="notification-avatar" />
+                <div class="notification-content">
+                    <div class="notification-text">${notification.message}</div>
+                    <div class="notification-time" data-created="${new Date(notification.created).toISOString()}">${notification.created}</div>
+                </div>
+                <button class="notification-close" onclick="dismissNotification('${notification.id}')">×</button>
+            `;
+
+            list.appendChild(item);
+        });
+
+        updateNotificationCount();
+        updateRelativeTimes();
+    } catch (err) {
+        console.error('Error loading notifications:', err);
+    }
+}
+
 

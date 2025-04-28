@@ -1,20 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities;
 
 public class NotificationEntity
 {
     [Key]
-    public int Id { get; set; }
-
-    [Required]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Image { get; set; } = null!;
     public string Message { get; set; } = null!;
+    public DateTime Created { get; set; } = DateTime.Now;
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-    public bool IsGlobal { get; set; } = false;
 
-    public string? TargetRole { get; set; }
+    [ForeignKey(nameof(NotificationTargetGroup))]
+    public int NotificationTargetGroupId { get; set; } = 1;
+    public NotificationTargetGroupEntity NotificationTargetGroup { get; set; } = null!;
 
-    public virtual ICollection<UserNotificationEntity> UserNotifications { get; set; } = new List<UserNotificationEntity>();
+
+
+    [ForeignKey(nameof(NotificationType))]
+    public int NotificationTypeId { get; set; }
+    public NotificationTypeEntity NotificationType { get; set; } = null!;
+
+    public ICollection<NotificationDismissedEntity> DismissedNotification { get; set; } = [];
+
 }

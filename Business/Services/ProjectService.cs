@@ -11,20 +11,17 @@ namespace Business.Services;
 public class ProjectService(
     IProjectRepository projectRepository,
     IClientRepository clientRepository,
-    IStatusRepository statusRepository,
     IMemberRepository memberRepository,
     ProjectFactory projectFactory) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IClientRepository _clientRepository = clientRepository;
-    private readonly IStatusRepository _statusRepository = statusRepository;
     private readonly IMemberRepository _memberRepository = memberRepository;
     private readonly ProjectFactory _projectFactory = projectFactory;
 
     public async Task<ServiceResult<ProjectModel>> CreateAsync(
         AddProjectForm form,
         int clientId,
-        int statusId,
         List<int> memberIds,
         string imageName)
     {
@@ -37,21 +34,17 @@ public class ProjectService(
             if (client is null)
                 return ServiceResult<ProjectModel>.Failure("Client not found", 400);
 
-            // 🚀 Ändra här:
             var selectedMembers = await _memberRepository
                 .WhereAsync(m => memberIds.Contains(m.Id));
 
             var project = _projectFactory.Create(
                 form,
                 client,
-                selectedMembers.ToList(), // 👈 här är de korrekt attached
+                selectedMembers.ToList(),
                 imageName
             );
 
             project.ImageName = imageName;
-
-            // TODO: hämta status från DB
-            project.StatusId = 1;
 
             await _projectRepository.CreateAsync(project);
             await _projectRepository.SaveToDatabaseAsync();
@@ -67,17 +60,12 @@ public class ProjectService(
         }
     }
     // READ ALL
-    public async Task<ServiceResult<IEnumerable<ProjectModel>>> GetAllProjectsAsync(string? sortBy = null, string? statusFilter = null)
+    public async Task<ServiceResult<IEnumerable<ProjectModel>>> GetAllProjectsAsync(string? sortBy = null)
     {
         var projects = await _projectRepository.GetAllWithDetailsAsync(q =>
             q.Include(p => p.Client)
-             .Include(p => p.Status)
              .Include(p => p.Members));
 
-        if (!string.IsNullOrWhiteSpace(statusFilter))
-        {
-            projects = projects.Where(p => p.Status?.StatusName.ToLower() == statusFilter.ToLower());
-        }
 
         projects = sortBy switch
         {
@@ -97,7 +85,6 @@ public class ProjectService(
     {
         var project = await _projectRepository.GetOneWithDetailsAsync(
             q => q.Include(p => p.Client)
-                  .Include(p => p.Status)
                   .Include(p => p.Members),
             p => p.Id == id);
 
@@ -110,7 +97,6 @@ public class ProjectService(
     public async Task<ServiceResult<ProjectModel>> UpdateProjectAsync(
     EditProjectForm form,
     int clientId,
-    int statusId,
     List<int> memberIds,
     string? newImageName)
     {
@@ -126,16 +112,14 @@ public class ProjectService(
         try
         {
             var client = await _clientRepository.GetOneAsync(c => c.ClientId == clientId);
-            var status = await _statusRepository.GetOneAsync(s => s.Id == statusId);
 
-            if (client == null || status == null)
-                return ServiceResult<ProjectModel>.Failure("Client or status not found", 400);
+            if (client == null)
+                return ServiceResult<ProjectModel>.Failure("Client not found", 400);
 
-            // 🚀 Ändra här:
             var selectedMembers = await _memberRepository
                 .WhereAsync(m => memberIds.Contains(m.Id));
 
-            _projectFactory.Update(project, form, client, status, selectedMembers.ToList());
+            _projectFactory.Update(project, form, client, selectedMembers.ToList());
 
             project.ImageName = newImageName ?? form.ImageName;
 
@@ -165,5 +149,14 @@ public class ProjectService(
         await _projectRepository.SaveToDatabaseAsync();
 
         return ServiceResult<bool>.Success(true);
+    }
+
+    //HJÄLP METOD FÖR NOTIFIERINGAR FÖR ATT KUNNA SE NYA SKAPADE PROJEKT
+    public async Task<IEnumerable<ProjectModel>> GetNewProjectsAsync(DateTime since)
+    {
+        var projects = await _projectRepository.GetCreatedAfterAsync(since);
+
+        var models = projects.Select(p => _projectFactory.Create(p));
+        return models;
     }
 }

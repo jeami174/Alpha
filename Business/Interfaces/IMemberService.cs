@@ -11,5 +11,7 @@ public interface IMemberService
     Task<ServiceResult<MemberModel>> AddMemberAsync(AddMemberForm form, string imageName);
     Task<ServiceResult<MemberModel>> UpdateMemberAsync(int id, EditMemberForm form);
     Task<ServiceResult<bool>> DeleteMemberAsync(int id);
+    Task<IEnumerable<MemberModel>> GetNewMembersAsync(DateTime since);
+
 }
 

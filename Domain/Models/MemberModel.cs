@@ -13,4 +13,7 @@ public class MemberModel
 
     public RoleModel? Role { get; set; }
     public AddressModel? Address { get; set; }
+
+    public DateTime Created { get; set; }
+
 }

@@ -27,6 +27,8 @@ public class MemberEntity
 
     public DateTime? DateOfBirth { get; set; }
 
+
+
     public int? RoleId { get; set; }
 
     public int? AddressId { get; set; }
@@ -47,5 +49,8 @@ public class MemberEntity
 
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
+
+    [Column(TypeName = "datetime2")]
+    public DateTime Created { get; set; } = DateTime.Now;
 
 }

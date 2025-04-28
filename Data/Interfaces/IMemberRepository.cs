@@ -21,4 +21,11 @@ public interface IMemberRepository : IBaseRepository<MemberEntity>
     /// Dessa entities är trackade av DbContext.
     /// </summary>
     Task<IEnumerable<MemberEntity>> WhereAsync(Expression<Func<MemberEntity, bool>> predicate);
+
+    /// <summary>
+    /// Hämtar alla members som skapats efter ett visst datum.
+    /// Används t.ex. vid notifieringar.
+    /// </summary>
+    Task<IEnumerable<MemberEntity>> GetCreatedAfterAsync(DateTime since);
+
 }

@@ -48,14 +48,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="FormData.SelectedStatusId">Status</label>
-                        <select class="custom-select-dropdown" asp-for="FormData.SelectedStatusId" asp-items="@(new SelectList(Model.Statuses, "Id", "StatusName"))">
-                            <option value="">-- Select Status --</option>
-                        </select>
-                        <span asp-validation-for="FormData.SelectedStatusId"></span>
-                    </div>
-
-                    <div class="form-group">
                         <label asp-for="FormData.Form.Description"></label>
                         <div class="field-group">
                             <textarea asp-for="FormData.Form.Description"></textarea>

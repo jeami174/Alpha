@@ -13,27 +13,23 @@ public class ProjectsController : Controller
 {
     private readonly IProjectService _projectService;
     private readonly IClientService _clientService;
-    private readonly IStatusService _statusService;
     private readonly IMemberService _memberService;
 
     public ProjectsController(
         IProjectService projectService,
         IClientService clientService,
-        IStatusService statusService,
         IMemberService memberService)
     {
         _projectService = projectService;
         _clientService = clientService;
-        _statusService = statusService;
         _memberService = memberService;
     }
 
     [HttpGet("")]
     public async Task<IActionResult> Projects(string? status = null, string? sortBy = null)
     {
-        var projectsResult = await _projectService.GetAllProjectsAsync(sortBy, status);
+        var projectsResult = await _projectService.GetAllProjectsAsync();
         var clientsResult = await _clientService.GetAllAsync();
-        var statusesResult = await _statusService.GetAllAsync();
         var membersResult = await _memberService.GetAllMembersAsync();
 
         if (!projectsResult.Succeeded)
@@ -61,7 +57,6 @@ public class ProjectsController : Controller
             SelectedStatus = status,
             SortBy = sortBy,
             Clients = clientsResult.Result?.ToList() ?? [],
-            Statuses = statusesResult.Result?.ToList() ?? [],
             Members = membersResult.Result?.ToList() ?? [],
             AddProjectForm = new AddProjectForm()
         };

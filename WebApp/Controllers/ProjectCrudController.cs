@@ -12,7 +12,6 @@ namespace WebApp.Controllers;
 public class ProjectCrudController : Controller
 {
     private readonly IProjectService _projectService;
-    private readonly IStatusService _statusService;
     private readonly IClientService _clientService;
     private readonly IMemberService _memberService;
     private readonly IFileStorageService _fileStorageService;
@@ -22,13 +21,11 @@ public class ProjectCrudController : Controller
 
     public ProjectCrudController(
         IProjectService projectService,
-        IStatusService statusService,
         IClientService clientService,
         IMemberService memberService,
         IFileStorageService fileStorageService)
     {
         _projectService = projectService;
-        _statusService = statusService;
         _clientService = clientService;
         _memberService = memberService;
         _fileStorageService = fileStorageService;
@@ -56,11 +53,9 @@ public class ProjectCrudController : Controller
             ? await _fileStorageService.SaveFileAsync(data.Form.ProjectImage, ProjectUploadsFolder)
             : _fileStorageService.GetRandomAvatar(AvatarsFolder);
 
-        // Anropa tjänsten –  skickar null för status just nu
         var result = await _projectService.CreateAsync(
             data.Form,
             data.SelectedClientId,
-            0,                     // status avaktiverad tills vidare
             data.SelectedMemberIds,
             imageName
         );
@@ -82,7 +77,6 @@ public class ProjectCrudController : Controller
         var project = projectResult.Result;
 
         var clientsResult = await _clientService.GetAllAsync();
-        var statusesResult = await _statusService.GetAllAsync();
         var membersResult = await _memberService.GetAllMembersAsync();
 
         var allMembers = (membersResult.Result ?? Enumerable.Empty<MemberModel>())
@@ -104,11 +98,9 @@ public class ProjectCrudController : Controller
                     Budget = project.Budget
                 },
                 SelectedClientId = project.ClientModel.ClientId,
-                SelectedStatusId = project.StatusModel.Id,
                 SelectedMemberIds = project.MemberModels.Select(m => m.Id).ToList()
             },
             Clients = clientsResult.Result ?? Enumerable.Empty<ClientModel>(),
-            Statuses = statusesResult.Result ?? Enumerable.Empty<StatusModel>(),
             Members = allMembers
         };
 
@@ -149,7 +141,6 @@ public class ProjectCrudController : Controller
         var result = await _projectService.UpdateProjectAsync(
             data.Form,
             data.SelectedClientId,
-            data.SelectedStatusId,
             data.SelectedMemberIds,
             newImageName
         );
@@ -225,7 +216,6 @@ public class ProjectCrudController : Controller
                     ImageName = project.ImageName
                 },
                 clientId: project.ClientModel.ClientId,
-                statusId: project.StatusModel.Id,
                 memberIds: project.MemberModels.Select(m => m.Id).ToList(),
                 newImageName: project.ImageName
             );

@@ -19,7 +19,7 @@ namespace Data.Context
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             if (string.IsNullOrEmpty(connectionString))
-            {
+            { 
                 // Logga felet till konsolen och kasta ett undantag
                 Console.Error.WriteLine("Connection string 'DefaultConnection' hittades inte. Kontrollera att appsettings.json finns på rätt sökväg.");
                 throw new InvalidOperationException("Connection string 'DefaultConnection' hittades inte.");
