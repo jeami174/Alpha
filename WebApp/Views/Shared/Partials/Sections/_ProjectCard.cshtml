@@ -12,7 +12,7 @@
                        : "normal";
 
     string? badgeText = null;
-    string? iconPath = "Images/Icons/Time.svg";
+    string iconPath = "Images/Icons/Time.svg";
 
     if (isNotStarted)
     {
@@ -24,21 +24,29 @@
         badgeText = "Ended";
         iconPath = "Images/Icons/Timered.svg";
     }
-    else if (isEndingSoon)
+    else if (isEndingSoon && Model.EndDate.HasValue)
     {
-        badgeText = ProjectHelper.GetTimeLeft(Model.EndDate!.Value);
+        badgeText = ProjectHelper.GetTimeLeft(Model.StartDate, Model.EndDate.Value);
         iconPath = "Images/Icons/Timered.svg";
     }
     else if (Model.EndDate.HasValue)
     {
-        badgeText = ProjectHelper.GetTimeLeft(Model.EndDate.Value);
+        badgeText = ProjectHelper.GetTimeLeft(Model.StartDate, Model.EndDate.Value);
         iconPath = "Images/Icons/Time.svg";
     }
 
-    bool showBadge = badgeText != null;
+    bool showBadge = !string.IsNullOrEmpty(badgeText);
 }
 
-<div class="project-card" data-member-id="@Model.Id">
+
+
+<div class="project-card"
+     data-member-id="@Model.Id"
+     data-status="@(
+        ProjectHelper.IsCompleted(Model.EndDate) ? "completed" :
+        ProjectHelper.IsNotStarted(Model.StartDate) ? "notstarted" :
+        "started"
+     )">
 
     <div class="settings-menu-wrapper">
         <button type="button" class="edit-btn dropdown-toggle" data-dropdown="projectEditDropdown-@Model.Id">

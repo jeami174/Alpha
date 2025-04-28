@@ -14,7 +14,7 @@
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="ImageName" type="hidden" />
 
-                    <div class="image-previewer square @(string.IsNullOrWhiteSpace(Model.ImageName) ? "" : "selected")">
+                    <div class="image-previewer circle @(string.IsNullOrWhiteSpace(Model.ImageName) ? "" : "selected")">
                         <img src="~/@Model.ImageName" class="image-preview" />
                         <input asp-for="ClientImage" type="file" accept="image/*" class="hide" />
                     </div>

@@ -2,26 +2,33 @@
 {
     public static class ProjectHelper
     {
-        public static string GetTimeLeft(DateTime endDate)
+        public static string GetTimeLeft(DateTime startDate, DateTime? endDate)
         {
             var today = DateTime.Today;
-            var daysRemaining = (endDate.Date - today).Days;
 
-            if (daysRemaining <= 0)
+            if (!endDate.HasValue)
+                return "";
+
+            if (today < startDate)
+                return "Not started";
+
+            if (today > endDate.Value)
                 return "Ended";
+
+            var daysRemaining = (endDate.Value.Date - today).Days;
 
             if (daysRemaining <= 7)
                 return $"{daysRemaining} day{(daysRemaining == 1 ? "" : "s")} left";
 
-            var weeks = (int)Math.Ceiling((endDate.Date - today).TotalDays / 7);
+            var weeks = (int)Math.Ceiling(daysRemaining / 7.0);
             return $"{weeks} week{(weeks == 1 ? "" : "s")} left";
         }
 
         public static bool IsNotStarted(DateTime startDate)
-            => startDate > DateTime.Today;
+            => DateTime.Today < startDate;
 
         public static bool IsCompleted(DateTime? endDate)
-            => endDate.HasValue && endDate.Value.Date < DateTime.Today;
+            => endDate.HasValue && DateTime.Today > endDate.Value;
 
         public static bool IsEndingSoon(DateTime? endDate, int thresholdDays = 7)
         {

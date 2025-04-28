@@ -11,7 +11,7 @@
                 <form novalidate method="post" asp-action="AddClient" asp-controller="Clients" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
 
-                    <div class="image-previewer square">
+                    <div class="image-previewer circle">
                         <img src="" class="image-preview" />
                         <input asp-for="ClientImage" accept="image/*" class="hide" />
                     </div>

@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Images\Projects\" />
     <Folder Include="wwwroot\uploads\Clients\clientuploads\" />
     <Folder Include="wwwroot\uploads\projects\projectuploads\" />
   </ItemGroup>

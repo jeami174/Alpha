@@ -595,6 +595,11 @@ form.extended-validation .extended-field-validation-error {
     border: none;
 }
 
+#add-member-form .dob-group .custom-select select {
+    background-image: none;
+    padding-right: 1rem;
+}
+
 form .form-message {
     margin-top: 1rem;
     font-size: 0.85rem;
@@ -1738,7 +1743,9 @@ input[type="checkbox"] {
 .project-card-avatar {
     width: 56px;
     height: 56px;
-    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 14px;
+
 }
 
 .project-card-header-text {
@@ -1767,7 +1774,7 @@ input[type="checkbox"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 1rem;
+    padding-top: 4rem;
 }
 
 .project-card-deadline {

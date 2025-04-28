@@ -11,6 +11,12 @@
         <button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-blue btn-add">Add Project</button>
     </header>
 
+    <div class="project-tabs">
+        <button type="button" class="tab-link active" data-filter="all">All</button>
+        <button type="button" class="tab-link" data-filter="started">Started</button>
+        <button type="button" class="tab-link" data-filter="completed">Completed</button>
+    </div>
+
     @* <div class="surface"> *@
     <div class="member-card-grid">
         @foreach (var project in Model.Projects)
@@ -30,3 +36,31 @@
 
 <div id="editProjectContainer"></div>
 <div id="addMemberToProjectContainer"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.tab-link');
+        const cards = document.querySelectorAll('.project-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+
+                cards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+
+                    if (filter === 'all') {
+                        card.style.display = '';
+                    } else if (filter === 'started') {
+                        card.style.display = (status === 'started' || status === 'completed') ? '' : 'none';
+                    } else if (filter === 'completed') {
+                        card.style.display = (status === 'completed') ? '' : 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
