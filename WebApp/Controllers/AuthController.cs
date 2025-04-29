@@ -11,7 +11,7 @@ using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
-public class AuthController(IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService) : Controller
+public class AuthController(IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService, SignInManager<ApplicationUser> signInManager) : Controller
 {
     private readonly IAuthService _authService = authService;
     private readonly INotificationService _notificationService = notificationService;
@@ -19,8 +19,9 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IProjectService _projectService = projectService;
     private readonly IMemberService _memberService = memberService;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
 
-
+    #region Local Identity
     // ------------------ SIGN IN ------------------
 
     [HttpGet]
@@ -263,6 +264,83 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
     {
         return View();
     }
+
+    #endregion
+
+    #region External Authentication
+
+    [HttpPost]
+    public IActionResult ExternalSignIn(string provider, string returnUrl = null!)
+    {
+        if (string.IsNullOrEmpty(provider))
+        {
+            ModelState.AddModelError("", "Invalid provider");
+            return View("SignIn");
+        }
+
+        var redirectUrl = Url.Action("ExternalSignInCallback", "Auth", new { returnUrl })!;
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return Challenge(properties, provider);
+
+    }
+
+    public async Task<IActionResult> ExternalSignInCallback(string returnUrl = null!, string remoteError = null!)
+    {
+        returnUrl ??= Url.Content("~/");
+        if (!string.IsNullOrEmpty(remoteError))
+        {
+            ModelState.AddModelError("", $"Error from external provider: {remoteError}");
+            return View("SignIn");
+        }
+
+        var info = await _signInManager.GetExternalLoginInfoAsync();
+        if (info == null)
+            return RedirectToAction("SignIn");
+
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        if (signInResult.Succeeded)
+        {
+            return LocalRedirect(returnUrl);
+        }
+        else
+        {
+            string firstName = string.Empty;
+            string lastName = string.Empty;
+
+            try
+            {
+                firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "unknown";
+                lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "unknown";
+            }
+            catch { }
+
+            string email = info.Principal.FindFirstValue(ClaimTypes.Email)!;
+            string userName = $"ext_{info.LoginProvider.ToLower()}_{email}";
+
+            var user = new ApplicationUser
+            {
+                UserName = userName,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+            };
+
+            var identityResult = await _userManager.CreateAsync(user);
+            if (identityResult.Succeeded)
+            {
+                await _userManager.AddLoginAsync(user, info);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            foreach (var error in identityResult.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View("SignIn");
+        }
+    }
+    #endregion
 
 }
 

@@ -1,5 +1,11 @@
 ﻿@model WebApp.ViewModels.UserProfileViewModel
+@{
+    var provider = User?.FindFirstValue(ClaimTypes.AuthenticationMethod);
+    if (string.IsNullOrEmpty(provider))
+        provider = "Local Identity";
 
+    var email = User?.FindFirstValue(ClaimTypes.Email);
+}
 <header class="topbar">
     <div class="search-container">
         <img src="/images/icons/Search.svg" alt="Search Icon" class="icon" />

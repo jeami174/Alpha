@@ -12,10 +12,7 @@
         <form class="form signin-form form extended-validation" method="post" asp-action="SignIn" asp-controller="Auth" novalidate>
 
             <!-- Google login -->
-            <button class="btn btn-gray google-btn" type="button">
-                <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
-                Login with Google
-            </button>
+            @await Html.PartialAsync("Partials/Components/_ExternalAuthenticationPartial")
 
             <div class="SignIn-Divider">
                 <hr />
