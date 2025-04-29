@@ -44,75 +44,84 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
 
         var result = await _authService.SignInAsync(form);
 
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user != null)
-            {
-                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-
-                if (isAdmin)
-                {
-                    var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
-                    var newMembers = await _memberService.GetNewMembersAsync(user.LastLogin);
-
-                    foreach (var project in newProjects)
-                    {
-                        var notification = new NotificationModel
-                        {
-                            Id = project.Id,
-                            Message = $"New project: {project.ProjectName}",
-                            ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
-                            Created = project.Created
-                        };
-
-                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
-                    }
-
-                    foreach (var member in newMembers)
-                    {
-                        var notification = new NotificationModel
-                        {
-                            Id = member.Id.ToString(),
-                            Message = $"New member: {member.FirstName} {member.LastName}",
-                            ImagePath = member.ImageName ?? "/uploads/members/avatars/default.svg",
-                            Created = member.Created
-                        };
-
-                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
-                    }
-                }
-                else
-                {
-                    var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
-
-                    foreach (var project in newProjects)
-                    {
-                        var notification = new NotificationModel
-                        {
-                            Id = project.Id,
-                            Message = $"New project: {project.ProjectName}",
-                            ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
-                            Created = project.Created
-                        };
-
-                        await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
-                    }
-                }
-
-                // Uppdatera LastLogin till nu!
-                user.LastLogin = DateTime.UtcNow;
-                await _userManager.UpdateAsync(user);
-            }
-
-            return Json(new { success = true, redirectUrl = result.Result });
+            return BadRequest(new { success = false, error = result.Error });
         }
 
-        return BadRequest(new { success = false, error = result.Error });
+        // Hämta användaren baserat på form.Email istället för Claims
+        var user = await _userManager.FindByEmailAsync(form.Email);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var userId = user.Id;
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+        try
+        {
+            if (isAdmin)
+            {
+                var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
+                var newMembers = await _memberService.GetNewMembersAsync(user.LastLogin);
+
+                foreach (var project in newProjects)
+                {
+                    var notification = new NotificationModel
+                    {
+                        Id = project.Id,
+                        Message = $"New project: {project.ProjectName}",
+                        ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
+                        Created = project.Created
+                    };
+
+                    await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                }
+
+                foreach (var member in newMembers)
+                {
+                    var notification = new NotificationModel
+                    {
+                        Id = member.Id.ToString(),
+                        Message = $"New member: {member.FirstName} {member.LastName}",
+                        ImagePath = member.ImageName ?? "/uploads/members/avatars/default.svg",
+                        Created = member.Created
+                    };
+
+                    await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                }
+            }
+            else
+            {
+                var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
+
+                foreach (var project in newProjects)
+                {
+                    var notification = new NotificationModel
+                    {
+                        Id = project.Id,
+                        Message = $"New project: {project.ProjectName}",
+                        ImagePath = project.ImageName ?? "/uploads/projects/avatars/default.svg",
+                        Created = project.Created
+                    };
+
+                    await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Logga exception om du har ILogger
+            // Men låt inte en misslyckad SignalR-sändning förstöra inloggningen.
+        }
+
+        // Uppdatera LastLogin till nu
+        user.LastLogin = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
+        return Json(new { success = true, redirectUrl = result.Result });
     }
 
 

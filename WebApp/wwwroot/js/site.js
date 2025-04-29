@@ -145,6 +145,27 @@ function updateRelativeTimes() {
     });
 }
 
+function updateNotificationCount() {
+    const notificationsList = document.querySelector('.notification-list');
+    const countDisplay = document.querySelector('.notification-count');
+    const dot = document.querySelector('.notification-dot');
+
+    const count = notificationsList.querySelectorAll('.notification-item').length;
+
+    if (countDisplay) {
+        countDisplay.textContent = count;
+    }
+
+    if (dot) {
+        if (count > 0) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    }
+}
+
+
 // 2. Dynamisk Partial Loader
 function loadPartialView(url, containerId) {
 
@@ -197,7 +218,7 @@ function loadPartialView(url, containerId) {
 }
 
 // 3. Form Submit Handlers
-function bindFormSubmitHandlers() {
+function bindFormSubmitHandlers() {loadNotifications()
     document.querySelectorAll('form').forEach(form => {
         let busy = false;
         form.addEventListener('submit', async e => {

@@ -16,10 +16,10 @@
 
             <!-- Notifications dropdown -->
             <div class="notifications-menu-wrapper hidden dropdown-menu" id="notificationsDropdown">
-                <div id="notification-list" class="notification-list">
-                </div>
+                @await Html.PartialAsync("~/Views/Shared/Partials/Notifications/_NotificationsMenu.cshtml", Model.Notifications)
+
             </div>
-        </div> <!-- Korrekt stängning här! -->
+        </div>
         <!-- Settings toggle -->
         <div class="settings-menu-wrapper">
             <img src="/images/icons/Setting.svg" alt="Settings" class="icon settings-toggle dropdown-toggle" data-dropdown="settingsDropdown" />

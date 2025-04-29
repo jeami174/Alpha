@@ -18,17 +18,18 @@ public class NotificationRepository(DataContext context) : BaseRepository<Notifi
 
     public async Task<IEnumerable<NotificationEntity>> GetAllForUserAsync(string userId, int take = 5)
     {
-        var dismissedIds = await _context.NotificationDismissed
-            .Where(x => x.UserId == userId)
-            .Select(x => x.NotificationId)
-            .ToListAsync();
+        if (string.IsNullOrEmpty(userId))
+            throw new ArgumentException("User ID cannot be null or empty.", nameof(userId));
 
         var notifications = await _dbSet
-            .Where(x => !dismissedIds.Contains(x.Id))
-            .OrderByDescending(x => x.Created)
-            .Take(take)
             .Include(x => x.NotificationType)
             .Include(x => x.NotificationTargetGroup)
+            .Where(x => !_context.NotificationDismissed
+                .Where(d => d.UserId == userId)
+                .Select(d => d.NotificationId)
+                .Contains(x.Id))
+            .OrderByDescending(x => x.Created)
+            .Take(take)
             .ToListAsync();
 
         return notifications;

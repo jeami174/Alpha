@@ -56,24 +56,3 @@ function removeNotification(notificationId) {
     }
 }
 
-function updateNotificationCount() {
-    const notificationsList = document.querySelector('.notification-list');
-    const countDisplay = document.querySelector('.notification-count');
-    const button = document.querySelector('.notification-btn');
-    const count = notificationsList.querySelectorAll('.notification-item').length;
-
-    if (countDisplay) {
-        countDisplay.textContent = count;
-    }
-
-    let dot = button.querySelector('.notification-dot');
-    if (count > 0 && !dot) {
-        dot = document.createElement('span');
-        dot.className = 'notification-dot';
-        button.appendChild(dot);
-    }
-
-    if (count === 0 && dot) {
-        dot.remove();
-    }
-}

@@ -2,12 +2,16 @@
 using Business.Models;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using WebApp.Hubs;
 using WebApp.ViewModels;
+using Data.Entities;
 
 namespace WebApp.Controllers;
 
-[Authorize(Policy = "Admins")]
+[Authorize(Roles = "Admin,User")]
 [Route("projectcrud")]
 public class ProjectCrudController : Controller
 {
@@ -15,6 +19,9 @@ public class ProjectCrudController : Controller
     private readonly IClientService _clientService;
     private readonly IMemberService _memberService;
     private readonly IFileStorageService _fileStorageService;
+    private readonly INotificationService _notificationService;
+    private readonly IHubContext<NotificationHub> _notificationHub;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     private const string ProjectUploadsFolder = "projects/projectuploads";
     private const string AvatarsFolder = "projects/avatars";
@@ -23,12 +30,18 @@ public class ProjectCrudController : Controller
         IProjectService projectService,
         IClientService clientService,
         IMemberService memberService,
-        IFileStorageService fileStorageService)
+        IFileStorageService fileStorageService,
+        INotificationService notificationService,
+        IHubContext<NotificationHub> notificationHub,
+        UserManager<ApplicationUser> userManager)
     {
         _projectService = projectService;
         _clientService = clientService;
         _memberService = memberService;
         _fileStorageService = fileStorageService;
+        _notificationService = notificationService;
+        _notificationHub = notificationHub;
+        _userManager = userManager;
     }
 
     [HttpPost]
@@ -63,9 +76,33 @@ public class ProjectCrudController : Controller
         if (!result.Succeeded)
             return BadRequest(new { success = false, error = result.Error ?? "Failed to create project." });
 
+        // 🔔 Skapa notification
+        var notification = new NotificationEntity
+        {
+            Message = $"New project: {data.Form.ProjectName}",
+            Image = imageName,
+            NotificationTypeId = 2,          // ProjectCreated
+            NotificationTargetGroupId = 2,   // Users
+            Created = DateTime.UtcNow
+        };
+
+        await _notificationService.AddNotificationAsync(notification);
+
+        // 🔔 Skicka till användare med rollen "User"
+        var users = await _userManager.GetUsersInRoleAsync("User");
+        foreach (var user in users)
+        {
+            await _notificationHub.Clients.User(user.Id).SendAsync("RecieveNotification", new
+            {
+                id = notification.Id,
+                message = notification.Message,
+                imagePath = notification.Image,
+                created = notification.Created
+            });
+        }
+
         return Ok(new { redirectUrl = Url.Action("Projects", "Projects") });
     }
-
 
     [HttpGet("edit/{id}")]
     public async Task<IActionResult> EditProject(string id)
@@ -109,7 +146,6 @@ public class ProjectCrudController : Controller
         return PartialView("~/Views/Shared/Partials/Sections/_EditProjectForm.cshtml", vm);
     }
 
-
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditProject(EditProjectFormViewModel vm)
@@ -134,8 +170,7 @@ public class ProjectCrudController : Controller
             .ToList();
 
         var newImageName = data.Form.ProjectImage is { Length: > 0 }
-            ? await _fileStorageService.SaveFileAsync(
-                  data.Form.ProjectImage, ProjectUploadsFolder)
+            ? await _fileStorageService.SaveFileAsync(data.Form.ProjectImage, ProjectUploadsFolder)
             : data.Form.ImageName;
 
         var result = await _projectService.UpdateProjectAsync(
@@ -179,7 +214,6 @@ public class ProjectCrudController : Controller
         );
     }
 
-    // POST /projectcrud/add-member
     [HttpPost("add-member", Name = "AddMemberToProject")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddMemberToProject(AddMemberToProjectViewModel vm)
@@ -232,7 +266,4 @@ public class ProjectCrudController : Controller
 
         return Ok(new { success = true });
     }
-
-
-
 }
