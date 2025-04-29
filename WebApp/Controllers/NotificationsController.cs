@@ -2,18 +2,27 @@
 using Business.Interfaces;
 using Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using WebApp.Hubs;
+using Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class NotificationsController(IHubContext<NotificationHub> notificationHub, INotificationService notificationService) : ControllerBase
+public class NotificationsController(
+    IHubContext<NotificationHub> notificationHub,
+    INotificationService notificationService,
+    UserManager<ApplicationUser> userManager,
+    DataContext context) : ControllerBase
 {
     private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
     private readonly INotificationService _notificationService = notificationService;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly DataContext _context = context;
 
     [HttpPost]
     [Authorize(Roles = "Admin,User")]
@@ -23,39 +32,23 @@ public class NotificationsController(IHubContext<NotificationHub> notificationHu
         if (string.IsNullOrEmpty(userId))
             return Unauthorized();
 
-        // Lägg till notification i DB
         await _notificationService.AddNotificationAsync(entity);
 
-        // Läs in NotificationType och TargetGroup
-        var notificationType = entity.NotificationType.NotificationType; // Typ: "ProjectCreated", "MemberCreated"
-        var targetGroup = entity.NotificationTargetGroup.NotificationTargetGroup; // Grupp: "All", "Admins" osv
+        var notificationType = entity.NotificationType?.NotificationType ?? "";
 
         if (notificationType == "ProjectCreated")
         {
-            // Ett nytt projekt skapades: skicka till alla
-            await _notificationHub.Clients.All.SendAsync("RecieveNotification", new
-            {
-                Id = entity.Id,
-                Message = entity.Message,
-                ImagePath = entity.Image,
-                Created = entity.Created
-            });
+            // Skicka till ALLA att de ska ladda om sina notifieringar
+            await _notificationHub.Clients.All.SendAsync("NotificationUpdated");
         }
         else if (notificationType == "MemberCreated")
         {
-            // En ny medlem skapades: skicka endast till admins
-            await _notificationHub.Clients.Group("Admins").SendAsync("RecieveNotification", new
-            {
-                Id = entity.Id,
-                Message = entity.Message,
-                ImagePath = entity.Image,
-                Created = entity.Created
-            });
+            // Skicka till ADMIN-gruppen att de ska ladda om sina notifieringar
+            await _notificationHub.Clients.Group("Admins").SendAsync("NotificationUpdated");
         }
 
         return Ok(new { success = true });
     }
-
 
     [HttpGet]
     [Authorize]
@@ -65,8 +58,42 @@ public class NotificationsController(IHubContext<NotificationHub> notificationHu
         if (string.IsNullOrEmpty(userId))
             return Unauthorized();
 
-        var notifications = await _notificationService.GetNotificationsForUserAsync(userId);
-        return Ok(notifications);
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+        var dismissedNotificationIds = await _context.NotificationDismissed
+            .Where(x => x.UserId == userId)
+            .Select(x => x.NotificationId)
+            .ToListAsync();
+
+        var query = _context.Notifications
+            .Include(x => x.NotificationType)
+            .Include(x => x.NotificationTargetGroup)
+            .Where(x => !dismissedNotificationIds.Contains(x.Id));
+
+        if (!isAdmin)
+        {
+            // Om user inte är admin → visa endast "ProjectCreated"
+            query = query.Where(x => x.NotificationType.NotificationType == "ProjectCreated");
+        }
+
+        var notifications = await query
+            .OrderByDescending(x => x.Created)
+            .Take(5)
+            .ToListAsync();
+
+        var models = notifications.Select(x => new
+        {
+            Id = x.Id,
+            Message = x.Message,
+            ImagePath = x.Image,
+            Created = x.Created
+        });
+
+        return Ok(models);
     }
 
     [HttpPost("dismiss/{id}")]

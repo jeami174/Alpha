@@ -1,40 +1,22 @@
-﻿const connection = new signalR.HubConnectionBuilder()
+﻿// Koppla mot SignalR-hubben
+const connection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .build();
 
-connection.on("RecieveNotification", function (notification) {
-    const notificationsList = document.querySelector('#notification-list'); // FIXAT!
-
-    const item = document.createElement('div');
-    item.className = 'notification-item';
-    item.setAttribute('data-id', notification.id);
-
-    item.innerHTML = `
-        <img src="${notification.imagePath}" alt="User" class="notification-avatar" />
-        <div class="notification-content">
-            <div class="notification-text">${notification.message}</div>
-            <div class="notification-time" data-created="${new Date(notification.created).toISOString()}">${notification.created}</div>
-        </div>
-        <button class="notification-close" onclick="dismissNotification('${notification.id}')">×</button>
-    `;
-
-    notificationsList.insertBefore(item, notificationsList.firstChild);
-
-    updateRelativeTimes();
-    updateNotificationCount();
+// När vi får signal om att notifications har uppdaterats
+connection.on("NotificationUpdated", function () {
+    loadNotifications(); // Ladda om alla notifications
 });
 
+// När vi får signal om att en notification har blivit borttagen
 connection.on("NotificationDismissed", function (notificationId) {
-    const element = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
-    if (element) {
-        element.remove();
-        updateNotificationCount();
-    }
+    removeNotification(notificationId);
 });
 
+// Starta SignalR-anslutningen
 connection.start().catch(error => console.error(error));
 
-// --- Hjälpfunktioner ---
+// Hjälpfunktion för att dismissa en notification
 async function dismissNotification(notificationId) {
     try {
         const res = await fetch(`/api/notifications/dismiss/${notificationId}`, { method: 'POST' });
@@ -48,6 +30,7 @@ async function dismissNotification(notificationId) {
     }
 }
 
+// Hjälpfunktion för att ta bort en notification från listan
 function removeNotification(notificationId) {
     const element = document.querySelector(`.notification-item[data-id='${notificationId}']`);
     if (element) {
@@ -56,3 +39,36 @@ function removeNotification(notificationId) {
     }
 }
 
+// Ladda alla aktuella notifications från API:t
+async function loadNotifications() {
+    try {
+        const response = await fetch('/api/notifications');
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+
+        const notifications = await response.json();
+        const list = document.getElementById('notification-list');
+        list.innerHTML = ''; // Töm listan innan vi lägger till nya!
+
+        notifications.forEach(notification => {
+            const item = document.createElement('div');
+            item.className = 'notification-item';
+            item.setAttribute('data-id', notification.id);
+
+            item.innerHTML = `
+                <img src="${notification.imagePath}" alt="User" class="notification-avatar" />
+                <div class="notification-content">
+                    <div class="notification-text">${notification.message}</div>
+                    <div class="notification-time" data-created="${new Date(notification.created).toISOString()}"></div>
+                </div>
+                <button class="notification-close" onclick="dismissNotification('${notification.id}')">×</button>
+            `;
+
+            list.appendChild(item);
+        });
+
+        updateNotificationCount();
+        updateRelativeTimes();
+    } catch (err) {
+        console.error('Error loading notifications:', err);
+    }
+}

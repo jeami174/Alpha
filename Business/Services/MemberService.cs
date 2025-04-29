@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Data.TempModels;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,15 @@ public class MemberService(
     IRoleRepository roleRepository,
     IAddressService addressService,
     MemberFactory memberFactory,
-    UserManager<ApplicationUser> userManager) : IMemberService
+    UserManager<ApplicationUser> userManager,
+    INotificationService notificationService) : IMemberService
 {
     private readonly IMemberRepository _memberRepository = memberRepository;
     private readonly IRoleRepository _roleRepository = roleRepository;
     private readonly IAddressService _addressService = addressService;
     private readonly MemberFactory _memberFactory = memberFactory;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly INotificationService _notificationService = notificationService;
 
     public async Task<ServiceResult<IEnumerable<MemberModel>>> GetAllMembersAsync()
     {
@@ -74,6 +77,9 @@ public class MemberService(
         }
     }
 
+
+
+
     public async Task<ServiceResult<MemberModel>> UpdateMemberAsync(int id, EditMemberForm form)
     {
         var member = await _memberRepository.GetOneAsync(m => m.Id == id);
@@ -104,9 +110,6 @@ public class MemberService(
         }
     }
 
-    /// <summary>
-    /// Raderar en medlem och den användare som är kopplad till medlemmen (om någon).
-    /// </summary>
     public async Task<ServiceResult<bool>> DeleteMemberAsync(int id)
     {
         var member = await _memberRepository.GetOneAsync(m => m.Id == id);
@@ -166,12 +169,11 @@ public class MemberService(
             FirstName = m.FirstName,
             LastName = m.LastName,
             Email = m.Email,
-            ImageName = m.ImageName ?? "/uploads/members/avatars/default.svg",
+            ImageName = m.ImageName,
             Created = m.Created
         });
 
         return models;
     }
-
 
 }

@@ -110,40 +110,40 @@ function bindTogglePassword() {
 }
 
 function updateRelativeTimes() {
-    const elements = document.querySelectorAll('.notification-time')
-    const now = new Date()
+    const elements = document.querySelectorAll('.notification-time');
+    const now = new Date();
 
     elements.forEach(el => {
-        const created = new Date(el.getAttribute('data-created'))
-        if (isNaN(created.getTime())) return
+        const createdUtc = new Date(el.getAttribute('data-created'));
+        if (isNaN(createdUtc.getTime())) return;
 
-        const diff = now - created
+        const createdLocal = new Date(createdUtc.getTime() - (createdUtc.getTimezoneOffset() * 60000));
+
+        const diff = now - createdLocal;
         const diffSeconds = Math.floor(diff / 1000);
-        const diffMinutes = Math.floor(diffSeconds / 60)
-        const diffHours = Math.floor(diffMinutes / 60)
-        const diffDays = Math.floor(diffHours / 24)
-        const diffWeeks = Math.floor(diffDays / 7)
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        const diffWeeks = Math.floor(diffDays / 7);
 
-        let relativeTime = ''
+        let relativeTime = '';
 
         if (diffMinutes < 1) {
-            relativeTime = 'just now'
+            relativeTime = 'just now';
         } else if (diffMinutes < 60) {
-            relativeTime = diffMinutes + ' min ago'
-        } else if (diffHours < 2) {
-            relativeTime = diffHours + ' hour ago'
+            relativeTime = `${diffMinutes} min ago`;
         } else if (diffHours < 24) {
-            relativeTime = diffHours + ' hours ago'
-        } else if (diffDays < 2) {
-            relativeTime = diffDays + ' day ago'
+            relativeTime = `${diffHours} h ago`;
         } else if (diffDays < 7) {
-            relativeTime = diffDays + ' days ago'
+            relativeTime = `${diffDays} d ago`;
         } else {
-            relativeTime = diffWeeks + ' weeks ago'
+            relativeTime = `${diffWeeks} w ago`;
         }
-        el.textContent = relativeTime
+
+        el.textContent = relativeTime;
     });
 }
+
 
 function updateNotificationCount() {
     const notificationsList = document.querySelector('.notification-list');
@@ -218,7 +218,7 @@ function loadPartialView(url, containerId) {
 }
 
 // 3. Form Submit Handlers
-function bindFormSubmitHandlers() {loadNotifications()
+function bindFormSubmitHandlers() {
     document.querySelectorAll('form').forEach(form => {
         let busy = false;
         form.addEventListener('submit', async e => {
@@ -356,10 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Lägg till Notifications ---
+
     loadNotifications();
-    setInterval(updateRelativeTimes, 60000); // Uppdatera tider var 60:e sekund
-    updateRelativeTimes(); // Uppdatera tider direkt vid laddning
+    setInterval(updateRelativeTimes, 60000);
+    updateRelativeTimes();
 });
 
 
@@ -414,6 +414,8 @@ async function loadNotifications() {
         const notifications = await response.json();
         const list = document.getElementById('notification-list');
 
+        list.innerHTML = '';
+
         notifications.forEach(notification => {
             const item = document.createElement('div');
             item.className = 'notification-item';
@@ -437,5 +439,3 @@ async function loadNotifications() {
         console.error('Error loading notifications:', err);
     }
 }
-
-

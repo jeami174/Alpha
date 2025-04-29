@@ -28,7 +28,7 @@ public class NotificationService(DataContext context, INotificationRepository no
             };
         }
 
-        entity.Created = DateTime.UtcNow; // Sätt created till exakt nu, serversäkrat
+        entity.Created = DateTime.UtcNow;
 
         await _context.AddAsync(entity);
         await _context.SaveChangesAsync();

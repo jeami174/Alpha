@@ -81,14 +81,13 @@ public class ProjectCrudController : Controller
         {
             Message = $"New project: {data.Form.ProjectName}",
             Image = imageName,
-            NotificationTypeId = 2,          // ProjectCreated
-            NotificationTargetGroupId = 2,   // Users
+            NotificationTypeId = 2,
+            NotificationTargetGroupId = 2,
             Created = DateTime.UtcNow
         };
 
         await _notificationService.AddNotificationAsync(notification);
 
-        // 🔔 Skicka till användare med rollen "User"
         var users = await _userManager.GetUsersInRoleAsync("User");
         foreach (var user in users)
         {

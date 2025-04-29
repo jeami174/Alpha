@@ -1,16 +1,29 @@
 ﻿using Business.Interfaces;
 using Business.Models;
+using Data.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
 [Authorize(Policy = "Admins")]
-public class MembersController(IMemberService memberService, IFileStorageService fileStorageService) : Controller
+public class MembersController(
+    IMemberService memberService,
+    IFileStorageService fileStorageService,
+    INotificationService notificationService,
+    IHubContext<NotificationHub> notificationHub,
+    UserManager<ApplicationUser> userManager
+) : Controller
 {
     private readonly IMemberService _memberService = memberService;
     private readonly IFileStorageService _fileStorageService = fileStorageService;
+    private readonly INotificationService _notificationService = notificationService;
+    private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
 
     private const string UserUploadsFolder = "members/useruploads";
     private const string AvatarsFolder = "members/avatars";
@@ -30,9 +43,7 @@ public class MembersController(IMemberService memberService, IFileStorageService
                 .Where(x => x.Value?.Errors.Count > 0)
                 .ToDictionary(
                     kvp => kvp.Key,
-                    kvp => kvp.Value?.Errors
-                    .Select(e => e.ErrorMessage)
-                    .ToArray()
+                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
                 );
             return BadRequest(new { success = false, errors });
         }
@@ -42,10 +53,25 @@ public class MembersController(IMemberService memberService, IFileStorageService
             : _fileStorageService.GetRandomAvatar(AvatarsFolder);
 
         var result = await _memberService.AddMemberAsync(form, imageName);
-        if (result.Succeeded)
+        if (!result.Succeeded || result.Result == null)
+            return BadRequest(new { success = false, error = result.Error ?? "Failed to create member." });
+
+        var notification = new NotificationEntity
+        {
+            Message = $"New member: {result.Result.FirstName} {result.Result.LastName}",
+            Image = imageName,
+            NotificationTypeId = 1,
+            NotificationTargetGroupId = 1,
+            Created = DateTime.UtcNow
+        };
+
+        await _notificationService.AddNotificationAsync(notification);
+
+        await _notificationHub.Clients.Group("Admins").SendAsync("NotificationUpdated");
+
             return Ok(new { success = true });
-        return BadRequest(new { success = false, error = result.Error });
     }
+
 
     [HttpGet]
     public async Task<IActionResult> EditMember(int id)
@@ -94,17 +120,17 @@ public class MembersController(IMemberService memberService, IFileStorageService
         }
 
         var result = await _memberService.UpdateMemberAsync(form.Id, form);
-        if (result.Succeeded)
-            return Ok(new { success = true });
-        return BadRequest(new { success = false, error = result.Error });
+        return result.Succeeded
+            ? Ok(new { success = true })
+            : BadRequest(new { success = false, error = result.Error });
     }
 
     [HttpPost]
     public async Task<IActionResult> DeleteMember(int id)
     {
         var result = await _memberService.DeleteMemberAsync(id);
-        if (result.Succeeded)
-            return Ok(new { success = true });
-        return BadRequest(new { success = false, error = result.Error });
+        return result.Succeeded
+            ? Ok(new { success = true })
+            : BadRequest(new { success = false, error = result.Error });
     }
 }

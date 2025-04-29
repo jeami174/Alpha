@@ -49,7 +49,6 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
             return BadRequest(new { success = false, error = result.Error });
         }
 
-        // Hämta användaren baserat på form.Email istället för Claims
         var user = await _userManager.FindByEmailAsync(form.Email);
         if (user == null)
         {
@@ -113,7 +112,7 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
         }
         catch (Exception ex)
         {
-            // TODO: Logga exception om du har ILogger
+            // TODO: Logga exception om  ILogger
             // Men låt inte en misslyckad SignalR-sändning förstöra inloggningen.
         }
 
