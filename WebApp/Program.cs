@@ -9,8 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Services;
 using WebApp.Hubs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
+// 5. MVC
+builder.Services.AddControllersWithViews();
 
 // 1. Add DB Context
 builder.Services.AddDbContext<DataContext>(options =>
@@ -35,18 +39,29 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.IsEssential = true;
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-    options.Cookie.SameSite = SameSiteMode.None; 
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-
-// 4. Authorization Policies
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Admins", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("Users", policy => policy.RequireRole("Admin", "User"));
 });
 
-// 5. MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    });
+
+// 4. Authorization Policies
+builder.Services.AddAuthorizationBuilder()
+                                // 4. Authorization Policies
+                                .AddPolicy("Admins", policy => policy.RequireRole("Admin"))
+                                // 4. Authorization Policies
+                                .AddPolicy("Users", policy => policy.RequireRole("Admin", "User"));
+
+
 
 // 6. SignalR
 builder.Services.AddSignalR();

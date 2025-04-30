@@ -19,7 +19,7 @@ public class MemberEntity
     [Column(TypeName = "nvarchar(100)")]
     public string LastName { get; set; } = null!;
 
-    [Column(TypeName = "varchar(20)")]
+    [Column(TypeName = "varchar(256)")]
     public string Email { get; set; } = null!;
 
     [Column(TypeName = "varchar(20)")]
@@ -43,7 +43,7 @@ public class MemberEntity
     public AddressEntity? Address { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public ApplicationUser? User { get; set; }
+    public virtual ApplicationUser? User { get; set; } //Ok med virtual? 
 
     public ICollection<ProjectEntity> Projects { get; set; } = new List<ProjectEntity>();
 

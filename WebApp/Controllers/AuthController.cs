@@ -2,7 +2,9 @@
 using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
+using Data.Interfaces;
 using Domain.Models;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
-public class AuthController(IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService, SignInManager<ApplicationUser> signInManager) : Controller
+public class AuthController(IMemberRepository memberRepository, IFileStorageService fileStorageService, IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService, SignInManager<ApplicationUser> signInManager) : Controller
 {
     private readonly IAuthService _authService = authService;
     private readonly INotificationService _notificationService = notificationService;
@@ -20,6 +22,8 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
     private readonly IProjectService _projectService = projectService;
     private readonly IMemberService _memberService = memberService;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly IMemberRepository _memberRepository = memberRepository;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
 
     #region Local Identity
     // ------------------ SIGN IN ------------------
@@ -269,7 +273,7 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
 
     #region External Authentication
 
-    [HttpPost]
+    [HttpGet, HttpPost]
     public IActionResult ExternalSignIn(string provider, string returnUrl = null!)
     {
         if (string.IsNullOrEmpty(provider))
@@ -281,12 +285,12 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
         var redirectUrl = Url.Action("ExternalSignInCallback", "Auth", new { returnUrl })!;
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         return Challenge(properties, provider);
-
     }
 
     public async Task<IActionResult> ExternalSignInCallback(string returnUrl = null!, string remoteError = null!)
     {
         returnUrl ??= Url.Content("~/");
+
         if (!string.IsNullOrEmpty(remoteError))
         {
             ModelState.AddModelError("", $"Error from external provider: {remoteError}");
@@ -297,7 +301,9 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
         if (info == null)
             return RedirectToAction("SignIn");
 
-        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(
+            info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
         if (signInResult.Succeeded)
         {
             return LocalRedirect(returnUrl);
@@ -310,7 +316,7 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
             try
             {
                 firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "unknown";
-                lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "unknown";
+                lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? firstName;
             }
             catch { }
 
@@ -322,14 +328,30 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
                 UserName = userName,
                 FirstName = firstName,
                 LastName = lastName,
-                Email = email,
+                Email = email
             };
 
             var identityResult = await _userManager.CreateAsync(user);
             if (identityResult.Succeeded)
             {
                 await _userManager.AddLoginAsync(user, info);
+                await _userManager.AddToRoleAsync(user, "User");
                 await _signInManager.SignInAsync(user, isPersistent: false);
+
+                var member = new MemberEntity
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email!,
+                    UserId = user.Id,
+                    ImageName = _fileStorageService.GetRandomAvatar("members/avatars"),
+                    RoleId = null,
+                    AddressId = null
+                };
+
+                await _memberRepository.CreateAsync(member);
+                await _memberRepository.SaveToDatabaseAsync();
+
                 return LocalRedirect(returnUrl);
             }
 
@@ -340,6 +362,7 @@ public class AuthController(IAuthService authService, UserManager<ApplicationUse
             return View("SignIn");
         }
     }
+
     #endregion
 
 }

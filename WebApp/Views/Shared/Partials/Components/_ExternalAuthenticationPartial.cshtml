@@ -2,9 +2,10 @@
 
     <input type="hidden" name="returnUrl" value="@ViewBag?.ReturnUrl" />
 
-    <button class="btn btn-gray google-btn" type="submit" name="provider" value="Google">
+    <a href="@Url.Action("ExternalSignIn", "Auth", new { provider = "Google", returnUrl = "~/admin" })" class="btn btn-gray google-btn">
         <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
         Login with Google
-    </button>
+    </a>
+
 
 </form>

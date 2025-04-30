@@ -9,8 +9,6 @@
     <div class="surface">
         <h1 class="form-header signin-title">Login</h1>
 
-        <form class="form signin-form form extended-validation" method="post" asp-action="SignIn" asp-controller="Auth" novalidate>
-
             <!-- Google login -->
             @await Html.PartialAsync("Partials/Components/_ExternalAuthenticationPartial")
 
@@ -19,6 +17,8 @@
                 <span>OR</span>
                 <hr />
             </div>
+
+        <form class="form signin-form form extended-validation" method="post" asp-action="SignIn" asp-controller="Auth" novalidate>
 
             <!-- Email -->
             <div class="form-group">

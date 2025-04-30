@@ -406,14 +406,19 @@ function closeAllDropdowns() {
     document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
 }
 
+// Ladda alla aktuella notifications från API:t
 async function loadNotifications() {
     try {
         const response = await fetch('/api/notifications');
-        if (!response.ok) throw new Error('Failed to fetch notifications');
+
+        const contentType = response.headers.get("content-type");
+        if (!response.ok || !contentType || !contentType.includes("application/json")) {
+            console.warn("Användaren är troligen inte inloggad – hoppar över notification-laddning.");
+            return;
+        }
 
         const notifications = await response.json();
         const list = document.getElementById('notification-list');
-
         list.innerHTML = '';
 
         notifications.forEach(notification => {
@@ -425,7 +430,7 @@ async function loadNotifications() {
                 <img src="${notification.imagePath}" alt="User" class="notification-avatar" />
                 <div class="notification-content">
                     <div class="notification-text">${notification.message}</div>
-                    <div class="notification-time" data-created="${new Date(notification.created).toISOString()}">${notification.created}</div>
+                    <div class="notification-time" data-created="${new Date(notification.created).toISOString()}"></div>
                 </div>
                 <button class="notification-close" onclick="dismissNotification('${notification.id}')">×</button>
             `;
@@ -436,6 +441,6 @@ async function loadNotifications() {
         updateNotificationCount();
         updateRelativeTimes();
     } catch (err) {
-        console.error('Error loading notifications:', err);
+        console.error('Fel vid hämtning av notifications:', err);
     }
 }

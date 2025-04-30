@@ -42,12 +42,24 @@ function removeNotification(notificationId) {
 // Ladda alla aktuella notifications från API:t
 async function loadNotifications() {
     try {
+        // Testa om användaren är inloggad först
+        const check = await fetch('/api/notifications/check');
+        if (!check.ok) {
+            console.warn("Användaren inte inloggad – hoppar över notification-laddning.");
+            return;
+        }
+
         const response = await fetch('/api/notifications');
-        if (!response.ok) throw new Error('Failed to fetch notifications');
+        const contentType = response.headers.get("content-type");
+
+        if (!response.ok || !contentType || !contentType.includes("application/json")) {
+            console.warn("Felaktigt svar från notifications-endpoint.");
+            return;
+        }
 
         const notifications = await response.json();
         const list = document.getElementById('notification-list');
-        list.innerHTML = ''; // Töm listan innan vi lägger till nya!
+        list.innerHTML = '';
 
         notifications.forEach(notification => {
             const item = document.createElement('div');
@@ -69,6 +81,6 @@ async function loadNotifications() {
         updateNotificationCount();
         updateRelativeTimes();
     } catch (err) {
-        console.error('Error loading notifications:', err);
+        console.error('Fel vid hämtning av notifications:', err);
     }
 }
