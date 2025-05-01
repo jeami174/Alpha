@@ -178,6 +178,3 @@ app.MapControllerRoute(
 app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
-
-
-
