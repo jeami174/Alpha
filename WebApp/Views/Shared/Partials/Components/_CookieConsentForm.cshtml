@@ -1,0 +1,54 @@
+﻿﻿<div id="cookieModal" class="modal">
+	<div class="modal-content">
+		<form id="cookieConsentForm">
+			<div class="modal-header">
+				<h4>Cookies</h4>
+			</div>
+			<div class="cookie-options">
+				<div class="cookie-option">
+					<div>
+						<label for="cookieEssential" class="cookie-label">Essential Cookies (can't be turned off)</label>
+						<p>These cookies are necessary for the website to function and cannot be switched off in our systems.</p>
+					</div>
+					<div class="btn-toggle-switch">
+						<label for="cookieEssential" class="toggle-switch">
+							<input id="cookieEssential" type="checkbox" name="essential" checked disabled>
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+
+				<div class="cookie-option">
+					<div>
+						<label for="cookieFunctional" class="cookie-label">Functional Cookies (optional)</label>
+						<p>Theese cookies are for functionality of our website, for example darkmode and text-settings</p>
+					</div>
+					<div class="btn-toggle-switch">
+						<label for="cookieFunctional" class="toggle-switch">
+							<input id="cookieFunctional" type="checkbox" name="functional">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+
+				<div class="cookie-option">
+					<div>
+						<label for="cookieMarketing" class="cookie-label">Marketing Cookies (optional)</label>
+						<p>These cookies are used to deliver advertisements that are relevant to you and your interests.</p>
+					</div>
+					<div class="btn-toggle-switch">
+						<label for="cookieMarketing" class="toggle-switch">
+							<input id="cookieMarketing" type="checkbox" name="marketing">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+
+			</div>
+			<div class="cookie-buttons">
+				<button type="button" class="btn btn-register-login" onclick="acceptAll()">Accept all</button>
+				<button type="button" class="btn btn-register-login" onclick="acceptSelected()">Accept selected only</button>
+			</div>
+		</form>
+	</div>
+</div>
