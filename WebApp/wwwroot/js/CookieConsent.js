@@ -71,7 +71,7 @@ async function acceptSelected() {
         functional: formData.get("functional") === "on",
         marketing: formData.get("marketing") === "on"
     }
-    setCookie("cookieConsent", JSON.stringify(consent), 90)
+    setCookie("cookieConsent", JSON.stringify(consent), 365)
     await setConsent(consent)
     closeCookieModal()
 }
@@ -93,3 +93,13 @@ async function setConsent(consent) {
         console.error("Error setting cookie consent:", error);
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const settingsLink = document.getElementById("cookieSettingsLink");
+    if (settingsLink) {
+        settingsLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            openCookieModal();
+        });
+    }
+});
