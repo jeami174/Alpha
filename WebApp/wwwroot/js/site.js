@@ -219,7 +219,7 @@ function loadPartialView(url, containerId) {
 
 // 3. Form Submit Handlers
 function bindFormSubmitHandlers() {
-    document.querySelectorAll('form').forEach(form => {
+    document.querySelectorAll('form:not(.no-js-submit)').forEach(form => {
         let busy = false;
         form.addEventListener('submit', async e => {
             e.preventDefault();

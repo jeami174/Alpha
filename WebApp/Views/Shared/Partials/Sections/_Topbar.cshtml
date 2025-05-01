@@ -5,12 +5,25 @@
         provider = "Local Identity";
 
     var email = User?.FindFirstValue(ClaimTypes.Email);
+
+    var currentController = (string)ViewContext.RouteData.Values["controller"]!;
+    var currentAction     = (string)ViewContext.RouteData.Values["action"]!;
+    var currentQuery      = ViewContext.HttpContext.Request.Query["query"].ToString();
 }
+
 <header class="topbar">
-    <div class="search-container">
+    <form class="search-container no-js-submit"
+          asp-controller="@currentController"
+          asp-action="@currentAction"
+          method="get"
+          novalidate>
         <img src="/images/icons/Search.svg" alt="Search Icon" class="icon" />
-        <input type="text" placeholder="Search anything..." />
-    </div>
+        <input type="search"
+               name="query"
+               value="@currentQuery"
+               placeholder="Search anything..."
+               class="form-search-input" />
+    </form>
 
     <div class="topbar-icons">
         <!-- Notifications toggle -->

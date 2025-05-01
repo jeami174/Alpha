@@ -26,41 +26,64 @@ public class ProjectsController : Controller
     }
 
     [HttpGet("")]
-    public async Task<IActionResult> Projects(string? status = null, string? sortBy = null)
+    public async Task<IActionResult> Projects(
+        string? status = null,
+        string? sortBy = null,
+        string? query = null)
     {
-        var projectsResult = await _projectService.GetAllProjectsAsync();
-        var clientsResult = await _clientService.GetAllAsync();
-        var membersResult = await _memberService.GetAllMembersAsync();
-
+        // 1) Hämta alla projekt (med eventuell sortering)
+        var projectsResult = await _projectService.GetAllProjectsAsync(sortBy);
         if (!projectsResult.Succeeded)
             return Problem(projectsResult.Error ?? "Could not load projects");
 
-        var cards = projectsResult.Result!.Select(p => new ProjectCardViewModel
+        // 2) Bygg kort‐viewmodeller
+        var cards = projectsResult.Result!
+            .Select(p => new ProjectCardViewModel
+            {
+                Id = p.Id,
+                ProjectName = p.ProjectName,
+                Description = p.Description,
+                ClientName = p.ClientModel.ClientName,
+                ImageName = string.IsNullOrWhiteSpace(p.ImageName)
+                                    ? "uploads/projects/avatars/default.svg"
+                                    : p.ImageName.Replace("\\", "/"),
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                MemberImageNames = p.MemberModels.Select(m => m.ImageName!).ToList()
+            })
+            .ToList();
+
+        // 3) Filtrera på sök‐term om användaren angett något
+        if (!string.IsNullOrWhiteSpace(query))
         {
-            Id = p.Id,
-            ProjectName = p.ProjectName,
-            Description = p.Description,
-            ClientName = p.ClientModel.ClientName,
-            ImageName = string.IsNullOrWhiteSpace(p.ImageName)
-                ? "uploads/projects/avatars/default.svg"
-                : p.ImageName.Replace("\\", "/"),
-            StartDate = p.StartDate,
-            EndDate = p.EndDate,
-            MemberImageNames = p.MemberModels
-                .Select(m => m.ImageName!)
-                .ToList()
-        }).ToList();
+            cards = cards
+                .Where(c => c.ProjectName!
+                    .Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        // 4) Lägg ihop din vy‐modell
+        var clientsResult = await _clientService.GetAllAsync();
+        var membersResult = await _memberService.GetAllMembersAsync();
 
         var viewModel = new ProjectOverviewViewModel
         {
             Projects = cards,
             SelectedStatus = status,
             SortBy = sortBy,
-            Clients = clientsResult.Result?.ToList() ?? [],
-            Members = membersResult.Result?.ToList() ?? [],
+            Clients = clientsResult.Result?.ToList() ?? new(),
+            Members = membersResult.Result?.ToList() ?? new(),
             AddProjectForm = new AddProjectForm()
         };
 
+        // 5) Skicka med sök‐strängen så du kan skriva ut den i input‐fältet
+        ViewBag.Query = query;
+
         return View("Projects", viewModel);
     }
+
+
+
+
+
 }
