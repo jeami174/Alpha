@@ -17,15 +17,15 @@
                         <input asp-for="MemberImage" type="file" accept="image/*" class="hide" />
                     </div>
 
-                    <div class="form-group name-group">
-                        <div class="name-field">
+                    <div class="name-group">
+                        <div class="name-field form-group">
                             <label asp-for="FirstName"></label>
                             <div class="field-group">
                                 <input asp-for="FirstName" />
                                 <span asp-validation-for="FirstName"></span>
                             </div>
                         </div>
-                        <div class="name-field">
+                        <div class="name-field form-group">
                             <label asp-for="LastName"></label>
                             <div class="field-group">
                                 <input asp-for="LastName" />
@@ -66,15 +66,15 @@
                         </div>
                     </div>
 
-                    <div class="form-group address-group">
-                        <div class="address-field">
+                    <div class="address-group">
+                        <div class="address-field form-group">
                             <label asp-for="PostalCode"></label>
                             <div class="field-group">
                                 <input asp-for="PostalCode" />
                                 <span asp-validation-for="PostalCode"></span>
                             </div>
                         </div>
-                        <div class="address-field">
+                        <div class="address-field form-group">
                             <label asp-for="City"></label>
                             <div class="field-group">
                                 <input asp-for="City" />

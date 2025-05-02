@@ -1,7 +1,6 @@
 ﻿@model WebApp.ViewModels.AddMemberToProjectViewModel
 
 @{
-    // Tömmer ut prefix så vi binder direkt mot FormData.*
     ViewData.TemplateInfo.HtmlFieldPrefix = "";
 }
 
@@ -18,7 +17,6 @@
 
                     @Html.AntiForgeryToken()
 
-                    @* Doldt fält för vilken projectId vi lägger till *@
                     <input asp-for="FormData.ProjectId" type="hidden" />
 
                     <div class="form-group">

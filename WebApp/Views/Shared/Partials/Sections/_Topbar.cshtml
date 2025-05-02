@@ -17,7 +17,8 @@
           asp-action="@currentAction"
           method="get"
           novalidate>
-        <img src="/images/icons/Search.svg" alt="Search Icon" class="icon" />
+        <img src="/images/icons/Search.svg" alt="Search Icon" class="icon icon-light" />
+        <img src="/images/icons/Search-dark.svg" alt="Search Icon" class="icon icon-dark" />
         <input type="search"
                name="query"
                value="@currentQuery"
@@ -42,7 +43,6 @@
         <!-- Settings toggle -->
         <div class="settings-menu-wrapper">
             <img src="/images/icons/Setting.svg" alt="Settings" class="icon settings-toggle dropdown-toggle" data-dropdown="settingsDropdown" />
-
             <!-- Settings dropdown -->
             <div class="settings-dropdown hidden dropdown-menu" id="settingsDropdown">
                 <div class="user-info">
@@ -62,12 +62,15 @@
                 <hr class="dropdown-separator" />
                 <form method="post" asp-controller="Auth" asp-action="LogOut">
                     <button type="submit" class="logout-btn">
-                        <img src="/images/icons/Logout.svg" class="icon-small" />
+                        <i class="fa-solid fa-arrow-right-from-bracket icon-small"></i>
                         Logout
                     </button>
                 </form>
                 <hr class="dropdown-separator" />
-                <a href="#" id="cookieSettingsLink">Ändra cookie-inställningar</a>
+                <a href="#" id="cookieSettingsLink">
+                    <i class="fa-solid fa-cookie-bite icon-small"></i>
+                    Ändra cookie-inställningar
+                </a>
             </div>
         </div>
 

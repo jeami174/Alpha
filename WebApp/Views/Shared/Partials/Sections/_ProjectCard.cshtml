@@ -60,7 +60,7 @@
                     class="edit-menu-item"
                     data-fetch-url="@Url.Action("EditProject", "ProjectCrud", new { id = Model.Id })"
                     data-container="editProjectContainer">
-                <img src="~/images/icons/Edit.svg" class="icon-small" alt="Edit" />
+                <i class="fa-solid fa-pencil icon-small" aria-hidden="true"></i>
                 <span>Edit</span>
             </button>
 
@@ -68,7 +68,7 @@
                     class="edit-menu-item"
                     data-fetch-url='@Url.RouteUrl("AddMemberModal", new { id = Model.Id })'
                     data-container="addMemberToProjectContainer">
-                <img src="~/images/icons/UserAdd.svg" class="icon-small" alt="Add Member" />
+                <i class="fa-solid fa-user-plus icon-small" aria-hidden="true"></i>
                 <span>Add Member</span>
             </button>
 
