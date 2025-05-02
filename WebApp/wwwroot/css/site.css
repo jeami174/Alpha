@@ -992,6 +992,10 @@ input[type="checkbox"] {
         border-radius: 16px;
     }
 
+.image-preview {
+    height: 100%;
+}
+
 /* SECTIONS */
 
 .topbar {
