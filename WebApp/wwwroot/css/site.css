@@ -77,7 +77,37 @@
     --transition-time: all 0.2s;
     --border-radius: 1rem;
     --button-font-size: 1rem;
+
 }
+
+.dark {
+    color-scheme: dark;
+    --background: #121212;
+    --surface: #1f1f1f;
+    --accent: #2D99FF;
+    --text-color: #e0e0e0;
+    --heading-color: #ffffff;
+    --border-color: #2c2c2c;
+    --background-color: #121212;
+    --navlink-text-color: #e0e0e0;
+    --navlink-background-hover-color: #2a2a2a;
+    --navlink-background-active-color: #2a2a2a;
+    --table-header-background-color: #1f1f1f;
+    --table-header-text-color: #ffffff;
+    --text-color-muted: #aaaaaa;
+    --modal-screen-background-color: rgba(0, 0, 0, 0.6);
+    
+
+}
+
+.show-light {
+    display: block;
+}
+
+.show-dark {
+    display: none;
+}
+
 
 /* BASE */
 

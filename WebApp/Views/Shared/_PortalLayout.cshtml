@@ -44,6 +44,16 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/Notification.js"></script>
     <script src="~/js/CookieConsent.js"></script>
+    <script>
+        window.appConfig = {
+          isAuthenticated: @(
+            (User?.Identity?.IsAuthenticated ?? false)
+              .ToString()
+              .ToLowerInvariant()
+          )
+        };
+    </script>
+    <script src="~/js/Darkmode.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -14,6 +14,10 @@ public class ApplicationUser : IdentityUser
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
 
+    [ProtectedPersonalData]
+    [Column(TypeName = "varchar(10)")]
+    public string PreferredTheme { get; set; } = "light";
+
     public MemberEntity? Member { get; set; }
 
     public ICollection<NotificationDismissedEntity> DismissedNotification { get; set; } = [];
