@@ -2256,10 +2256,9 @@ input[type="checkbox"] {
         margin-top: 1rem;
     }
 
-/* Gemensam klass för Quill-editor */
 .quill-editor {
     background-color: var(--input-bg-color);
-    border: 1px solid var(--border100);
+    border: 1px solid var(--border100, #EBEEF2);
     border-radius: 14px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -2271,11 +2270,6 @@ input[type="checkbox"] {
     outline: none;
 }
 
-    .quill-editor:focus-within {
-        border-color: var(--border300);
-    }
-
-/* Gemensam klass för toolbar */
 .quill-toolbar .ql-toolbar {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
@@ -2285,16 +2279,8 @@ input[type="checkbox"] {
     padding-top: 0.5rem;
 }
 
-/* Dark mode */
-.dark .quill-editor {
-    background-color: var(--surface);
-    border-color: var(--border200);
-    color: var(--text-color);
-}
-
-/* Formatgrupper i toolbaren */
 .ql-toolbar .ql-formats {
-    border-left: 1px solid #eee;
+    border-left: 1px solid var(--border100, #EBEEF2);
     padding-left: 0.5rem;
     margin-left: 0.5rem;
 }
@@ -2304,3 +2290,8 @@ input[type="checkbox"] {
         margin-left: 0;
         padding-left: 0;
     }
+
+.dark .quill-editor .quill-toolbar {
+    background-color: var(--surface);
+    border: 1px solid var(--border100);
+}
