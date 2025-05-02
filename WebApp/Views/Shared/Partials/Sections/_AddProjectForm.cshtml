@@ -54,10 +54,21 @@
                     <div class="form-group">
                         <label asp-for="FormData.Form.Description"></label>
                         <div class="field-group">
-                            <textarea asp-for="FormData.Form.Description"></textarea>
+
+                            <!-- Editor first -->
+                            <div id="quill-editor" class="form-control quill-editor" style="min-height: 150px;"></div>
+
+                            <!-- Toolbar second -->
+                            <div id="quill-toolbar" class="quill-toolbar"></div>
+
+                            <!-- Hidden input -->
+                            <input type="hidden" id="FormData_Form_Description" name="FormData.Form.Description" />
+
                             <span asp-validation-for="FormData.Form.Description"></span>
                         </div>
                     </div>
+
+
 
                     <div class="form-group date-group">
                         <div>

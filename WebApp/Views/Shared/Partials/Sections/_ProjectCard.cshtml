@@ -38,8 +38,6 @@
     bool showBadge = !string.IsNullOrEmpty(badgeText);
 }
 
-
-
 <div class="project-card"
      data-member-id="@Model.Id"
      data-status="@(
@@ -49,11 +47,16 @@
      )">
 
     <div class="settings-menu-wrapper">
-        <button type="button" class="edit-btn dropdown-toggle" data-dropdown="projectEditDropdown-@Model.Id">
-            <img src="~/Images/Icons/More 2.svg" alt="Actions" class="project-card-edit" />
+        <button type="button"
+                class="edit-btn dropdown-toggle"
+                data-dropdown="projectEditDropdown-@Model.Id">
+            <img src="~/Images/Icons/More 2.svg"
+                 alt="Actions"
+                 class="project-card-edit" />
         </button>
 
-        <div class="settings-dropdown project-dropdown hidden dropdown-menu" id="projectEditDropdown-@Model.Id">
+        <div class="settings-dropdown project-dropdown hidden dropdown-menu"
+             id="projectEditDropdown-@Model.Id">
 
             <!-- Edit -->
             <button type="button"
@@ -64,6 +67,7 @@
                 <span>Edit</span>
             </button>
 
+            <!-- Add Member -->
             <button type="button"
                     class="edit-menu-item"
                     data-fetch-url='@Url.RouteUrl("AddMemberModal", new { id = Model.Id })'
@@ -72,21 +76,24 @@
                 <span>Add Member</span>
             </button>
 
-            <!-- Separator -->
             <hr class="dropdown-separator" />
 
             <!-- Delete Project -->
             <button type="button"
                     class="edit-menu-item trash-menu-item"
                     data-delete-url="@Url.Action("DeleteProject", "ProjectCrud", new { id = Model.Id })">
-                <img src="~/images/icons/TrashRed.svg" class="icon-small" alt="Delete Project" />
+                <img src="~/images/icons/TrashRed.svg"
+                     class="icon-small"
+                     alt="Delete Project" />
                 <span>Delete Project</span>
             </button>
         </div>
     </div>
 
     <div class="project-card-header">
-        <img src="~/@Model.ImageName" alt="Project Avatar" class="project-card-avatar" />
+        <img src="~/@Model.ImageName"
+             alt="Project Avatar"
+             class="project-card-avatar" />
         <div class="project-card-header-text">
             <h4>@Model.ProjectName</h4>
             @if (!string.IsNullOrWhiteSpace(Model.ClientName))
@@ -96,16 +103,21 @@
         </div>
     </div>
 
+    @* Renderar den formaterade HTML-beskrivningen från Quill *@
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {
-        <div class="project-card-description">@Model.Description</div>
+        <div class="project-card-description">
+            @Html.Raw(Model.Description)
+        </div>
     }
 
     <div class="project-card-deadline-and-members">
         @if (showBadge)
         {
             <span class="project-card-deadline @badgeClass">
-                <img src="~/@iconPath" alt="Clock" class="clock-icon" />
+                <img src="~/@iconPath"
+                     alt="Clock"
+                     class="clock-icon" />
                 @badgeText
             </span>
         }
@@ -115,7 +127,9 @@
             <div class="project-card-members">
                 @foreach (var memberImg in Model.MemberImageNames)
                 {
-                    <img src="@Url.Content($"~/{memberImg}")" alt="Member" class="project-card-memberimg" />
+                    <img src="@Url.Content($"~/{memberImg}")"
+                         alt="Member"
+                         class="project-card-memberimg" />
                 }
             </div>
         }

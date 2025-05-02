@@ -1746,19 +1746,27 @@ input[type="checkbox"] {
 
     /* PROJECTS */
 
-    .project-card {
-        position: relative;
-        display: grid;
-        grid-template-rows: auto auto auto;
-        align-items: center;
-        background-color: var(--surface);
-        border-radius: 1rem;
-        padding: 1rem 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        flex-shrink: 0;
-        max-width: 21.87rem;
-        max-height: 17.25rem;
-    }
+.project-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: center;
+    background-color: var(--surface);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    max-width: 21.87rem;
+    height: auto;
+}
+
+.project-card-description {
+    font-size: 15px;
+    color: var(--body-dark);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    margin-bottom: 1rem;
+}
 
     .project-card-header {
         display: flex;
@@ -2246,4 +2254,53 @@ input[type="checkbox"] {
 
     .btn-cookie {
         margin-top: 1rem;
+    }
+
+/* Gemensam klass för Quill-editor */
+.quill-editor {
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--border100);
+    border-radius: 14px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 12px 16px;
+    min-height: 150px;
+    font-family: var(--font-main);
+    font-size: 15px;
+    color: var(--text-color);
+    outline: none;
+}
+
+    .quill-editor:focus-within {
+        border-color: var(--border300);
+    }
+
+/* Gemensam klass för toolbar */
+.quill-toolbar .ql-toolbar {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: none;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding-top: 0.5rem;
+}
+
+/* Dark mode */
+.dark .quill-editor {
+    background-color: var(--surface);
+    border-color: var(--border200);
+    color: var(--text-color);
+}
+
+/* Formatgrupper i toolbaren */
+.ql-toolbar .ql-formats {
+    border-left: 1px solid #eee;
+    padding-left: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+    .ql-toolbar .ql-formats:first-child {
+        border-left: none;
+        margin-left: 0;
+        padding-left: 0;
     }

@@ -76,7 +76,6 @@ public class ProjectCrudController : Controller
         if (!result.Succeeded)
             return BadRequest(new { success = false, error = result.Error ?? "Failed to create project." });
 
-        // 🔔 Skapa notification
         var notification = new NotificationEntity
         {
             Message = $"New project: {data.Form.ProjectName}",

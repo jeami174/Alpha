@@ -11,11 +11,9 @@ public class ProjectOverviewViewModel
 
     public EditProjectForm EditProjectForm { get; set; } = new();
 
-    public string? SelectedStatus { get; set; }
     public string? SelectedClient { get; set; }
     public string? SortBy { get; set; }
 
-    public IEnumerable<StatusModel> Statuses { get; set; } = [];
     public IEnumerable<ClientModel> Clients { get; set; } = [];
     public IEnumerable<MemberModel> Members { get; set; } = [];
 

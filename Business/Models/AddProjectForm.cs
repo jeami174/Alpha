@@ -16,7 +16,6 @@ public class AddProjectForm
 
     [Display(Name = "Description", Prompt = "Type something")]
     [DataType(DataType.Text)]
-    [Required(ErrorMessage = "Required")]
     public string Description { get; set; } = null!;
 
     [Display(Name = "Start Date", Prompt = "Select start date")]

@@ -10,6 +10,4 @@ public class AddProjectFormViewModel
     public IEnumerable<ClientModel> Clients { get; set; } = [];
     public IEnumerable<MemberModel> Members { get; set; } = [];
 
-    //public IEnumerable<StatusModel> Statuses { get; set; } = [];
-
 }

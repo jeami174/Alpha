@@ -13,8 +13,6 @@ namespace WebApp.ViewModels
 
         public IEnumerable<ClientModel> Clients { get; set; } = new List<ClientModel>();
 
-        public IEnumerable<StatusModel> Statuses { get; set; } = new List<StatusModel>();
-
         public IEnumerable<MemberModel> Members { get; set; } = new List<MemberModel>();
     }
 }

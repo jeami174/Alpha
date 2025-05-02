@@ -1,6 +1,5 @@
 ﻿using Business.Interfaces;
 using Business.Models;
-using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.ViewModels;
@@ -31,12 +30,10 @@ public class ProjectsController : Controller
         string? sortBy = null,
         string? query = null)
     {
-        // 1) Hämta alla projekt (med eventuell sortering)
         var projectsResult = await _projectService.GetAllProjectsAsync(sortBy);
         if (!projectsResult.Succeeded)
             return Problem(projectsResult.Error ?? "Could not load projects");
 
-        // 2) Bygg kort‐viewmodeller
         var cards = projectsResult.Result!
             .Select(p => new ProjectCardViewModel
             {
@@ -53,7 +50,6 @@ public class ProjectsController : Controller
             })
             .ToList();
 
-        // 3) Filtrera på sök‐term om användaren angett något
         if (!string.IsNullOrWhiteSpace(query))
         {
             cards = cards
@@ -62,28 +58,20 @@ public class ProjectsController : Controller
                 .ToList();
         }
 
-        // 4) Lägg ihop din vy‐modell
         var clientsResult = await _clientService.GetAllAsync();
         var membersResult = await _memberService.GetAllMembersAsync();
 
         var viewModel = new ProjectOverviewViewModel
         {
             Projects = cards,
-            SelectedStatus = status,
             SortBy = sortBy,
             Clients = clientsResult.Result?.ToList() ?? new(),
             Members = membersResult.Result?.ToList() ?? new(),
             AddProjectForm = new AddProjectForm()
         };
 
-        // 5) Skicka med sök‐strängen så du kan skriva ut den i input‐fältet
         ViewBag.Query = query;
 
         return View("Projects", viewModel);
     }
-
-
-
-
-
 }

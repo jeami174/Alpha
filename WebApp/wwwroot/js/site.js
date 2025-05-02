@@ -1,8 +1,25 @@
-﻿// ----------------------------------------
-// site.js - Global JavaScript
-// ----------------------------------------
+﻿// site.js - Global JavaScript
 
-// 0. Global click-delegat för alla [data-fetch-url]
+
+// ----------------------------------------
+// 0. Global Quill-konfigurationer
+// ----------------------------------------
+const quillConfigs = [
+    {
+        editorId: 'quill-editor',
+        toolbarId: 'quill-toolbar',
+        hiddenInputId: 'FormData_Form_Description'
+    },
+    {
+        editorId: 'quill-editor-edit',
+        toolbarId: 'quill-toolbar-edit',
+        hiddenInputId: 'FormData_Form_Description_Edit'
+    }
+];
+
+// ----------------------------------------
+// 1. Global click-delegat för alla [data-fetch-url]
+// ----------------------------------------
 document.addEventListener('click', e => {
     const btn = e.target.closest('[data-fetch-url]');
     if (!btn) return;
@@ -22,8 +39,9 @@ document.addEventListener('click', e => {
     loadPartialView(url, container);
 });
 
-
-// 1. Hjälpfunktioner
+// ----------------------------------------
+// 2. Hjälpfunktioner
+// ----------------------------------------
 function getRequestVerificationToken() {
     const t = document.querySelector('input[name="__RequestVerificationToken"]');
     return t ? t.value : '';
@@ -118,7 +136,6 @@ function updateRelativeTimes() {
         if (isNaN(createdUtc.getTime())) return;
 
         const createdLocal = new Date(createdUtc.getTime() - (createdUtc.getTimezoneOffset() * 60000));
-
         const diff = now - createdLocal;
         const diffSeconds = Math.floor(diff / 1000);
         const diffMinutes = Math.floor(diffSeconds / 60);
@@ -128,22 +145,15 @@ function updateRelativeTimes() {
 
         let relativeTime = '';
 
-        if (diffMinutes < 1) {
-            relativeTime = 'just now';
-        } else if (diffMinutes < 60) {
-            relativeTime = `${diffMinutes} min ago`;
-        } else if (diffHours < 24) {
-            relativeTime = `${diffHours} h ago`;
-        } else if (diffDays < 7) {
-            relativeTime = `${diffDays} d ago`;
-        } else {
-            relativeTime = `${diffWeeks} w ago`;
-        }
+        if (diffMinutes < 1) relativeTime = 'just now';
+        else if (diffMinutes < 60) relativeTime = `${diffMinutes} min ago`;
+        else if (diffHours < 24) relativeTime = `${diffHours} h ago`;
+        else if (diffDays < 7) relativeTime = `${diffDays} d ago`;
+        else relativeTime = `${diffWeeks} w ago`;
 
         el.textContent = relativeTime;
     });
 }
-
 
 function updateNotificationCount() {
     const notificationsList = document.querySelector('.notification-list');
@@ -152,23 +162,17 @@ function updateNotificationCount() {
 
     const count = notificationsList.querySelectorAll('.notification-item').length;
 
-    if (countDisplay) {
-        countDisplay.textContent = count;
-    }
-
+    if (countDisplay) countDisplay.textContent = count;
     if (dot) {
-        if (count > 0) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
-        }
+        if (count > 0) dot.classList.add('active');
+        else dot.classList.remove('active');
     }
 }
 
-
-// 2. Dynamisk Partial Loader
+// ----------------------------------------
+// 3. Dynamisk Partial Loader
+// ----------------------------------------
 function loadPartialView(url, containerId) {
-
     if (typeof closeAllDropdowns === 'function') {
         closeAllDropdowns();
     }
@@ -187,7 +191,6 @@ function loadPartialView(url, containerId) {
             }
             c.innerHTML = html;
 
-
             Array.from(c.querySelectorAll('script')).forEach(old => {
                 const ns = document.createElement('script');
                 if (old.src) {
@@ -201,23 +204,29 @@ function loadPartialView(url, containerId) {
             });
 
             const m = c.querySelector('.modal');
-            if (m) {
-                m.style.display = 'flex';
-            }
-
+            if (m) m.style.display = 'flex';
 
             bindImagePreviewers();
             bindCloseButtons();
             bindFormSubmitHandlers();
             bindTogglePassword();
             setupDropdownToggles();
+
+            quillConfigs.forEach(config => {
+                const ed = document.getElementById(config.editorId);
+                const tb = document.getElementById(config.toolbarId);
+                const hi = document.getElementById(config.hiddenInputId);
+                if (ed && tb && hi) initQuillEditor(config);
+            });
         })
         .catch(err => {
             console.error('Error loading partial view:', err);
         });
 }
 
-// 3. Form Submit Handlers
+// ----------------------------------------
+// 4. Form Submit Handlers
+// ----------------------------------------
 function bindFormSubmitHandlers() {
     document.querySelectorAll('form:not(.no-js-submit)').forEach(form => {
         let busy = false;
@@ -321,7 +330,9 @@ function bindFormSubmitHandlers() {
     });
 }
 
-// 4. Init på laddning
+// ----------------------------------------
+// 5. DOMContentLoaded – Init-funktioner
+// ----------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-modal="true"]').forEach(b => {
         b.addEventListener('click', () => {
@@ -337,33 +348,44 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTogglePassword();
     setupDropdownToggles();
 
-    const lo = document.getElementById('logoutButton');
-    if (lo) lo.addEventListener('click', async e => {
-        e.preventDefault();
-        try {
-            const r = await fetch('/Auth/LogOut', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'RequestVerificationToken': getRequestVerificationToken()
-                }
-            });
-            const d = await r.json();
-            if (r.ok && d.redirectUrl) window.location.href = d.redirectUrl;
-            else window.location.reload();
-        } catch (err) {
-            console.error('Logout failed', err);
+    quillConfigs.forEach(config => {
+        const editorEl = document.getElementById(config.editorId);
+        const toolbarEl = document.getElementById(config.toolbarId);
+        const inputEl = document.getElementById(config.hiddenInputId);
+        if (editorEl && toolbarEl && inputEl) {
+            initQuillEditor(config);
         }
     });
 
+    const lo = document.getElementById('logoutButton');
+    if (lo) {
+        lo.addEventListener('click', async e => {
+            e.preventDefault();
+            try {
+                const r = await fetch('/Auth/LogOut', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    }
+                });
+                const d = await r.json();
+                if (r.ok && d.redirectUrl) window.location.href = d.redirectUrl;
+                else window.location.reload();
+            } catch (err) {
+                console.error('Logout failed', err);
+            }
+        });
+    }
 
     loadNotifications();
     setInterval(updateRelativeTimes, 60000);
     updateRelativeTimes();
 });
 
-
-// 5. Dropdown-menyer
+// ----------------------------------------
+// 6. Dropdown-menyer
+// ----------------------------------------
 function setupDropdownToggles() {
     document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
         const dd = document.getElementById(toggle.getAttribute('data-dropdown'));
@@ -402,11 +424,11 @@ function setupDropdownToggles() {
         }
     });
 }
+
 function closeAllDropdowns() {
     document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
 }
 
-// Ladda alla aktuella notifications från API:t
 async function loadNotifications() {
     try {
         const response = await fetch('/api/notifications');

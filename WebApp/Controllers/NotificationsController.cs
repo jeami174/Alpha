@@ -38,12 +38,10 @@ public class NotificationsController(
 
         if (notificationType == "ProjectCreated")
         {
-            // Skicka till ALLA att de ska ladda om sina notifieringar
             await _notificationHub.Clients.All.SendAsync("NotificationUpdated");
         }
         else if (notificationType == "MemberCreated")
         {
-            // Skicka till ADMIN-gruppen att de ska ladda om sina notifieringar
             await _notificationHub.Clients.Group("Admins").SendAsync("NotificationUpdated");
         }
 
