@@ -15,10 +15,10 @@
                 <form class="form signup-form extended-validation" method="post" asp-action="SignUp" asp-controller="Auth" novalidate>
 
                     <!-- Google Sign up -->
-                    <button class="btn btn-gray google-btn" type="button">
+                    <a href="@Url.Action("ExternalSignIn", "Auth", new { provider = "Google", returnUrl = "~/admin" })" class="btn btn-gray google-btn">
                         <img src="~/images/Icons/google-icon.svg" alt="Google logo" class="google-icon" />
                         Sign Up with Google
-                    </button>
+                    </a>
 
                     <div class="SignUp-Divider">
                         <hr />
