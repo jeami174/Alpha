@@ -2184,3 +2184,21 @@ span.btn-remove {
     background-position: right 1rem center;
     background-size: 0.75rem auto;
 }
+
+.Cookie-Footer {
+    margin-top: 3.5rem;
+    text-align: center;
+}
+
+.Cookie-Title {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+#cookieConsentForm {
+    max-width: 500px;
+}
+
+.btn-cookie {
+    margin-top: 1rem;
+}

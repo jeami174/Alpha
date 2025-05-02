@@ -1,54 +1,52 @@
-﻿﻿<div id="cookieModal" class="modal">
+﻿﻿<div id="cookieModal" class="modal center-screen">
 	<div class="modal-content">
-		<form id="cookieConsentForm">
-			<div class="modal-header">
-				<h4>Cookies</h4>
-			</div>
-			<div class="cookie-options">
-				<div class="cookie-option">
-					<div>
-						<label for="cookieEssential" class="cookie-label">Essential Cookies (can't be turned off)</label>
-						<p>These cookies are necessary for the website to function and cannot be switched off in our systems.</p>
+		<div class="inner-padding">
+			<form id="cookieConsentForm">
+
+					<h1 class="Cookie-Title">Cookies</h1>
+				<div class="cookie-options">
+					<div class="cookie-option form-group">
+						<div>
+							<label for="cookieEssential" class="cookie-label">Essential Cookies (can't be turned off)</label>
+							<p>These cookies are essential for the basic functionality of the website and are required for features such as page navigation, secure login, and access to protected areas. They cannot be disabled in our system.</p>
+						</div>
+						<div class="btn-toggle-switch">
+							<label for="cookieEssential" class="toggle-switch">
+								<input id="cookieEssential" type="checkbox" name="essential" checked disabled>
+								<span class="slider round"></span>
+							</label>
+						</div>
 					</div>
-					<div class="btn-toggle-switch">
-						<label for="cookieEssential" class="toggle-switch">
-							<input id="cookieEssential" type="checkbox" name="essential" checked disabled>
-							<span class="slider round"></span>
-						</label>
+					<div class="cookie-option form-group">
+						<div>
+							<label for="cookieFunctional" class="cookie-label">Functional Cookies (optional)</label>
+							<p>These cookies enable enhanced functionality on our website, such as remembering user preferences like dark mode, font size, and other custom settings.</p>
+						</div>
+						<div class="btn-toggle-switch">
+							<label for="cookieFunctional" class="toggle-switch">
+								<input id="cookieFunctional" type="checkbox" name="functional">
+								<span class="slider round"></span>
+							</label>
+						</div>
+					</div>
+					<div class="cookie-option form-group">
+						<div>
+							<label for="cookieMarketing" class="cookie-label">Marketing Cookies (optional)</label>
+							<p>These cookies are used to deliver personalized advertisements based on your browsing behavior and interests, helping us show you more relevant content.</p>
+						</div>
+						<div class="btn-toggle-switch">
+							<label for="cookieMarketing" class="toggle-switch">
+								<input id="cookieMarketing" type="checkbox" name="marketing">
+								<span class="slider round"></span>
+							</label>
+						</div>
 					</div>
 				</div>
-
-				<div class="cookie-option">
-					<div>
-						<label for="cookieFunctional" class="cookie-label">Functional Cookies (optional)</label>
-						<p>Theese cookies are for functionality of our website, for example darkmode and text-settings</p>
-					</div>
-					<div class="btn-toggle-switch">
-						<label for="cookieFunctional" class="toggle-switch">
-							<input id="cookieFunctional" type="checkbox" name="functional">
-							<span class="slider round"></span>
-						</label>
-					</div>
+				<div class="cookie-buttons Cookie-Footer">
+					<button type="button" class="btn btn-blue btn-cookie" onclick="acceptAll()">Accept all</button>
+					<button type="button" class="btn btn-blue btn-cookie" onclick="acceptSelected()">Accept selected only</button>
 				</div>
-
-				<div class="cookie-option">
-					<div>
-						<label for="cookieMarketing" class="cookie-label">Marketing Cookies (optional)</label>
-						<p>These cookies are used to deliver advertisements that are relevant to you and your interests.</p>
-					</div>
-					<div class="btn-toggle-switch">
-						<label for="cookieMarketing" class="toggle-switch">
-							<input id="cookieMarketing" type="checkbox" name="marketing">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-
-			</div>
-			<div class="cookie-buttons">
-				<button type="button" class="btn btn-register-login" onclick="acceptAll()">Accept all</button>
-				<button type="button" class="btn btn-register-login" onclick="acceptSelected()">Accept selected only</button>
-			</div>
-		</form>
+			</form>
+		</div>
 	</div>
 </div>
