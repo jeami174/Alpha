@@ -1,9 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Business.Models;
-
 public class EditProjectFormData
 {
     public EditProjectForm Form { get; set; } = new();

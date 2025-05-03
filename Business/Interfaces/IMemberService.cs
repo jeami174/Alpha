@@ -2,7 +2,6 @@
 using Domain.Models;
 
 namespace Business.Interfaces;
-
 public interface IMemberService
 {
     Task<ServiceResult<IEnumerable<MemberModel>>> GetAllMembersAsync();
@@ -12,6 +11,5 @@ public interface IMemberService
     Task<ServiceResult<MemberModel>> UpdateMemberAsync(int id, EditMemberForm form);
     Task<ServiceResult<bool>> DeleteMemberAsync(int id);
     Task<IEnumerable<MemberModel>> GetNewMembersAsync(DateTime since);
-
 }
 

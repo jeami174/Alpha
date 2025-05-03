@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Context;
 
+/// <summary>
+/// EF Core database context, including ASP.NET Identity for ApplicationUser
+/// and all application entities such as Address, Member, Project, Client, and Notification.
+/// </summary>
 public class DataContext : IdentityDbContext<ApplicationUser>
 {
     public DataContext(DbContextOptions<DataContext> options)

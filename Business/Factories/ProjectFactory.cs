@@ -3,18 +3,15 @@ using Data.Entities;
 using Domain.Models;
 
 namespace Business.Factories;
-
 public class ProjectFactory
 {
     private readonly ClientFactory _clientFactory;
     private readonly MemberFactory _memberFactory;
-
     public ProjectFactory(ClientFactory clientFactory, MemberFactory memberFactory)
     {
         _clientFactory = clientFactory;
         _memberFactory = memberFactory;
     }
-
     public ProjectModel Create(ProjectEntity entity)
     {
         return new ProjectModel
@@ -37,7 +34,6 @@ public class ProjectFactory
                 : new List<MemberModel>()
         };
     }
-
     public ProjectEntity Create(
         AddProjectForm form,
         ClientEntity client,
@@ -58,7 +54,6 @@ public class ProjectFactory
             Members = members
         };
     }
-
     public void Update(
         ProjectEntity entity,
         EditProjectForm form,
@@ -78,7 +73,6 @@ public class ProjectFactory
             entity.Members.Add(m);
         }
     }
-
     public ProjectEntity Create(ProjectModel model)
     {
         return new ProjectEntity

@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities;
-
 public class ProjectEntity
 {
     [Key]
@@ -34,7 +33,4 @@ public class ProjectEntity
     public ClientEntity Client { get; set; } = null!;
 
     public ICollection<MemberEntity> Members { get; set; } = [];
-
-
-
 }

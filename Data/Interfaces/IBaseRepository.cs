@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 
 namespace Data.Interfaces;
-
 public interface IBaseRepository<TEntity> where TEntity : class
 {
     #region Transaction Management
@@ -30,7 +29,6 @@ public interface IBaseRepository<TEntity> where TEntity : class
 
     Task<bool> ExistsAsync(
         Expression<Func<TEntity, bool>> predicate);
-
     Task SaveToDatabaseAsync();
     #endregion
 }

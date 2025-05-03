@@ -5,6 +5,10 @@ using Data.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// AuthService handles user authentication and registration logic.
+/// It interacts with ASP.NET Identity and the domain-specific user/member systems.
+/// </summary>
 public class AuthService : IAuthService
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -30,6 +34,13 @@ public class AuthService : IAuthService
         _fileStorageService = fileStorageService;
     }
 
+    /// <summary>
+    /// Registers a new user:
+    /// - Validates email uniqueness
+    /// - Creates user in ASP.NET Identity
+    /// - Creates associated MemberEntity
+    /// - Signs the user in
+    /// </summary>
     public async Task<ServiceResult<string>> RegisterAsync(SignUpFormModel form)
     {
         if (form == null)
@@ -83,6 +94,12 @@ public class AuthService : IAuthService
         }
     }
 
+    /// <summary>
+    /// Signs in an existing user:
+    /// - Validates credentials
+    /// - Signs the user in
+    /// - Returns redirect URL based on role or default
+    /// </summary>
     public async Task<ServiceResult<string>> SignInAsync(SignInFormModel form)
     {
         if (form == null)
@@ -109,6 +126,9 @@ public class AuthService : IAuthService
         return ServiceResult<string>.Success(redirectUrl);
     }
 
+    /// <summary>
+    /// Signs out the current user.
+    /// </summary>
     public async Task<ServiceResult<bool>> LogOutAsync()
     {
         await _signInManager.SignOutAsync();
@@ -116,6 +136,10 @@ public class AuthService : IAuthService
         return ServiceResult<bool>.Success(true);
     }
 
+    /// <summary>
+    /// Generates a password reset token for the user with the specified email.
+    /// If the user does not exist, returns a generic message to avoid user enumeration.
+    /// </summary>
     public async Task<ServiceResult<string>> GeneratePasswordResetTokenAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -128,6 +152,10 @@ public class AuthService : IAuthService
         return ServiceResult<string>.Success(token);
     }
 
+    /// <summary>
+    /// Resets the user's password using a valid reset token.
+    /// Validates the token and applies the new password.
+    /// </summary>
     public async Task<ServiceResult<bool>> ResetPasswordAsync(ResetPasswordFormModel form)
     {
         var user = await _userManager.FindByEmailAsync(form.Email);

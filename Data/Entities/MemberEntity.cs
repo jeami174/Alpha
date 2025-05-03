@@ -1,11 +1,8 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.TempModels;
 
 namespace Data.Entities;
-
-
 public class MemberEntity
 {
     [Key]
@@ -27,13 +24,11 @@ public class MemberEntity
 
     public DateTime? DateOfBirth { get; set; }
 
-
     public int? RoleId { get; set; }
 
     public int? AddressId { get; set; }
 
     public string? UserId { get; set; }
-
 
     [ForeignKey(nameof(RoleId))]
     public RoleEntity? Role { get; set; }

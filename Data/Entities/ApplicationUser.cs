@@ -16,11 +16,12 @@ public class ApplicationUser : IdentityUser
 
     [ProtectedPersonalData]
     [Column(TypeName = "varchar(10)")]
+
     public string PreferredTheme { get; set; } = "light";
 
     public MemberEntity? Member { get; set; }
 
     public ICollection<NotificationDismissedEntity> DismissedNotification { get; set; } = [];
-
+    
     public DateTime LastLogin { get; set; } = DateTime.UtcNow;
 }

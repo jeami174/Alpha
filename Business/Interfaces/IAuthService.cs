@@ -1,5 +1,4 @@
 ﻿using Business.Models;
-
 public interface IAuthService
 {
     Task<ServiceResult<string>> RegisterAsync(SignUpFormModel form);

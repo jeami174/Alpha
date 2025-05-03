@@ -19,6 +19,5 @@ public class AddressEntity
     [Column(TypeName = "nvarchar(20)")]
     public string City { get; set; } = null!;
 
-
     public ICollection<MemberEntity> Members { get; set; } = new List<MemberEntity>();
 }

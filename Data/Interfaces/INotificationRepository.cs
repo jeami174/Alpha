@@ -6,6 +6,5 @@ namespace Data.Interfaces
     {
         Task<IEnumerable<NotificationEntity>> GetAllWithIncludesAsync();
         Task<IEnumerable<NotificationEntity>> GetAllForUserAsync(string userId, int take = 5);
-
     }
 }

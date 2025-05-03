@@ -7,12 +7,19 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services;
-
+/// <summary>
+/// Manages creation, retrieval, and dismissal of notifications,
+/// including default image assignment and user-specific fetching.
+/// </summary>
 public class NotificationService(DataContext context, INotificationRepository notificationRepository) : INotificationService
 {
     private readonly DataContext _context = context;
     private readonly INotificationRepository _notificationRepository = notificationRepository;
 
+    /// <summary>
+    /// Adds a new notification to the store, assigns a default image based on type if none provided,
+    /// and timestamps it with the current UTC time.
+    /// </summary>
     public async Task AddNotificationAsync(NotificationEntity entity)
     {
         if (entity == null)
@@ -34,6 +41,9 @@ public class NotificationService(DataContext context, INotificationRepository no
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Retrieves the latest notifications for a specific user, up to the given number.
+    /// </summary>
     public async Task<IEnumerable<NotificationModel>> GetNotificationsForUserAsync(string userId, int take = 5)
     {
         if (string.IsNullOrEmpty(userId))
@@ -50,6 +60,9 @@ public class NotificationService(DataContext context, INotificationRepository no
         });
     }
 
+    /// <summary>
+    /// Marks a notification as dismissed for a user by recording it if not already dismissed.
+    /// </summary>
     public async Task DismissNotificationAsync(string notificationId, string userId)
     {
         if (string.IsNullOrEmpty(notificationId) || string.IsNullOrEmpty(userId))

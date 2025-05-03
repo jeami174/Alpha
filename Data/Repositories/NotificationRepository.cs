@@ -5,8 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
+/// <summary>
+/// Repository for accessing notifications, including methods
+/// to retrieve all notifications with related data and to fetch
+/// user-specific, non-dismissed notifications.
+/// </summary>
 public class NotificationRepository(DataContext context) : BaseRepository<NotificationEntity>(context), INotificationRepository
 {
+    /// <summary>
+    /// Retrieves all notifications along with their NotificationType,
+    /// NotificationTargetGroup, and any dismissed records.
+    /// </summary>
     public async Task<IEnumerable<NotificationEntity>> GetAllWithIncludesAsync()
     {
         return await _dbSet
@@ -16,6 +25,11 @@ public class NotificationRepository(DataContext context) : BaseRepository<Notifi
             .ToListAsync();
     }
 
+    /// <summary>
+    /// Retrieves the most recent notifications for the specified user
+    /// that have not been dismissed, ordered by creation date and
+    /// limited to the given count.
+    /// </summary>
     public async Task<IEnumerable<NotificationEntity>> GetAllForUserAsync(string userId, int take = 5)
     {
         if (string.IsNullOrEmpty(userId))

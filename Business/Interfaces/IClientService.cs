@@ -2,7 +2,6 @@
 using Domain.Models;
 
 namespace Business.Interfaces;
-
 public interface IClientService
 {
     Task<ServiceResult<IEnumerable<ClientModel>>> GetAllAsync();

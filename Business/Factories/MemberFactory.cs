@@ -3,10 +3,9 @@ using Data.Entities;
 using Domain.Models;
 
 namespace Business.Factories;
-
 public class MemberFactory
 {
-    public MemberEntity Create(AddMemberForm form, RoleEntity role, string imageName)
+ public MemberEntity Create(AddMemberForm form, RoleEntity role, string imageName)
     {
         return new MemberEntity
         {
@@ -19,7 +18,6 @@ public class MemberFactory
             ImageName = imageName
         };
     }
-
     public void Update(MemberEntity entity, EditMemberForm form, RoleEntity role)
     {
         entity.FirstName = form.FirstName;
@@ -34,7 +32,6 @@ public class MemberFactory
             entity.ImageName = form.ImageName;
         }
     }
-
     public MemberModel Create(MemberEntity entity)
     {
         return new MemberModel

@@ -2,7 +2,6 @@
 using Data.Entities;
 
 namespace Business.Factories;
-
 public class UserFactory
 {
     public ApplicationUser Create(SignUpFormModel form)
@@ -15,5 +14,4 @@ public class UserFactory
             LastName = form.LastName
         };
     }
-
 }

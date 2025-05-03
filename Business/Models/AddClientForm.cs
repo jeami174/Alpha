@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 namespace Business.Models;
-
 public class AddClientForm
 {
     [Display(Name = "Client Image", Prompt = "Upload a image")]

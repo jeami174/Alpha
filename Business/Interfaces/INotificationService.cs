@@ -1,9 +1,7 @@
-﻿using Business.Models;
-using Data.Entities;
+﻿using Data.Entities;
 using Domain.Models;
 
 namespace Business.Interfaces;
-
 public interface INotificationService
 {
     Task AddNotificationAsync(NotificationEntity entity);

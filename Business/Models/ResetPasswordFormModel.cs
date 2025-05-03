@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Business.Models;
-
 public class ResetPasswordFormModel
 {
     [Required(ErrorMessage = "Email is required.")]

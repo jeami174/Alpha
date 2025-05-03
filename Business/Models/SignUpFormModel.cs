@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Business.Models;
-
 public class SignUpFormModel
 {
     [Display(Name = "First Name", Prompt = "Your first name")]

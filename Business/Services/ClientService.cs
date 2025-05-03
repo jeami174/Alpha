@@ -5,26 +5,25 @@ using Data.Interfaces;
 using Domain.Models;
 
 namespace Business.Services;
-
-public class ClientService : IClientService
+/// Service for handling client-related business logic, including CRUD operations.
+/// Utilizes a repository for data access, a factory for mapping between entities and models,
+/// and a file storage service for handling uploaded files and avatars.
+/// </summary>
+public class ClientService(
+    IClientRepository clientRepository,
+    ClientFactory clientFactory,
+    IFileStorageService fileStorageService) : IClientService
 {
-    private readonly IClientRepository _clientRepository;
-    private readonly ClientFactory _clientFactory;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly ClientFactory _clientFactory = clientFactory;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
 
     private const string ClientUploadsFolder = "clients/clientuploads";
     private const string ClientAvatarFolder = "Clients/avatars";
 
-    public ClientService(
-        IClientRepository clientRepository,
-        ClientFactory clientFactory,
-        IFileStorageService fileStorageService)
-    {
-        _clientRepository = clientRepository;
-        _clientFactory = clientFactory;
-        _fileStorageService = fileStorageService;
-    }
-
+    /// <summary>
+    /// Retrieves all clients and maps them to client models.
+    /// </summary>
     public async Task<ServiceResult<IEnumerable<ClientModel>>> GetAllAsync()
     {
         var entities = await _clientRepository.GetAllAsync();
@@ -32,6 +31,9 @@ public class ClientService : IClientService
         return ServiceResult<IEnumerable<ClientModel>>.Success(models);
     }
 
+    /// <summary>
+    /// Retrieves a single client by its unique identifier.
+    /// </summary>
     public async Task<ServiceResult<ClientModel>> GetByIdAsync(int id)
     {
         var entity = await _clientRepository.GetOneAsync(c => c.ClientId == id);
@@ -41,6 +43,10 @@ public class ClientService : IClientService
         return ServiceResult<ClientModel>.Success(_clientFactory.Create(entity));
     }
 
+    /// <summary>
+    /// Creates a new client from the provided form, assigns an avatar if none provided,
+    /// and commits the new record in a transactional scope.
+    /// </summary>
     public async Task<ServiceResult<ClientModel>> CreateAsync(AddClientForm form, string? imageName)
     {
         var exists = await _clientRepository.ExistsAsync(c => c.ClientEmail == form.ClientEmail);
@@ -68,6 +74,10 @@ public class ClientService : IClientService
         }
     }
 
+    /// <summary>
+    /// Updates an existing client’s details, handles an optional new image upload,
+    /// and persists changes within a transaction.
+    /// </summary>
     public async Task<ServiceResult<ClientModel>> UpdateAsync(EditClientForm form)
     {
         var entity = await _clientRepository.GetOneAsync(c => c.ClientId == form.Id);
@@ -104,6 +114,9 @@ public class ClientService : IClientService
         }
     }
 
+    /// <summary>
+    /// Deletes the client identified by the given ID from the data store.
+    /// </summary>
     public async Task<ServiceResult<bool>> DeleteAsync(int id)
     {
         var entity = await _clientRepository.GetOneAsync(c => c.ClientId == id);

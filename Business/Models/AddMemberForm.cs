@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Business.Models;
-
 public class AddMemberForm
 {
     [Display(Name = "Member Image", Prompt = "Upload a image")]

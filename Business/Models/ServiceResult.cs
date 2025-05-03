@@ -1,5 +1,4 @@
 ﻿namespace Business.Models;
-
 public class ServiceResult<T>
 {
     public bool Succeeded { get; set; }

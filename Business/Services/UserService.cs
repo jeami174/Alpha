@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services;
 
+/// <summary>
+/// Handles user creation and role assignment using ASP.NET Identity,
+/// including creating new users with profile details and adding them to roles.
+/// </summary>
 public class UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager) : IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;

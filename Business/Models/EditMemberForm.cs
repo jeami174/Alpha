@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Business.Models;
@@ -54,5 +53,4 @@ public class EditMemberForm
     [Display(Name = "City", Prompt = "Enter City")]
     [DataType(DataType.Text)]
     public string? City { get; set; }
-
 }

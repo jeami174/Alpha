@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Business.Models;
-
 public class EditProjectForm
 {
     public string Id { get; set; } = null!;
@@ -31,6 +30,4 @@ public class EditProjectForm
 
     [Display(Name = "Budget", Prompt = "")]
     public decimal? Budget { get; set; }
-
-
 }

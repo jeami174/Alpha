@@ -13,14 +13,11 @@ public class ClientEntity
     [Column(TypeName = "nvarchar(50)")]
     public string ClientName { get; set; } = null!;
 
-
     [Column(TypeName = "varchar(200)")]
     public string ClientEmail { get; set; } = null!;
 
-
     [Column(TypeName = "nvarchar(50)")]
     public string? Location { get; set; }
-
 
     [Column(TypeName = "varchar(20)")]
     public string? Phone { get; set; }

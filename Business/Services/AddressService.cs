@@ -3,16 +3,18 @@ using Data.Entities;
 using Data.Interfaces;
 
 namespace Business.Services;
-
 public class AddressService : IAddressService
 {
     private readonly IAddressRepository _addressRepository;
-
     public AddressService(IAddressRepository addressRepository)
     {
         _addressRepository = addressRepository;
     }
 
+    /// <summary>
+    /// Retrieves an existing address if it matches the given data, or creates and saves a new one.
+    /// Returns null if all input fields are empty or null.
+    /// </summary>
     public async Task<AddressEntity?> GetOrCreateAddressAsync(string? street, string? postalCode, string? city)
     {
         street = string.IsNullOrWhiteSpace(street) ? string.Empty : street.Trim();

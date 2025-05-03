@@ -3,13 +3,16 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
-using Data.TempModels;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services;
 
+/// <summary>
+/// Handles member-related business operations, including retrieval, search,
+/// creation, updating, deletion, and fetching of newly added members with related data.
+/// </summary>
 public class MemberService(
     IMemberRepository memberRepository,
     IRoleRepository roleRepository,
@@ -25,6 +28,9 @@ public class MemberService(
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly INotificationService _notificationService = notificationService;
 
+    /// <summary>
+    /// Retrieves all members along with their roles and addresses.
+    /// </summary>
     public async Task<ServiceResult<IEnumerable<MemberModel>>> GetAllMembersAsync()
     {
         var members = await _memberRepository.GetAllWithDetailsAsync(q =>
@@ -34,6 +40,9 @@ public class MemberService(
         return ServiceResult<IEnumerable<MemberModel>>.Success(models);
     }
 
+    /// <summary>
+    /// Retrieves a single member by its unique identifier.
+    /// </summary>
     public async Task<ServiceResult<MemberModel>> GetMemberByIdAsync(int id)
     {
         var entity = await _memberRepository.GetOneWithIncludesAsync(id);
@@ -44,12 +53,18 @@ public class MemberService(
         return ServiceResult<MemberModel>.Success(model);
     }
 
+    /// <summary>
+    /// Searches for members matching the specified term.
+    /// </summary>
     public async Task<List<MemberModel>> SearchMembersAsync(string searchTerm)
     {
         var results = await _memberRepository.SearchMembersAsync(searchTerm);
         return results.Select(m => _memberFactory.Create(m)).ToList();
     }
 
+    /// <summary>
+    /// Adds a new member with role and address resolution, within a transaction.
+    /// </summary>
     public async Task<ServiceResult<MemberModel>> AddMemberAsync(AddMemberForm form, string imageName)
     {
         await _memberRepository.BeginTransactionAsync();
@@ -77,9 +92,9 @@ public class MemberService(
         }
     }
 
-
-
-
+    /// <summary>
+    /// Updates an existing member’s details, including role and address, within a transaction.
+    /// </summary>
     public async Task<ServiceResult<MemberModel>> UpdateMemberAsync(int id, EditMemberForm form)
     {
         var member = await _memberRepository.GetOneAsync(m => m.Id == id);
@@ -110,6 +125,9 @@ public class MemberService(
         }
     }
 
+    /// <summary>
+    /// Deletes a member and its associated user account, within a transaction.
+    /// </summary>
     public async Task<ServiceResult<bool>> DeleteMemberAsync(int id)
     {
         var member = await _memberRepository.GetOneAsync(m => m.Id == id);
@@ -146,6 +164,9 @@ public class MemberService(
         }
     }
 
+    /// <summary>
+    /// Retrieves an existing role by the specified name, or creates and persists a new one if none is found.
+    /// </summary>
     private async Task<RoleEntity> GetOrCreateRoleAsync(string roleName)
     {
         roleName = roleName.Trim();
@@ -159,6 +180,9 @@ public class MemberService(
         return newRole;
     }
 
+    /// <summary>
+    /// Retrieves members created after the specified date.
+    /// </summary>
     public async Task<IEnumerable<MemberModel>> GetNewMembersAsync(DateTime since)
     {
         var members = await _memberRepository.GetCreatedAfterAsync(since);
@@ -175,5 +199,4 @@ public class MemberService(
 
         return models;
     }
-
 }

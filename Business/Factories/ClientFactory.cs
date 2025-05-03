@@ -3,7 +3,6 @@ using Data.Entities;
 using Domain.Models;
 
 namespace Business.Factories;
-
 public class ClientFactory
 {
     public ClientModel Create(ClientEntity entity)
@@ -20,7 +19,6 @@ public class ClientFactory
                 : entity.ImageName.Replace("\\", "/")
         };
     }
-
     public ClientEntity Create(AddClientForm form, string imageName)
     {
         return new ClientEntity
@@ -32,7 +30,6 @@ public class ClientFactory
             ImageName = imageName
         };
     }
-
     public ClientEntity Update(ClientEntity entity, EditClientForm form)
     {
         entity.ClientName = form.ClientName;
@@ -47,5 +44,4 @@ public class ClientFactory
 
         return entity;
     }
-
 }
