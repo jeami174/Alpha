@@ -2313,45 +2313,50 @@ input[type="checkbox"] {
     border: 1px solid var(--border100);
 }
 
-.admin-login-wrapper {
+.two-column-layout {
     display: flex;
     height: 100vh;
 }
 
-.admin-login-left {
+.welcome-container {
     flex: 1;
-    background: linear-gradient(to bottom right, #3B3AFA, #9013FE);
+    background-image: url('/images/backgrounds/blur.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 40px;
+}
+
+.bottom-align {
+    max-width: 800px;
+    width: 100%;
+}
+
+.admin-signup {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 40px;
+}
+
+.white-text {
+    color: #FFF;
+    font-size: 72px;
+}
+
+.orange-text {
+    color: #FF9640;
+    font-size: 72px;
+}
+
+.welcome-container p {
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-top: 20px;
 }
 
-.admin-login-text {
-    max-width: 400px;
-}
-
-    .admin-login-text h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-    }
-
-        .admin-login-text h1 span {
-            color: #FFA726;
-        }
-
-    .admin-login-text p {
-        margin-top: 1rem;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: rgba(255,255,255,0.85);
-    }
-
-.admin-login-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--background-color);
-}
