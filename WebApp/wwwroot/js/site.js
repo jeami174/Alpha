@@ -157,17 +157,40 @@ function updateRelativeTimes() {
 
 function updateNotificationCount() {
     const notificationsList = document.querySelector('.notification-list');
-    const countDisplay = document.querySelector('.notification-count');
-    const dot = document.querySelector('.notification-dot');
-
     const count = notificationsList.querySelectorAll('.notification-item').length;
 
-    if (countDisplay) countDisplay.textContent = count;
+    let countDisplay = document.querySelector('.notification-count');
+    if (!countDisplay) {
+        const header = document.querySelector('.notifications-header');
+        if (header) {
+            countDisplay = document.createElement('div');
+            countDisplay.className = 'notification-count';
+            header.appendChild(countDisplay);
+        }
+    }
+
+    if (countDisplay) {
+        countDisplay.textContent = count;
+        countDisplay.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+
+    // 🔽 Kontrollera och uppdatera notification-dot
+    let dot = document.querySelector('.notification-dot');
+    if (!dot) {
+        const wrapper = document.querySelector('.notification-wrapper'); // justera vid behov
+        if (wrapper) {
+            dot = document.createElement('span');
+            dot.className = 'notification-dot';
+            wrapper.appendChild(dot);
+        }
+    }
+
     if (dot) {
         if (count > 0) dot.classList.add('active');
         else dot.classList.remove('active');
     }
 }
+
 
 // ----------------------------------------
 // 3. Dynamisk Partial Loader

@@ -83,43 +83,43 @@
 }
 
 .dark {
-    color-scheme: dark; /*KLAR*/
+    color-scheme: dark;
     /*BORDERS*/
-    --border100: #2F2F30; /*KLAR*/
-    --border200: #232324; /*KLAR*/
-    --border300: #363638; /*KLAR*/
-    --gray100: #313133; /*KLAR*/
-    --gray200: #38383B; /*KLAR*/
-    --gray300: #E8EAED; /*KLAR*/
-    --gray400: #E3E5E8; /*KLAR*/
+    --border100: #2F2F30;
+    --border200: #232324;
+    --border300: #363638;
+    --gray100: #313133;
+    --gray200: #38383B;
+    --gray300: #E8EAED;
+    --gray400: #E3E5E8;
     /*COLORS*/
-    --background: #151517; /*KLAR*/
-    --surface: #202123; /*KLAR*/
-    --heading: #FFFFFF; /*KLAR*/
-    --body-light: #9E9E9E; /*KLAR*/
-    --body-dark: #E8E8E8; /*KLAR*/
-    --dark-100: #1A1926; /*KLAR*/
-    --dark-200: #1C1D1F; /*KLAR*/
-    --dark-300: #202123; /*KLAR*/
-    --dark-400: #28263B; /*KLAR*/
-    --dark-500: #333333; /*KLAR*/
-    --dark-600: #38383B; /*KLAR*/
+    --background: #151517;
+    --surface: #202123;
+    --heading: #FFFFFF;
+    --body-light: #9E9E9E;
+    --body-dark: #E8E8E8;
+    --dark-100: #1A1926;
+    --dark-200: #1C1D1F;
+    --dark-300: #202123;
+    --dark-400: #28263B;
+    --dark-500: #333333;
+    --dark-600: #38383B;
     --dark-opacity-20: rgba(26, 25, 38, 0.2);
     --dark-opacity-60: rgba(26, 25, 38, 0.6);
     /*CUSTOM PROPERTIES*/
-    --text-color: var(--body-light); /*KLAR*/
-    --heading-color: var(--heading); /*KLAR*/
-    --border-color: var(--gray100); /*KLAR*/
-    --background-color: var(--background); /*KLAR*/
-    --btn-border: #202123; /*kolla*/
-    --navlink-text-color: var(--text-color); /*KLAR*/
+    --text-color: var(--body-light);
+    --heading-color: var(--heading);
+    --border-color: var(--gray100);
+    --background-color: var(--background);
+    --btn-border: #202123;
+    --navlink-text-color: var(--text-color);
     --navlink-text-hover-color: var(--accent);
     --navlink-text-active-color: var(--accent);
-    --navlink-background-color: transparent; /*KLAR*/
-    --navlink-background-hover-color: #1A8EFF1A; /*KLAR*/
-    --navlink-background-active-color: #1A8EFF1A; /*KLAR*/
+    --navlink-background-color: transparent;
+    --navlink-background-hover-color: #1A8EFF1A;
+    --navlink-background-active-color: #1A8EFF1A;
     --table-header-background-color: var(--background);
-    --table-header-text-color: var(--heading); /*KLAR*/
+    --table-header-text-color: var(--heading);
     --text-color-muted: #706E83;
     --modal-screen-background-color: rgba(26, 26, 26, 0.2);
     --input-text-color: var(--text-color);
@@ -2360,3 +2360,22 @@ input[type="checkbox"] {
     margin-top: 20px;
 }
 
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+}
+
+.notification-count {
+    background-color: #FF6A3D;
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 3px 6.5px 2px 6.5px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--Red, #FF6640);
+}
