@@ -1,5 +1,4 @@
-﻿
-namespace Domain.Models;
+﻿namespace Domain.Models;
 
 public class MemberModel
 {
@@ -10,10 +9,8 @@ public class MemberModel
     public string Email { get; set; } = null!;
     public string? Phone { get; set; }
     public DateTime? DateOfBirth { get; set; }
-
     public RoleModel? Role { get; set; }
     public AddressModel? Address { get; set; }
-
     public DateTime Created { get; set; }
 
 }

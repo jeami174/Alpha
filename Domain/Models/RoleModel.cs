@@ -1,5 +1,4 @@
 ﻿namespace Domain.Models;
-
 public class RoleModel
 {
     public int Id { get; set; }
