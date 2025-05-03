@@ -1,0 +1,53 @@
+﻿@model SignInFormModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="center-screen">
+    <div class="surface">
+        <h1 class="form-header signin-title">Admin Login</h1>
+
+        <form id="admin-signin-form" class="form signin-form form extended-validation" method="post" asp-action="AdminLogin" asp-controller="Auth" novalidate>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <div class="field-group">
+                    <input asp-for="Email" data-val="true" data-val-required="Email is required" autocomplete="off" />
+                    <span asp-validation-for="Email"></span>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <div class="field-group">
+                    <div class="input-with-icon">
+                        <input asp-for="Password" data-val="true" data-val-required="Password is required" id="passwordField" />
+                        <span id="togglePassword" class="toggle-password">
+                            <img src="~/images/Icons/Hide.svg" alt="Toggle Password" class="toggle-icon" />
+                        </span>
+                    </div>
+                    <span asp-validation-for="Password"></span>
+                </div>
+            </div>
+
+            <div class="form-message"></div>
+
+            <button type="submit" class="btn btn-blue">Log In as Admin</button>
+        </form>
+
+        <div class="SignIn-Footer">
+            <p><a asp-action="SignIn" asp-controller="Auth">Back to user login</a></p>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            bindFormSubmitHandlers();
+            bindTogglePassword();
+        });
+    </script>
+}

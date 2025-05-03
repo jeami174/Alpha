@@ -331,6 +331,66 @@ function bindFormSubmitHandlers() {
 }
 
 // ----------------------------------------
+// Admin-email validering (JS-fetch mot /Auth/IsAdmin)
+// ----------------------------------------
+function bindAdminEmailValidation() {
+    const form = document.getElementById('admin-login-form');
+    if (!form) return;
+
+    const emailInput = form.querySelector('#admin-email');
+    const errorSpan = form.querySelector('#admin-email-error');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    let lastChecked = '';
+
+    async function checkAdmin(email) {
+        if (!email) {
+            errorSpan.innerText = '';
+            submitBtn.disabled = false;
+            return;
+        }
+        if (email === lastChecked) return;
+        lastChecked = email;
+
+        try {
+            const res = await fetch(`/Auth/IsAdmin?email=${encodeURIComponent(email)}`, {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            if (!res.ok) throw new Error(res.status);
+            const json = await res.json();
+            if (!json.isAdmin) {
+                errorSpan.innerText = 'You must be an administrator to log in here.';
+                submitBtn.disabled = true;
+            } else {
+                errorSpan.innerText = '';
+                submitBtn.disabled = false;
+            }
+        } catch (err) {
+            console.error('Admin-check failed', err);
+            errorSpan.innerText = '';
+            submitBtn.disabled = false;
+        }
+    }
+
+    emailInput.addEventListener('blur', e => checkAdmin(e.target.value));
+    emailInput.addEventListener('input', e => {
+        errorSpan.innerText = '';
+        submitBtn.disabled = false;
+    });
+
+    form.addEventListener('submit', async e => {
+        const email = emailInput.value.trim();
+        if (email && email !== lastChecked) {
+            e.preventDefault();
+            await checkAdmin(email);
+            if (submitBtn.disabled) return;
+            form.submit();
+        }
+    });
+}
+
+// ----------------------------------------
 // 5. DOMContentLoaded – Init-funktioner
 // ----------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
@@ -344,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bindImagePreviewers();
     bindCloseButtons();
+    bindAdminEmailValidation(); 
     bindFormSubmitHandlers();
     bindTogglePassword();
     setupDropdownToggles();
@@ -378,9 +439,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    loadNotifications();
-    setInterval(updateRelativeTimes, 60000);
-    updateRelativeTimes();
+    if (document.getElementById('notification-list')) {
+        loadNotifications();
+        setInterval(updateRelativeTimes, 60000);
+        updateRelativeTimes();
+    }
 });
 
 // ----------------------------------------

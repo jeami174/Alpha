@@ -359,6 +359,7 @@ h6 {
     padding-left: 3rem;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
     .google-btn .google-icon {
@@ -2310,4 +2311,47 @@ input[type="checkbox"] {
 .dark .quill-editor .quill-toolbar {
     background-color: var(--surface);
     border: 1px solid var(--border100);
+}
+
+.admin-login-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+.admin-login-left {
+    flex: 1;
+    background: linear-gradient(to bottom right, #3B3AFA, #9013FE);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+}
+
+.admin-login-text {
+    max-width: 400px;
+}
+
+    .admin-login-text h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+        .admin-login-text h1 span {
+            color: #FFA726;
+        }
+
+    .admin-login-text p {
+        margin-top: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: rgba(255,255,255,0.85);
+    }
+
+.admin-login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
 }

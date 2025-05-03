@@ -269,6 +269,56 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
         return View();
     }
 
+    // ------------------ ADMIN SIGN IN ------------------
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult AdminLogin()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AdminLogin(SignInFormModel form)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray());
+
+            return BadRequest(new { success = false, errors });
+        }
+
+        var result = await _authService.SignInAsync(form);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { success = false, error = result.Error });
+        }
+
+        var user = await _userManager.FindByEmailAsync(form.Email);
+        if (user == null || !(await _userManager.IsInRoleAsync(user, "Admin")))
+        {
+            return BadRequest(new
+            {
+                success = false,
+                error = "You must be an administrator to log in here.",
+                errors = new Dictionary<string, string[]>
+            {
+                { "", new[] { "You must be an administrator to log in here." } }
+            }
+            });
+        }
+
+        user.LastLogin = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
+        return Json(new { success = true, redirectUrl = result.Result });
+    }
+
+
+
     #endregion
 
     #region External Authentication
