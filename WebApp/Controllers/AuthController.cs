@@ -4,7 +4,6 @@ using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using Domain.Models;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +12,10 @@ using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
+/// <summary>
+/// Handles all authentication flows: local sign-in/up/out, password reset,
+/// external (OAuth) sign-in, and notifications via SignalR.
+/// </summary>
 public class AuthController(IMemberRepository memberRepository, IFileStorageService fileStorageService, IAuthService authService, UserManager<ApplicationUser> userManager, INotificationService notificationService, IHubContext<NotificationHub> notificationHub, IProjectService projectService, IMemberService memberService, SignInManager<ApplicationUser> signInManager) : Controller
 {
     private readonly IAuthService _authService = authService;
@@ -26,6 +29,7 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
     private readonly IFileStorageService _fileStorageService = fileStorageService;
 
     #region Local Identity
+    
     // ------------------ SIGN IN ------------------
 
     [HttpGet]
@@ -38,6 +42,7 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignIn(SignInFormModel form)
     {
+        // Validate input
         if (!ModelState.IsValid)
         {
             var errors = ModelState.ToDictionary(
@@ -47,6 +52,7 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
             return BadRequest(new { success = false, errors });
         }
 
+        // Attempt to sign in via business layer
         var result = await _authService.SignInAsync(form);
 
         if (!result.Succeeded)
@@ -54,6 +60,7 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
             return BadRequest(new { success = false, error = result.Error });
         }
 
+        // Fetch user and enforce authorization
         var user = await _userManager.FindByEmailAsync(form.Email);
         if (user == null)
         {
@@ -64,8 +71,10 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
 
         var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
+        // Send real-time notifications for newly created projects/members
         try
         {
+            // Admins see both new projects and new members
             if (isAdmin)
             {
                 var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
@@ -97,6 +106,7 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
                     await _notificationHub.Clients.User(userId).SendAsync("RecieveNotification", notification);
                 }
             }
+            // Regular users see only new projects
             else
             {
                 var newProjects = await _projectService.GetNewProjectsAsync(user.LastLogin);
@@ -121,20 +131,24 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
             // Men låt inte en misslyckad SignalR-sändning förstöra inloggningen.
         }
 
-        // Uppdatera LastLogin till nu
+        // Update the user's last login timestamp
         user.LastLogin = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
 
+        // Return JSON with redirect URL
         return Json(new { success = true, redirectUrl = result.Result });
     }
-
-
-
 
     // ------------------ SIGN UP ------------------
     [HttpGet]
     public IActionResult SignUp() => View();
 
+    /// <summary>
+    /// Processes sign-up form via AJAX:
+    /// - Validates model state
+    /// - Calls AuthService.RegisterAsync
+    /// - Returns redirect URL on success
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignUp(SignUpFormModel form)
@@ -162,7 +176,6 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
         return Json(new { success = true, redirectUrl = result.Result });
     }
 
-
     // ------------------ SIGN OUT ------------------
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -177,6 +190,12 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
     [HttpGet]
     public IActionResult ForgotPassword() => View();
 
+    /// <summary>
+    /// Handles forgot password requests via AJAX:
+    /// - Validates model state
+    /// - Generates reset token if user exists
+    /// - Returns URL for reset page
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordFormModel model)
@@ -201,10 +220,13 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
 
         var result = await _authService.GeneratePasswordResetTokenAsync(model.Email);
         string token = result.Succeeded ? (result.Result ?? "") : "";
+        // Redirect to ResetPassword action with email and token
         return Json(new { success = true, redirectUrl = Url.Action("ResetPassword", new { email = model.Email, token }) });
     }
 
-
+    /// <summary>
+    /// Displays the reset password page with email and token populated.
+    /// </summary>
     [HttpGet]
     public IActionResult ResetPassword(string email, string token)
     {
@@ -216,6 +238,12 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
         return View(model);
     }
 
+    /// <summary>
+    /// Processes reset password form via AJAX:
+    /// - Validates model state
+    /// - Calls AuthService.ResetPasswordAsync
+    /// - Returns JSON success or validation errors
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordFormModel model)
@@ -270,6 +298,9 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
     }
 
     // ------------------ ADMIN SIGN IN ------------------
+    /// <summary>
+    /// Displays the admin-only sign-in page.
+    /// </summary>
     [HttpGet]
     [AllowAnonymous]
     public IActionResult AdminLogin()
@@ -277,6 +308,12 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
         return View();
     }
 
+    /// <summary>
+    /// Processes admin login via AJAX:
+    /// - Validates input
+    /// - Ensures user has Admin role
+    /// - Updates LastLogin and returns redirect URL
+    /// </summary>
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -322,6 +359,11 @@ public class AuthController(IMemberRepository memberRepository, IFileStorageServ
     #endregion
 
     #region External Authentication
+
+    /// <summary>
+    /// Initiates external login (e.g. Google, Facebook) by issuing a challenge.
+    /// This is from Hans video.
+    /// </summary>
 
     [HttpGet, HttpPost]
     public IActionResult ExternalSignIn(string provider, string returnUrl = null!)

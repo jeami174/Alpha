@@ -6,24 +6,27 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
+/// <summary>
+/// Controller for displaying the project overview page.
+/// both users and admins may access.
+/// </summary>
 [Authorize(Policy = "Users")]
 [Route("projects")]
-public class ProjectsController : Controller
+public class ProjectsController(
+    IProjectService projectService,
+    IClientService clientService,
+    IMemberService memberService) : Controller
 {
-    private readonly IProjectService _projectService;
-    private readonly IClientService _clientService;
-    private readonly IMemberService _memberService;
+    private readonly IProjectService _projectService = projectService;
+    private readonly IClientService _clientService = clientService;
+    private readonly IMemberService _memberService = memberService;
 
-    public ProjectsController(
-        IProjectService projectService,
-        IClientService clientService,
-        IMemberService memberService)
-    {
-        _projectService = projectService;
-        _clientService = clientService;
-        _memberService = memberService;
-    }
-
+    /// <summary>
+    /// GET /projects
+    /// Loads all projects (optionally sorted), maps them to card view models,
+    /// applies an optional search filter, and populates additional dropdown data
+    /// (clients and members) before rendering the overview view.
+    /// </summary>
     [HttpGet("")]
     public async Task<IActionResult> Projects(
         string? status = null,

@@ -10,6 +10,13 @@ using WebApp.Hubs;
 
 namespace WebApp.Controllers;
 
+/// <summary>
+/// Controller for managing members in the admin area.
+/// Only users satisfying the “Admins” policy may access these actions.
+/// Supports listing, creating, editing, and deleting members, 
+/// as well as broadcasting notification updates via SignalR.
+/// </summary>
+
 [Authorize(Policy = "Admins")]
 public class MembersController(
     IMemberService memberService,
@@ -25,6 +32,7 @@ public class MembersController(
     private readonly IHubContext<NotificationHub> _notificationHub = notificationHub;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
 
+    // Folder paths for member uploads and avatar defaults
     private const string UserUploadsFolder = "members/useruploads";
     private const string AvatarsFolder = "members/avatars";
 
@@ -34,6 +42,11 @@ public class MembersController(
         return View(result.Succeeded ? result.Result : new List<MemberModel>());
     }
 
+    /// <summary>
+    /// POST /Members/AddMember
+    /// Validates and creates a new member with an uploaded image or a random avatar.
+    /// Also creates a notification and broadcasts an update to all admins via SignalR.
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> AddMember(AddMemberForm form)
     {
@@ -48,31 +61,39 @@ public class MembersController(
             return BadRequest(new { success = false, errors });
         }
 
+        // Save uploaded image or fallback to a random avatar
         string imageName = form.MemberImage is { Length: > 0 }
             ? await _fileStorageService.SaveFileAsync(form.MemberImage, UserUploadsFolder)
             : _fileStorageService.GetRandomAvatar(AvatarsFolder);
 
+        // Create member
+
         var result = await _memberService.AddMemberAsync(form, imageName);
         if (!result.Succeeded || result.Result == null)
             return BadRequest(new { success = false, error = result.Error ?? "Failed to create member." });
-
+        
+        // Create and persist a notification entity
         var notification = new NotificationEntity
         {
             Message = $"New member: {result.Result.FirstName} {result.Result.LastName}",
             Image = imageName,
-            NotificationTypeId = 1,
-            NotificationTargetGroupId = 1,
+            NotificationTypeId = 1, // e.g. MemberCreated
+            NotificationTargetGroupId = 1, // e.g. Admins group
             Created = DateTime.UtcNow
         };
 
         await _notificationService.AddNotificationAsync(notification);
 
+        // Notify all connected admins of the update
         await _notificationHub.Clients.Group("Admins").SendAsync("NotificationUpdated");
 
             return Ok(new { success = true });
     }
 
-
+    /// <summary>
+    /// GET /Members/EditMember?id={id}
+    /// Loads data for an existing member into an edit form partial view.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> EditMember(int id)
     {
@@ -99,6 +120,11 @@ public class MembersController(
         return PartialView("~/Views/Shared/Partials/Sections/_EditMemberForm.cshtml", form);
     }
 
+    /// <summary>
+    /// POST /Members/EditMember
+    /// Validates and updates an existing member.
+    /// Saves a new uploaded image if provided.
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> EditMember(EditMemberForm form)
     {
@@ -125,6 +151,10 @@ public class MembersController(
             : BadRequest(new { success = false, error = result.Error });
     }
 
+    /// <summary>
+    /// POST /Members/DeleteMember
+    /// Deletes the member with the specified ID.
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> DeleteMember(int id)
     {

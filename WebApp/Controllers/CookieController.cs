@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
+/// <summary>
+/// Handles setting and deleting of various site cookies based on user consent.
+/// </summary>
 public class CookieController : Controller
 {
     [HttpPost]
     public IActionResult SetCookies([FromBody] CookieConsent consent)
     {
-    Response.Cookies.Append("SessionCookie", "Essential", new CookieOptions
+        Response.Cookies.Append("SessionCookie", "Essential", new CookieOptions
     {
         IsEssential = true,
         Expires = DateTimeOffset.UtcNow.AddDays(90),
