@@ -1,8 +1,9 @@
 ﻿// site.js - Global JavaScript
-
+// Manages multiple core functionalities across the site:
 
 // ----------------------------------------
-// 0. Global Quill-konfigurationer
+// 1. Global Quill configurations
+//  Quill editor setup for rich-text fields on create/edit forms.
 // ----------------------------------------
 const quillConfigs = [
     {
@@ -18,7 +19,8 @@ const quillConfigs = [
 ];
 
 // ----------------------------------------
-// 1. Global click-delegat för alla [data-fetch-url]
+// 2. Global click delegate for all [data-fetch-url] elements
+// Delegated click handling for elements with [data - fetch - url] to load partial views via AJAX.
 // ----------------------------------------
 document.addEventListener('click', e => {
     const btn = e.target.closest('[data-fetch-url]');
@@ -40,7 +42,10 @@ document.addEventListener('click', e => {
 });
 
 // ----------------------------------------
-// 2. Hjälpfunktioner
+// 3. Helper utilities:
+// Retrieving the anti - forgery token
+// Clearing validation error messages
+// Asynchronously loading and processing image previews
 // ----------------------------------------
 function getRequestVerificationToken() {
     const t = document.querySelector('input[name="__RequestVerificationToken"]');
@@ -174,10 +179,9 @@ function updateNotificationCount() {
         countDisplay.style.display = count > 0 ? 'inline-block' : 'none';
     }
 
-    // 🔽 Kontrollera och uppdatera notification-dot
     let dot = document.querySelector('.notification-dot');
     if (!dot) {
-        const wrapper = document.querySelector('.notification-wrapper'); // justera vid behov
+        const wrapper = document.querySelector('.notification-wrapper');
         if (wrapper) {
             dot = document.createElement('span');
             dot.className = 'notification-dot';
@@ -191,9 +195,11 @@ function updateNotificationCount() {
     }
 }
 
-
 // ----------------------------------------
-// 3. Dynamisk Partial Loader
+// 4. Dynamic partial view loader that:
+// Fetches HTML fragments
+// Injects and executes embedded scripts
+// Binds image previewers, form handlers, password toggles, dropdowns, and Quill editors
 // ----------------------------------------
 function loadPartialView(url, containerId) {
     if (typeof closeAllDropdowns === 'function') {
@@ -248,26 +254,47 @@ function loadPartialView(url, containerId) {
 }
 
 // ----------------------------------------
-// 4. Form Submit Handlers
+// 5. Form submission handlers for all forms (excluding .no-js-submit), with:
+// Binds submission handlers to all forms (except those with .no-js-submit) to:
+// Prevent double submissions via a `busy` flag
+// Clear existing validation messages
+// Format a Date of Birth from separate day/month/year fields
+// Enforce that at least one member is selected when required
+// Perform client-side required-field validation based on data-val attributes
+// Submit the form via AJAX (Fetch API)
+// Handle success responses (redirect or close modal + reload)
+// Handle validation errors returned from the server (400 status)
+// Got coached by ChatGPT on this one, some lines är from ChatGPT and some are from me.
+// I also read the documentation on this pages: https://api.jquery.com/ and https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
 // ----------------------------------------
 function bindFormSubmitHandlers() {
+    // Select all forms that should use JS submission
     document.querySelectorAll('form:not(.no-js-submit)').forEach(form => {
-        let busy = false;
+        let busy = false; // Prevents multiple simultaneous submissions
         form.addEventListener('submit', async e => {
             e.preventDefault();
-            if (busy) return;
+            if (busy) return; // If a submission is already in progress, abort
             busy = true;
 
+            // Remove any previous client-side validation messages/styles
             clearErrorMessages(form);
 
+            // -----------------------------
+            // 1. Format Date of Birth field
+            // -----------------------------
             const d = form.querySelector('#dobDay')?.value;
             const mo = form.querySelector('#dobMonth')?.value;
             const y = form.querySelector('#dobYear')?.value;
             const hd = form.querySelector('input[name="DateOfBirth"]');
+            // If day, month, and year are all provided, assemble YYYY-MM-DD
             if (hd) hd.value = (d && mo && y) ? `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}` : '';
 
+            // -------------------------------------------------
+            // 2. Ensure at least one member is selected (if used)
+            // -------------------------------------------------
             const selectedMembersInput = form.querySelector('input[name="FormData.SelectedMemberIdsRaw"]');
             if (selectedMembersInput && selectedMembersInput.value.trim() === '') {
+                // Highlight the project-tags field group and show error message
                 const membersFieldGroup = form.querySelector('#project-tags');
                 if (membersFieldGroup) {
                     const errorSpan = form.querySelector('[data-valmsg-for="FormData.SelectedMemberIdsRaw"]');
@@ -277,15 +304,19 @@ function bindFormSubmitHandlers() {
                     }
                     membersFieldGroup.classList.add('input-validation-error');
                 }
+                // Reset busy flag and restore submit button state
                 busy = false;
                 const btn = form.querySelector('button[type="submit"]');
                 if (btn) {
                     btn.disabled = false;
                     btn.innerText = btn.getAttribute('data-original-text') || btn.innerText;
                 }
-                return;
+                return; // Abort submission
             }
 
+            // ---------------------------------------------------
+            // 3. Client-side required-field validation using data-val
+            // ---------------------------------------------------
             let hasError = false;
             form.querySelectorAll('[data-val="true"]').forEach(i => {
                 if (!i.value.trim()) {
@@ -293,6 +324,7 @@ function bindFormSubmitHandlers() {
                     i.classList.add('input-validation-error');
                     const sp = form.querySelector(`[data-valmsg-for="${i.name}"]`);
                     if (sp) {
+                        // Extended validation shows custom message, otherwise generic
                         sp.innerText = form.classList.contains('extended-validation')
                             ? i.getAttribute('data-val-required') || 'This field is required'
                             : 'Field is required';
@@ -301,20 +333,26 @@ function bindFormSubmitHandlers() {
                 }
             });
 
+            // Store reference to submit button & its original text
             const btn = form.querySelector('button[type="submit"]');
             const txt = btn?.getAttribute('data-original-text') || btn?.innerText;
 
             if (hasError) {
+                // If any required fields are empty, reset busy and button, then abort
                 busy = false;
                 if (btn) { btn.disabled = false; btn.innerText = txt; }
                 return;
             }
 
+            // ---------------------------------
+            // 4. Submit form data via AJAX POST
+            // ---------------------------------
             try {
                 const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
                 const j = await res.json();
 
                 if (res.ok) {
+                    // On success: either redirect or close modal + reload
                     if (j.redirectUrl) window.location.href = j.redirectUrl;
                     else {
                         const mo = form.closest('.modal');
@@ -322,6 +360,10 @@ function bindFormSubmitHandlers() {
                         window.location.reload();
                     }
                 } else if (res.status === 400) {
+
+                    // ----------------------------------------------------------------
+                    // 5. Server-side validation errors: map error messages to fields
+                    // ----------------------------------------------------------------
 
                     if (j.errors) {
                         Object.keys(j.errors).forEach(k => {
@@ -334,6 +376,7 @@ function bindFormSubmitHandlers() {
                             }
                         });
                     }
+                    // General form-level error (e.g. authentication failure)
                     if (j.error) {
                         const msg = form.querySelector('.form-message');
                         if (msg) {
@@ -341,10 +384,12 @@ function bindFormSubmitHandlers() {
                             msg.style.display = 'block';
                         }
                     }
+                    // Reset busy flag and restore submit button
                     busy = false;
                     if (btn) { btn.disabled = false; btn.innerText = txt; }
                 }
             } catch (err) {
+                // Network or unexpected error: log and reset state
                 console.error('Submit failed', err);
                 if (btn) { btn.disabled = false; btn.innerText = txt; }
                 busy = false;
@@ -354,67 +399,100 @@ function bindFormSubmitHandlers() {
 }
 
 // ----------------------------------------
-// Admin-email validering (JS-fetch mot /Auth/IsAdmin)
+// 6. Administrator email validation via server lookup before allowing login.
+// On blur or before submit, sends a GET request to / Auth / IsAdmin ? email =…
+// to verify that the entered email belongs to an administrator, disabling
+// the submit button and showing an error message if not.
+// Got coached by ChatGPT on this one, some lines är from ChatGPT and some are from me.
 // ----------------------------------------
 function bindAdminEmailValidation() {
+    // Find the admin login form by its ID
     const form = document.getElementById('admin-login-form');
     if (!form) return;
 
+    // Locate the email input, error message span, and submit button
     const emailInput = form.querySelector('#admin-email');
     const errorSpan = form.querySelector('#admin-email-error');
     const submitBtn = form.querySelector('button[type="submit"]');
 
+    // Track the last email we checked to avoid duplicate network calls
     let lastChecked = '';
 
+    /*
+     * Checks with the server whether the given email is an admin.
+     * - Clears any previous error if email is empty.
+     * - Skips the check if the email hasn't changed since last time.
+     * - On a non-admin response, shows an error and disables the submit button.
+     * - Re-enables the button and clears the error if admin or on network failure.
+     */
     async function checkAdmin(email) {
+        // If the input is empty, clear errors and enable submit
         if (!email) {
             errorSpan.innerText = '';
             submitBtn.disabled = false;
             return;
         }
+        // If the same email was just checked, skip the network request
         if (email === lastChecked) return;
         lastChecked = email;
 
         try {
+        // Send GET request to the server endpoint
             const res = await fetch(`/Auth/IsAdmin?email=${encodeURIComponent(email)}`, {
                 method: 'GET',
                 credentials: 'same-origin'
             });
-            if (!res.ok) throw new Error(res.status);
+            if (!res.ok) throw new Error(res.status); // Treat non-2xx as error
             const json = await res.json();
             if (!json.isAdmin) {
+                // Not an admin: display message and disable submission
                 errorSpan.innerText = 'You must be an administrator to log in here.';
                 submitBtn.disabled = true;
             } else {
+                // Valid admin: clear any error and re-enable button
                 errorSpan.innerText = '';
                 submitBtn.disabled = false;
             }
         } catch (err) {
+            // On network or parsing error, log it and allow the user to procee
             console.error('Admin-check failed', err);
             errorSpan.innerText = '';
             submitBtn.disabled = false;
         }
     }
 
+    // When the email field loses focus, trigger an admin check
     emailInput.addEventListener('blur', e => checkAdmin(e.target.value));
+    // When the user types again, clear any existing error and re-enable the button
     emailInput.addEventListener('input', e => {
         errorSpan.innerText = '';
         submitBtn.disabled = false;
     });
 
+/*
+ * On form submission:
+ * - If the email hasn't been checked yet, prevent default submit,
+ *   perform the check, and then submit or keep disabled based on result.
+ */
     form.addEventListener('submit', async e => {
+        // If there's an email and we haven't just checked it
         const email = emailInput.value.trim();
         if (email && email !== lastChecked) {
-            e.preventDefault();
-            await checkAdmin(email);
-            if (submitBtn.disabled) return;
-            form.submit();
+            e.preventDefault(); // Stop the form from submitting
+            await checkAdmin(email); // Perform the admin check
+            if (submitBtn.disabled) return; // If still disabled, abort submit
+            form.submit(); // Otherwise, proceed with submission
         }
     });
 }
 
 // ----------------------------------------
-// 5. DOMContentLoaded – Init-funktioner
+// 7. DOMContentLoaded initialization:
+// Modal triggers
+// Image previewers, close buttons, form binds, password toggles, dropdowns
+// Quill editor instantiation
+// Logout button AJAX
+// Notification list loading and time updates
 // ----------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-modal="true"]').forEach(b => {
@@ -470,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ----------------------------------------
-// 6. Dropdown-menyer
+// 8. Dropdown menu open/close logic and delete confirmation dialogs.
 // ----------------------------------------
 function setupDropdownToggles() {
     document.querySelectorAll('.dropdown-toggle').forEach(toggle => {

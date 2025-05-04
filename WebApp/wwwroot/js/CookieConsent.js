@@ -1,9 +1,19 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿/*
+ * Manages the cookie consent workflow:
+ * - On page load, checks for an existing "cookieConsent" cookie and opens the consent modal if missing.
+ * - Provides functions to open/close the modal, read/write cookies, and send consent choices to the server.
+ * - Supports “Accept All” and “Accept Selected” flows with persistence for 90 or 365 days.
+ * - This Code is based on Hans code in the Video about Cookie Consent
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Show the cookie consent modal if no consent cookie is present
     if (!getCookie("cookieConsent")) {
         openCookieModal()
     }
 })
 
+// Function to open the cookie consent modal and pre-populate it with existing consent values
 function openCookieModal() {
     const modal = document.getElementById("cookieModal");
     if (modal) modal.style.display = "flex";
@@ -21,6 +31,7 @@ function openCookieModal() {
     }
 }
 
+// Function to get a cookie by name
 function getCookie(name) {
     const nameEQ = name + "=";
     const cookies = document.cookie.split(';');
@@ -33,11 +44,13 @@ function getCookie(name) {
     return null;
 }
 
+// Function to close the cookie consent modal
 function closeCookieModal() {
     const modal = document.getElementById("cookieModal");
     if (modal) modal.style.display = "none";
 }
 
+// Function to set a cookie with a specified name, value, and expiration in days
 function setCookie(name, value, days) {
     let expires = ""
     if (days) {
@@ -49,6 +62,9 @@ function setCookie(name, value, days) {
     const encodedValue = encodeURIComponent(value || "");
     document.cookie = `${name}=${encodedValue}${expires}; path=/; SameSite=Lax`
 }
+
+//  Accepts all categories (essential, functional, marketing),
+// Persists the choice for 90 days, sends it to the server, and closes the modal.
 
 async function acceptAll() {
     const consent = {
@@ -62,6 +78,8 @@ async function acceptAll() {
     closeCookieModal()
 }
 
+// Accepts only the categories selected by the user in the form,
+// Persists the choice for 365 days, sends it to the server, and closes the modal.
 async function acceptSelected() {
     const form = document.getElementById("cookieConsentForm");
     const formData = new FormData(form);
@@ -76,6 +94,7 @@ async function acceptSelected() {
     closeCookieModal()
 }
 
+// Function to send the consent data to the server
 async function setConsent(consent) {
     try {
         const res = await fetch("/cookies/setcookies", {
@@ -94,6 +113,7 @@ async function setConsent(consent) {
     }
 }
 
+// Allow opening the consent modal again via a settings link
 document.addEventListener("DOMContentLoaded", function () {
     const settingsLink = document.getElementById("cookieSettingsLink");
     if (settingsLink) {
